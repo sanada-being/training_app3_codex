@@ -130,3 +130,29 @@
 - 重複コードは放置せず、共通化・再利用でDRY原則を守る。
 - クラス内クラス（nested class）は禁止し、必要な型は独立した `.cs` ファイルへ切り出す。
 - 画面コードはUI責務に限定し、業務ロジック・データ変換はCore層/サービス層に配置する。
+
+## 15. WinForms再設計方針（MVC/MVP準拠）
+- 本プロジェクトのWinFormsは、`MainForm` をシェル（タブホスト）として最小責務にする。
+- `MainForm` は「画面コンテナ配置」と「依存オブジェクト配線」のみを担当し、業務処理は持たない。
+- 各機能タブは `UserControl` + `Controller`（MVP/Passive View相当）で分離する。
+  - View責務: 入力取得、表示更新、イベント通知
+  - Controller責務: 入力検証、Application/Core Service呼び出し、ViewModel変換、エラー制御
+- 画面表示用の整形データは必要に応じてViewModelを用意し、Domain Entityを直接UIへ露出させない。
+
+## 16. クラス配置ルール（Form1整理方針）
+- `Form1`（または `MainForm`）は原則 `Form1.cs` と `Form1.Designer.cs` を基本構成とし、巨大partialで機能分割しない。
+- タブ固有機能は `Form1.*.cs` へ追加せず、必ず独立 `.cs`（View/Controller/Model）へ切り出す。
+- コントロール宣言はDesigner管理を基本とし、動的生成が必要な場合は理由をコメントで明示する。
+- nested classは禁止。必要な型は独立ファイルへ定義する。
+
+## 17. 状態管理・データアクセス方針
+- アプリ全体状態は `AppState` に集約し、Form側で生の `List<T>` を分散保持しない。
+- 起動時ロードは `AppBootstrapper` へ集約し、Formの初期化コードから分離する。
+- CSV入出力は `AppDataRepository` 経由で扱い、UI層から `CsvDataStore` を直接呼ばない。
+- 永続化仕様（CSVヘッダー、保存先、互換性）は既存仕様を維持し、破壊的変更はIssueで合意後に実施する。
+
+## 18. 移行実装ルール（Issue #59 以降）
+- 移行は「基盤 -> MainFormシェル化 -> 共通基盤 -> 各タブ移行 -> 最終整理」の依存順で実施する。
+- 1 Issue = 1 ブランチ = 1 PR を厳守する。
+- 既存機能と等価動作を維持し、リファクタリングで挙動を変える場合は別Issue化する。
+- すべての移行タスクで build/test/主要手動シナリオ確認を実施する。
