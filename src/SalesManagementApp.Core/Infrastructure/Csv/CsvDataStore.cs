@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Domain.Entities;
 using SalesManagementApp.Core.Infrastructure.DataProtection;
@@ -51,6 +53,15 @@ public class CsvDataStore
         return result;
     }
 
+    public Task<IReadOnlyList<Product>> ReadProductsAsync(string filePath, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return ReadProducts(filePath);
+        }, cancellationToken);
+    }
+
     public IReadOnlyList<InventoryRecord> ReadInventories(string filePath)
     {
         var rows = ReadDataRows(filePath, "StoreId,ProductId,Stock");
@@ -70,6 +81,15 @@ public class CsvDataStore
         }
 
         return result;
+    }
+
+    public Task<IReadOnlyList<InventoryRecord>> ReadInventoriesAsync(string filePath, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return ReadInventories(filePath);
+        }, cancellationToken);
     }
 
     public IReadOnlyList<SaleRecord> ReadSales(string filePath)
@@ -94,11 +114,29 @@ public class CsvDataStore
         return result;
     }
 
+    public Task<IReadOnlyList<SaleRecord>> ReadSalesAsync(string filePath, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return ReadSales(filePath);
+        }, cancellationToken);
+    }
+
     public void WriteProducts(string filePath, IEnumerable<Product> products)
     {
         var lines = new List<string> { "ProductId,ProductName,UnitPrice,Category" };
         lines.AddRange(products.Select(p => $"{p.ProductId},{p.ProductName},{p.UnitPrice},{p.Category}"));
         WriteAllLines(filePath, lines);
+    }
+
+    public Task WriteProductsAsync(string filePath, IEnumerable<Product> products, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            WriteProducts(filePath, products);
+        }, cancellationToken);
     }
 
     public void WriteInventories(string filePath, IEnumerable<InventoryRecord> records)
@@ -108,12 +146,30 @@ public class CsvDataStore
         WriteAllLines(filePath, lines);
     }
 
+    public Task WriteInventoriesAsync(string filePath, IEnumerable<InventoryRecord> records, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            WriteInventories(filePath, records);
+        }, cancellationToken);
+    }
+
     public void WriteSales(string filePath, IEnumerable<SaleRecord> records)
     {
         var lines = new List<string> { "SaleDate,StoreId,ProductId,Quantity" };
         lines.AddRange(records.Select(r =>
             $"{r.SaleDate:yyyy-MM-dd},{r.StoreId},{r.ProductId},{r.Quantity}"));
         WriteAllLines(filePath, lines);
+    }
+
+    public Task WriteSalesAsync(string filePath, IEnumerable<SaleRecord> records, CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            WriteSales(filePath, records);
+        }, cancellationToken);
     }
 
     public IReadOnlyList<string> GetBackups(string filePath)
