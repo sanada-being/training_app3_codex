@@ -78,3 +78,15 @@
 - 入力エラー/業務エラー時の挙動を実装時に定義し、検証結果を残す。
 - データ保護と継続利用を意識し、破壊的変更時は移行手順を明示する。
 - 将来的な機能追加を想定し、モジュール責務を分離した設計を優先する。
+
+## 9. 開発環境・初期プロジェクト構成
+- 開発環境
+  - Visual Studio（.NET デスクトップ開発）
+  - .NET Framework 4.7.2
+- ソリューション/プロジェクト配置
+  - `Sales Management App/Sales Management App.slnx`
+  - `Sales Management App/Sales Management App/Sales Management App.csproj`
+- エントリポイント
+  - クラスファイル: `Sales Management App/Sales Management App/Program.cs`
+- 運用ルール
+  - `bin/`, `obj/`, `.vs/` などのビルド生成物はコミットしない。
