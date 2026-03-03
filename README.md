@@ -13,4 +13,5 @@
 - 既知制約/未対応: `docs/known-limitations.md`
 - リリース判定チェック: `docs/release-checklist.md`
 - E2Eシナリオ/結果: `docs/e2e-scenarios.md`, `docs/e2e-test-report.md`
+- 在庫算出方式: `docs/inventory-calculation.md`
 
