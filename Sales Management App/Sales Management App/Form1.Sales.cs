@@ -19,7 +19,7 @@ namespace Sales_Management_App {
                 RefreshInventoryGrid();
                 RefreshInventoryHistoryGrid();
                 ClearSaleInputs();
-                MessageBox.Show(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount), "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _messageService.ShowInfo(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount));
             });
         }
 
@@ -152,7 +152,7 @@ namespace Sales_Management_App {
             }
 
             if (!valid && showMessage) {
-                MessageBox.Show("入力内容を確認してください。", "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _messageService.ShowWarning("入力内容を確認してください。", "入力エラー");
             }
 
             return valid;

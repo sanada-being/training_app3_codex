@@ -83,6 +83,9 @@
     <Compile Include="InventoryHistoryOperationFilterOption.cs" />
     <Compile Include="AggregationSnapshot.cs" />
     <Compile Include="MainFormDependencies.cs" />
+    <Compile Include="Presentation\Common\DataGridHeaderMapper.cs" />
+    <Compile Include="Presentation\Common\UiActionExecutor.cs" />
+    <Compile Include="Presentation\Common\UiMessageService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

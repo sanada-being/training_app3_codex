@@ -18,7 +18,7 @@ namespace Sales_Management_App {
                 var snapshot = BuildAggregationSnapshot();
                 RenderAggregationSnapshot(snapshot);
                 Clipboard.SetText(BuildAggregationClipboardText(snapshot));
-                MessageBox.Show("集計結果をクリップボードにコピーしました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _messageService.ShowInfo("集計結果をクリップボードにコピーしました。");
             });
         }
 
