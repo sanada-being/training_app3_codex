@@ -5,6 +5,7 @@ using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
 using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
+using Sales_Management_App.Presentation.Tabs.Products;
 
 namespace Sales_Management_App {
     public partial class Form1 : Form {
@@ -18,7 +19,7 @@ namespace Sales_Management_App {
         private readonly UiMessageService _messageService;
         private readonly UiActionExecutor _uiActionExecutor;
 
-        private AppState _appState = new AppState();
+        private readonly AppState _appState = new AppState();
 
         private List<Product> _products { get { return _appState.Products; } }
 
@@ -30,14 +31,8 @@ namespace Sales_Management_App {
 
         private string _inventoryHistoryPath { get { return _appState.InventoryHistoryPath; } }
 
-        private DataGridView _productsGrid;
-        private TextBox _productIdText;
-        private TextBox _productNameText;
-        private TextBox _unitPriceText;
-        private TextBox _categoryText;
-        private TextBox _productFilterIdText;
-        private TextBox _productFilterNameText;
-        private TextBox _productFilterCategoryText;
+        private ProductsView _productsView;
+        private ProductsController _productsController;
 
         private DataGridView _inventoryGrid;
         private TextBox _inventoryStoreIdText;
@@ -96,18 +91,35 @@ namespace Sales_Management_App {
 
             InitializeComponent();
             InitializeShell();
+            InitializeControllers();
             LoadInitialDataFromRepositoryRoot();
             InitializeViewsFromState();
         }
 
+        private void InitializeControllers() {
+            _productsController = new ProductsController(
+                _productsView,
+                _productService,
+                _appState,
+                _messageService,
+                _uiActionExecutor,
+                HandleProductsChanged);
+            _productsController.Initialize();
+        }
+
         private void InitializeViewsFromState() {
-            RefreshProductsGrid();
+            _productsController.Refresh();
             RefreshInventoryGrid();
             RefreshInventoryHistoryGrid();
             RefreshSaleProductOptions();
             RefreshSalesGrid();
             ResetAggregationDisplay();
             UpdateSaleUnitPriceAndAmountPreview();
+        }
+
+        private void HandleProductsChanged() {
+            RefreshSaleProductOptions();
+            RefreshSalesGrid();
         }
 
         private void InitializeShell() {
