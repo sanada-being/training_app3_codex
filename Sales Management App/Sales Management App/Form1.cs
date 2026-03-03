@@ -7,8 +7,8 @@ using System.Windows.Forms;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Models;
 using SalesManagementApp.Core.Application.Services;
+using SalesManagementApp.Core.Application.State;
 using SalesManagementApp.Core.Domain.Entities;
-using SalesManagementApp.Core.Infrastructure.Csv;
 
 namespace Sales_Management_App {
     public partial class Form1 : Form {
@@ -17,13 +17,20 @@ namespace Sales_Management_App {
         private readonly InventoryHistoryService _inventoryHistoryService = new InventoryHistoryService();
         private readonly SalesService _salesService = new SalesService();
         private readonly SalesAggregationService _salesAggregationService = new SalesAggregationService();
-        private readonly CsvDataStore _csvDataStore = new CsvDataStore();
+        private readonly AppDataRepository _appDataRepository = new AppDataRepository();
+        private readonly AppBootstrapper _appBootstrapper = new AppBootstrapper();
 
-        private readonly List<Product> _products = new List<Product>();
-        private readonly List<InventoryRecord> _inventories = new List<InventoryRecord>();
-        private readonly List<InventoryHistoryRecord> _inventoryHistories = new List<InventoryHistoryRecord>();
-        private readonly List<SaleRecord> _sales = new List<SaleRecord>();
-        private string _inventoryHistoryPath = string.Empty;
+        private AppState _appState = new AppState();
+
+        private List<Product> _products { get { return _appState.Products; } }
+
+        private List<InventoryRecord> _inventories { get { return _appState.Inventories; } }
+
+        private List<InventoryHistoryRecord> _inventoryHistories { get { return _appState.InventoryHistories; } }
+
+        private List<SaleRecord> _sales { get { return _appState.Sales; } }
+
+        private string _inventoryHistoryPath { get { return _appState.InventoryHistoryPath; } }
 
         private DataGridView _productsGrid;
         private TextBox _productIdText;

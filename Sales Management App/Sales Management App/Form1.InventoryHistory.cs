@@ -94,11 +94,7 @@ namespace Sales_Management_App {
         }
 
         private void PersistInventoryHistory() {
-            if (string.IsNullOrWhiteSpace(_inventoryHistoryPath)) {
-                return;
-            }
-
-            _csvDataStore.WriteInventoryHistories(_inventoryHistoryPath, _inventoryHistories);
+            _appDataRepository.WriteInventoryHistories(_inventoryHistoryPath, _inventoryHistories);
         }
     }
 }
