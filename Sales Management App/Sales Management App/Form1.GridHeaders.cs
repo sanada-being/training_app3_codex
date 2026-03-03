@@ -4,16 +4,6 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App {
     public partial class Form1 {
-        private static readonly IReadOnlyDictionary<string, string> SalesGridHeaders =
-            new Dictionary<string, string> {
-                { "SaleDate", "販売日" },
-                { "StoreId", "店舗ID" },
-                { "ProductId", "商品ID" },
-                { "ProductName", "商品名" },
-                { "Quantity", "数量" },
-                { "SalesAmount", "売上金額" }
-            };
-
         private static readonly IReadOnlyDictionary<string, string> ProductSummaryGridHeaders =
             new Dictionary<string, string> {
                 { "ProductId", "商品ID" },

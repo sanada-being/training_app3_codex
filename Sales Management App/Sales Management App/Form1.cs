@@ -7,6 +7,7 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 using Sales_Management_App.Presentation.Tabs.Inventory;
 using Sales_Management_App.Presentation.Tabs.Products;
+using Sales_Management_App.Presentation.Tabs.Sales;
 
 namespace Sales_Management_App {
     public partial class Form1 : Form {
@@ -36,6 +37,8 @@ namespace Sales_Management_App {
         private ProductsController _productsController;
         private InventoryView _inventoryView;
         private InventoryController _inventoryController;
+        private SalesView _salesView;
+        private SalesController _salesController;
 
         private DataGridView _inventoryHistoryGrid;
         private DateTimePicker _historyStartDatePicker;
@@ -44,18 +47,6 @@ namespace Sales_Management_App {
         private TextBox _historyStoreIdText;
         private TextBox _historyProductIdText;
 
-        private DataGridView _salesGrid;
-        private DateTimePicker _saleDatePicker;
-        private TextBox _saleStoreIdText;
-        private ComboBox _saleProductCombo;
-        private TextBox _saleQuantityText;
-        private DateTimePicker _salesFilterStartDatePicker;
-        private DateTimePicker _salesFilterEndDatePicker;
-        private TextBox _salesFilterStoreIdText;
-        private TextBox _salesFilterProductIdText;
-        private Label _saleUnitPriceLabel;
-        private Label _saleAmountPreviewLabel;
-
         private DateTimePicker _summaryStartDatePicker;
         private DateTimePicker _summaryEndDatePicker;
         private Label _summaryTotalLabel;
@@ -63,8 +54,6 @@ namespace Sales_Management_App {
         private DataGridView _weeklySummaryGrid;
         private TextBox _aggregationFilterProductIdText;
         private AggregationSnapshot _currentAggregationSnapshot;
-
-        private ErrorProvider _errorProvider;
 
         public Form1()
             : this(MainFormDependencies.CreateDefault()) {
@@ -111,24 +100,41 @@ namespace Sales_Management_App {
                 _uiActionExecutor,
                 HandleInventoryUpdated);
             _inventoryController.Initialize();
+
+            _salesController = new SalesController(
+                _salesView,
+                _productService,
+                _salesService,
+                _appDataRepository,
+                _appState,
+                _messageService,
+                _uiActionExecutor,
+                HandleSalesRegistered);
+            _salesController.Initialize();
         }
 
         private void InitializeViewsFromState() {
             _productsController.Refresh();
             _inventoryController.Refresh();
             RefreshInventoryHistoryGrid();
-            RefreshSaleProductOptions();
-            RefreshSalesGrid();
+            _salesController.RefreshProductOptions();
+            _salesController.RefreshGrid();
             ResetAggregationDisplay();
-            UpdateSaleUnitPriceAndAmountPreview();
+            _salesController.UpdatePricePreview();
         }
 
         private void HandleProductsChanged() {
-            RefreshSaleProductOptions();
-            RefreshSalesGrid();
+            _salesController.RefreshProductOptions();
+            _salesController.RefreshGrid();
+            _salesController.UpdatePricePreview();
         }
 
         private void HandleInventoryUpdated() {
+            RefreshInventoryHistoryGrid();
+        }
+
+        private void HandleSalesRegistered() {
+            _inventoryController.Refresh();
             RefreshInventoryHistoryGrid();
         }
 
@@ -137,11 +143,6 @@ namespace Sales_Management_App {
             Width = 1100;
             Height = 700;
 
-            _errorProvider = new ErrorProvider {
-                BlinkStyle = ErrorBlinkStyle.NeverBlink
-            };
-            _errorProvider.SetIconAlignment(this, ErrorIconAlignment.MiddleLeft);
-
             var tabs = new TabControl { Dock = DockStyle.Fill };
             tabs.TabPages.Add(CreateProductTab());
             tabs.TabPages.Add(CreateInventoryTab());
@@ -149,8 +150,6 @@ namespace Sales_Management_App {
             tabs.TabPages.Add(CreateSalesTab());
             tabs.TabPages.Add(CreateAggregationTab());
             Controls.Add(tabs);
-
-            WireSalesInputValidation();
         }
 
     }
