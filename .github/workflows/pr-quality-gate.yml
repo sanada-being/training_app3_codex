@@ -1,0 +1,31 @@
+name: PR Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build WinForms App (.NET Framework 4.7.2)
+        run: msbuild "Sales Management App\Sales Management App\Sales Management App.csproj" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /nologo
+
+      - name: Restore NUnit Test Project
+        run: dotnet restore "tests/SalesManagementApp.Tests/SalesManagementApp.Tests.csproj"
+
+      - name: Run NUnit Tests
+        run: dotnet test "tests/SalesManagementApp.Tests/SalesManagementApp.Tests.csproj" --configuration Release --no-restore --verbosity normal
