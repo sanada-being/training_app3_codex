@@ -55,9 +55,6 @@
     <Compile Include="Form1.Layout.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.Products.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form1.Inventory.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
@@ -86,6 +83,11 @@
     <Compile Include="Presentation\Common\DataGridHeaderMapper.cs" />
     <Compile Include="Presentation\Common\UiActionExecutor.cs" />
     <Compile Include="Presentation\Common\UiMessageService.cs" />
+    <Compile Include="Presentation\Tabs\Products\ProductFilterModel.cs" />
+    <Compile Include="Presentation\Tabs\Products\ProductInputModel.cs" />
+    <Compile Include="Presentation\Tabs\Products\ProductsController.cs" />
+    <Compile Include="Presentation\Tabs\Products\ProductsView.cs" />
+    <Compile Include="Presentation\Tabs\Products\ProductViewRow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

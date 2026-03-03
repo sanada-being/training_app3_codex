@@ -5,80 +5,8 @@ namespace Sales_Management_App {
     public partial class Form1 {
         private TabPage CreateProductTab() {
             var tab = new TabPage("商品管理");
-            var root = new TableLayoutPanel {
-                Dock = DockStyle.Fill,
-                RowCount = 3,
-                ColumnCount = 1
-            };
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 170));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 96));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-
-            var inputPanel = new TableLayoutPanel {
-                Dock = DockStyle.Fill,
-                ColumnCount = 4,
-                RowCount = 3,
-                Padding = new Padding(12)
-            };
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-
-            _productIdText = AddLabeledTextBox(inputPanel, "商品ID", 0, 0);
-            _productNameText = AddLabeledTextBox(inputPanel, "商品名", 2, 0);
-            _unitPriceText = AddLabeledTextBox(inputPanel, "単価", 0, 1);
-            _categoryText = AddLabeledTextBox(inputPanel, "区分", 2, 1);
-
-            var buttonFlow = new FlowLayoutPanel {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.LeftToRight,
-                AutoSize = true
-            };
-            buttonFlow.Controls.Add(CreateButton("登録", RegisterProduct));
-            buttonFlow.Controls.Add(CreateButton("更新", UpdateProduct));
-            buttonFlow.Controls.Add(CreateButton("削除", DeleteProduct));
-            buttonFlow.Controls.Add(CreateButton("クリア", delegate { ClearProductInputs(); }));
-            inputPanel.Controls.Add(buttonFlow, 0, 2);
-            inputPanel.SetColumnSpan(buttonFlow, 4);
-
-            var filterPanel = new TableLayoutPanel {
-                Dock = DockStyle.Fill,
-                ColumnCount = 4,
-                RowCount = 2,
-                Padding = new Padding(12, 0, 12, 8)
-            };
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            _productFilterIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 0, 0);
-            _productFilterNameText = AddLabeledTextBox(filterPanel, "絞込 商品名", 2, 0);
-            _productFilterCategoryText = AddLabeledTextBox(filterPanel, "絞込 区分", 0, 1);
-
-            var productFilterButtons = new FlowLayoutPanel {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.LeftToRight,
-                AutoSize = true
-            };
-            productFilterButtons.Controls.Add(CreateButton("絞り込み", SearchProducts));
-            productFilterButtons.Controls.Add(CreateButton("解除", ClearProductFilter));
-            filterPanel.Controls.Add(productFilterButtons, 2, 1);
-            filterPanel.SetColumnSpan(productFilterButtons, 2);
-
-            _productsGrid = new DataGridView {
-                Dock = DockStyle.Fill,
-                ReadOnly = true,
-                AutoGenerateColumns = true,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false
-            };
-            _productsGrid.SelectionChanged += ProductsGridOnSelectionChanged;
-
-            root.Controls.Add(inputPanel, 0, 0);
-            root.Controls.Add(filterPanel, 0, 1);
-            root.Controls.Add(_productsGrid, 0, 2);
-            tab.Controls.Add(root);
+            _productsView = new Presentation.Tabs.Products.ProductsView();
+            tab.Controls.Add(_productsView);
             return tab;
         }
 

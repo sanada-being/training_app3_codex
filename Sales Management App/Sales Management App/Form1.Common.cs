@@ -10,13 +10,6 @@ namespace Sales_Management_App {
             _uiActionExecutor.Execute(action);
         }
 
-        private void ClearProductInputs() {
-            _productIdText.Text = string.Empty;
-            _productNameText.Text = string.Empty;
-            _unitPriceText.Text = string.Empty;
-            _categoryText.Text = string.Empty;
-        }
-
         private void ClearInventoryInputs() {
             _inventoryStoreIdText.Text = string.Empty;
             _inventoryProductIdText.Text = string.Empty;
