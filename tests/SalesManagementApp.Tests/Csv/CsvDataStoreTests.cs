@@ -173,6 +173,37 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    public void WriteAndReadInventoryHistories_WhenDataIsValid_RoundTrips()
+    {
+        var path = Path.Combine(_workDir, "inventory_history.csv");
+        var input = new[]
+        {
+            new InventoryHistoryRecord
+            {
+                OccurredAt = new DateTime(2026, 3, 3, 10, 15, 0),
+                OperationType = InventoryOperationType.Inbound,
+                StoreId = "S001",
+                ProductId = "P001",
+                Quantity = 5,
+                ResultStock = 15,
+                Result = "Success"
+            }
+        };
+
+        _store.WriteInventoryHistories(path, input);
+        var loaded = _store.ReadInventoryHistories(path);
+
+        Assert.That(loaded.Count, Is.EqualTo(1));
+        Assert.That(loaded[0].OccurredAt, Is.EqualTo(new DateTime(2026, 3, 3, 10, 15, 0)));
+        Assert.That(loaded[0].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
+        Assert.That(loaded[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(loaded[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(loaded[0].Quantity, Is.EqualTo(5));
+        Assert.That(loaded[0].ResultStock, Is.EqualTo(15));
+        Assert.That(loaded[0].Result, Is.EqualTo("Success"));
+    }
+
+    [Test]
     public void WriteProducts_WhenTargetExists_CreatesBackup()
     {
         var path = Path.Combine(_workDir, "products.csv");

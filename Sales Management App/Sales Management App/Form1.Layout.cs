@@ -221,6 +221,100 @@ namespace Sales_Management_App {
             return tab;
         }
 
+        private TabPage CreateInventoryHistoryTab() {
+            var tab = new TabPage("在庫履歴");
+            var root = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                RowCount = 2,
+                ColumnCount = 1
+            };
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+            var filterPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 6,
+                RowCount = 3,
+                Padding = new Padding(12)
+            };
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 220));
+
+            var startLabel = new Label {
+                Text = "開始日時",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _historyStartDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Custom,
+                CustomFormat = "yyyy/MM/dd HH:mm:ss",
+                ShowCheckBox = true,
+                Checked = false
+            };
+            filterPanel.Controls.Add(startLabel, 0, 0);
+            filterPanel.Controls.Add(_historyStartDatePicker, 1, 0);
+
+            var endLabel = new Label {
+                Text = "終了日時",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _historyEndDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Custom,
+                CustomFormat = "yyyy/MM/dd HH:mm:ss",
+                ShowCheckBox = true,
+                Checked = false
+            };
+            filterPanel.Controls.Add(endLabel, 2, 0);
+            filterPanel.Controls.Add(_historyEndDatePicker, 3, 0);
+
+            var operationLabel = new Label {
+                Text = "操作種別",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _historyOperationTypeCombo = new ComboBox {
+                Dock = DockStyle.Fill,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            filterPanel.Controls.Add(operationLabel, 4, 0);
+            filterPanel.Controls.Add(_historyOperationTypeCombo, 5, 0);
+
+            _historyStoreIdText = AddLabeledTextBox(filterPanel, "店舗ID", 0, 1);
+            _historyProductIdText = AddLabeledTextBox(filterPanel, "商品ID", 2, 1);
+
+            var buttonFlow = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            buttonFlow.Controls.Add(CreateButton("検索", SearchInventoryHistory));
+            buttonFlow.Controls.Add(CreateButton("クリア", ClearInventoryHistoryFilter));
+            filterPanel.Controls.Add(buttonFlow, 0, 2);
+            filterPanel.SetColumnSpan(buttonFlow, 6);
+
+            _inventoryHistoryGrid = new DataGridView {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AutoGenerateColumns = true,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+
+            root.Controls.Add(filterPanel, 0, 0);
+            root.Controls.Add(_inventoryHistoryGrid, 0, 1);
+            tab.Controls.Add(root);
+
+            BindInventoryHistoryOperationOptions();
+            return tab;
+        }
+
         private TabPage CreateAggregationTab() {
             var tab = new TabPage("売上集計");
             var root = new TableLayoutPanel {

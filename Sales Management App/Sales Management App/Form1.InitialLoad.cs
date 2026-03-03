@@ -20,6 +20,8 @@ namespace Sales_Management_App {
                 var productsPath = Path.Combine(rootPath, "products.csv");
                 var inventoryPath = Path.Combine(rootPath, "inventory.csv");
                 var salesPath = ResolveSalesPath(rootPath);
+                var inventoryHistoryPath = Path.Combine(rootPath, "inventory_history.csv");
+                _inventoryHistoryPath = inventoryHistoryPath;
 
                 if (File.Exists(productsPath)) {
                     _products.Clear();
@@ -36,8 +38,14 @@ namespace Sales_Management_App {
                     _sales.AddRange(_csvDataStore.ReadAndNormalizeSales(salesPath, _products));
                 }
 
+                if (File.Exists(inventoryHistoryPath)) {
+                    _inventoryHistories.Clear();
+                    _inventoryHistories.AddRange(_csvDataStore.ReadInventoryHistories(inventoryHistoryPath));
+                }
+
                 RefreshProductsGrid();
                 RefreshInventoryGrid();
+                RefreshInventoryHistoryGrid();
                 RefreshSaleProductOptions();
                 RefreshSalesGrid();
                 ResetAggregationDisplay();

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -14,8 +14,11 @@ namespace SalesManagementApp.Core.Infrastructure.Csv;
 
 public class CsvDataStore
 {
+    private const string ProductsHeader = "ProductId,ProductName,UnitPrice,Category";
+    private const string InventoryHeader = "StoreId,ProductId,Stock";
     private const string SalesHeaderLegacy = "SaleDate,StoreId,ProductId,Quantity";
     private const string SalesHeaderStandard = "SaleDate,StoreId,ProductId,Quantity,SalesAmount";
+    private const string InventoryHistoryHeader = "OccurredAt,OperationType,StoreId,ProductId,Quantity,ResultStock,Result";
 
     private readonly DataProtectionService _dataProtectionService;
 
@@ -31,7 +34,7 @@ public class CsvDataStore
 
     public IReadOnlyList<Product> ReadProducts(string filePath)
     {
-        var rows = ReadDataRows(filePath, out _, "ProductId,ProductName,UnitPrice,Category");
+        var rows = ReadDataRows(filePath, out _, ProductsHeader);
         var result = new List<Product>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -67,7 +70,7 @@ public class CsvDataStore
 
     public IReadOnlyList<InventoryRecord> ReadInventories(string filePath)
     {
-        var rows = ReadDataRows(filePath, out _, "StoreId,ProductId,Stock");
+        var rows = ReadDataRows(filePath, out _, InventoryHeader);
         var result = new List<InventoryRecord>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -95,13 +98,45 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistories(string filePath)
+    {
+        var rows = ReadDataRows(filePath, out _, InventoryHistoryHeader);
+        var result = new List<InventoryHistoryRecord>();
+
+        for (var i = 0; i < rows.Count; i++)
+        {
+            var lineNo = i + 2;
+            var cells = SplitAndValidateColumns(rows[i], 7, lineNo);
+
+            result.Add(new InventoryHistoryRecord
+            {
+                OccurredAt = ParseDateTime(cells[0], nameof(InventoryHistoryRecord.OccurredAt), lineNo),
+                OperationType = ParseOperationType(cells[1], lineNo),
+                StoreId = Require(cells[2], nameof(InventoryHistoryRecord.StoreId), lineNo),
+                ProductId = Require(cells[3], nameof(InventoryHistoryRecord.ProductId), lineNo),
+                Quantity = ParseInt(cells[4], nameof(InventoryHistoryRecord.Quantity), lineNo, min: 1),
+                ResultStock = ParseInt(cells[5], nameof(InventoryHistoryRecord.ResultStock), lineNo, min: 0),
+                Result = Require(cells[6], nameof(InventoryHistoryRecord.Result), lineNo)
+            });
+        }
+
+        return result;
+    }
+
+    public Task<IReadOnlyList<InventoryHistoryRecord>> ReadInventoryHistoriesAsync(
+        string filePath,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return ReadInventoryHistories(filePath);
+        }, cancellationToken);
+    }
+
     public IReadOnlyList<SaleRecord> ReadSales(string filePath)
     {
-        var rows = ReadDataRows(
-            filePath,
-            out var header,
-            SalesHeaderLegacy,
-            SalesHeaderStandard);
+        var rows = ReadDataRows(filePath, out var header, SalesHeaderLegacy, SalesHeaderStandard);
         var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
         var result = new List<SaleRecord>();
 
@@ -153,7 +188,7 @@ public class CsvDataStore
             if (hasSalesAmount && salesAmount != expectedAmount)
             {
                 throw new DomainValidationException(
-                    $"行{lineNo}: SalesAmount が不正です。期待値={expectedAmount}, 実値={salesAmount}");
+                    $"Line {lineNo}: SalesAmount mismatch. expected={expectedAmount}, actual={salesAmount}");
             }
 
             result.Add(new SaleRecord
@@ -185,7 +220,7 @@ public class CsvDataStore
 
     public void WriteProducts(string filePath, IEnumerable<Product> products)
     {
-        var lines = new List<string> { "ProductId,ProductName,UnitPrice,Category" };
+        var lines = new List<string> { ProductsHeader };
         lines.AddRange(products.Select(p => $"{p.ProductId},{p.ProductName},{p.UnitPrice},{p.Category}"));
         WriteAllLines(filePath, lines);
     }
@@ -201,7 +236,7 @@ public class CsvDataStore
 
     public void WriteInventories(string filePath, IEnumerable<InventoryRecord> records)
     {
-        var lines = new List<string> { "StoreId,ProductId,Stock" };
+        var lines = new List<string> { InventoryHeader };
         lines.AddRange(records.Select(r => $"{r.StoreId},{r.ProductId},{r.Stock}"));
         WriteAllLines(filePath, lines);
     }
@@ -212,6 +247,26 @@ public class CsvDataStore
         {
             cancellationToken.ThrowIfCancellationRequested();
             WriteInventories(filePath, records);
+        }, cancellationToken);
+    }
+
+    public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
+    {
+        var lines = new List<string> { InventoryHistoryHeader };
+        lines.AddRange(records.Select(r =>
+            $"{r.OccurredAt:yyyy-MM-dd HH:mm:ss},{r.OperationType},{r.StoreId},{r.ProductId},{r.Quantity},{r.ResultStock},{r.Result}"));
+        WriteAllLines(filePath, lines);
+    }
+
+    public Task WriteInventoryHistoriesAsync(
+        string filePath,
+        IEnumerable<InventoryHistoryRecord> records,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            WriteInventoryHistories(filePath, records);
         }, cancellationToken);
     }
 
@@ -252,7 +307,7 @@ public class CsvDataStore
         if (duplicate is not null)
         {
             throw new DomainValidationException(
-                $"商品マスタに重複したProductIdが存在するため売上金額を算出できません: {duplicate.Key}");
+                $"Duplicate ProductId in product master: {duplicate.Key}");
         }
 
         return products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
@@ -267,7 +322,7 @@ public class CsvDataStore
         if (!unitPriceMap.TryGetValue(productId, out var unitPrice))
         {
             throw new DomainValidationException(
-                $"行{lineNo}: ProductId={productId} の商品マスタが存在しないため売上金額を算出できません。");
+                $"Line {lineNo}: ProductId={productId} is not found in product master.");
         }
 
         try
@@ -277,7 +332,7 @@ public class CsvDataStore
         catch (OverflowException)
         {
             throw new DomainValidationException(
-                $"行{lineNo}: 売上金額が計算上限を超えています。");
+                $"Line {lineNo}: SalesAmount overflow.");
         }
     }
 
@@ -287,20 +342,20 @@ public class CsvDataStore
 
         if (!File.Exists(filePath))
         {
-            throw new DomainValidationException($"ファイルが存在しません: {filePath}");
+            throw new DomainValidationException($"File not found: {filePath}");
         }
 
         var lines = File.ReadAllLines(filePath, Encoding.UTF8).ToList();
         if (lines.Count == 0)
         {
-            throw new DomainValidationException($"ファイルが空です: {filePath}");
+            throw new DomainValidationException($"File is empty: {filePath}");
         }
 
         var normalizedHeader = lines[0].Trim();
         header = normalizedHeader;
         if (!expectedHeaders.Contains(normalizedHeader, StringComparer.Ordinal))
         {
-            throw new DomainValidationException($"ヘッダーが不正です: {filePath}");
+            throw new DomainValidationException($"Header is invalid: {filePath}");
         }
 
         return lines.Skip(1).Where(static l => !string.IsNullOrWhiteSpace(l)).ToList();
@@ -311,7 +366,8 @@ public class CsvDataStore
         var cells = line.Split(',');
         if (cells.Length != expectedCount)
         {
-            throw new DomainValidationException($"行{lineNo}: 列数が不正です。期待値={expectedCount}, 実値={cells.Length}");
+            throw new DomainValidationException(
+                $"Line {lineNo}: invalid column count. expected={expectedCount}, actual={cells.Length}");
         }
 
         return cells;
@@ -321,7 +377,7 @@ public class CsvDataStore
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new DomainValidationException($"行{lineNo}: {fieldName} は必須です。");
+            throw new DomainValidationException($"Line {lineNo}: {fieldName} is required.");
         }
 
         return value.Trim();
@@ -331,12 +387,12 @@ public class CsvDataStore
     {
         if (!int.TryParse(value, out var parsed))
         {
-            throw new DomainValidationException($"行{lineNo}: {fieldName} は整数である必要があります。");
+            throw new DomainValidationException($"Line {lineNo}: {fieldName} must be integer.");
         }
 
         if (parsed < min)
         {
-            throw new DomainValidationException($"行{lineNo}: {fieldName} は {min} 以上である必要があります。");
+            throw new DomainValidationException($"Line {lineNo}: {fieldName} must be >= {min}.");
         }
 
         return parsed;
@@ -346,7 +402,30 @@ public class CsvDataStore
     {
         if (!DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
         {
-            throw new DomainValidationException($"行{lineNo}: {fieldName} の日付形式は yyyy-MM-dd である必要があります。");
+            throw new DomainValidationException(
+                $"Line {lineNo}: {fieldName} must follow yyyy-MM-dd.");
+        }
+
+        return parsed;
+    }
+
+    private static DateTime ParseDateTime(string value, string fieldName, int lineNo)
+    {
+        if (!DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        {
+            throw new DomainValidationException(
+                $"Line {lineNo}: {fieldName} must follow yyyy-MM-dd HH:mm:ss.");
+        }
+
+        return parsed;
+    }
+
+    private static InventoryOperationType ParseOperationType(string value, int lineNo)
+    {
+        if (!Enum.TryParse(value, ignoreCase: true, out InventoryOperationType parsed)
+            || !Enum.IsDefined(typeof(InventoryOperationType), parsed))
+        {
+            throw new DomainValidationException($"Line {lineNo}: OperationType is invalid.");
         }
 
         return parsed;
