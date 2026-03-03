@@ -94,6 +94,68 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    public void ReadAndNormalizeSales_WhenHeaderWithoutSalesAmount_ComputesAmountAndRewritesCsv()
+    {
+        var path = Path.Combine(_workDir, "sales.csv");
+        File.WriteAllLines(path, new[]
+        {
+            "SaleDate,StoreId,ProductId,Quantity",
+            "2026-03-01,S001,P001,2"
+        });
+        var products = new[]
+        {
+            new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+        };
+
+        var sales = _store.ReadAndNormalizeSales(path, products);
+
+        Assert.That(sales.Count, Is.EqualTo(1));
+        Assert.That(sales[0].SalesAmount, Is.EqualTo(240));
+
+        var lines = File.ReadAllLines(path);
+        Assert.That(lines[0], Is.EqualTo("SaleDate,StoreId,ProductId,Quantity,SalesAmount"));
+        Assert.That(lines[1], Is.EqualTo("2026-03-01,S001,P001,2,240"));
+    }
+
+    [Test]
+    public void ReadAndNormalizeSales_WhenProductMasterIsMissing_ThrowsValidationException()
+    {
+        var path = Path.Combine(_workDir, "sales.csv");
+        File.WriteAllLines(path, new[]
+        {
+            "SaleDate,StoreId,ProductId,Quantity",
+            "2026-03-01,S001,P999,2"
+        });
+        var products = new[]
+        {
+            new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+        };
+
+        Assert.That(
+            () => _store.ReadAndNormalizeSales(path, products),
+            Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
+    public void ReadAndNormalizeSales_WhenSalesAmountDoesNotMatchUnitPrice_ThrowsValidationException()
+    {
+        var path = Path.Combine(_workDir, "sales.csv");
+        File.WriteAllLines(path, new[]
+        {
+            "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
+            "2026-03-01,S001,P001,2,100"
+        });
+        var products = new[]
+        {
+            new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+        };
+
+        Assert.That(
+            () => _store.ReadAndNormalizeSales(path, products),
+            Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
     public void WriteAndReadInventories_WhenDataIsValid_RoundTrips()
     {
         var path = Path.Combine(_workDir, "inventory.csv");

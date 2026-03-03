@@ -39,6 +39,15 @@ public class ProductServiceTests
     }
 
     [Test]
+    public void Register_WhenProductIdHasTrailingSpaceAndDuplicateExists_ThrowsValidationException()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").Build());
+        var duplicate = new ProductBuilder().WithId("P001 ").Build();
+
+        Assert.That(() => _service.Register(_products, duplicate), Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
     public void Register_WhenPriceIsNegative_ThrowsValidationException()
     {
         var invalid = new ProductBuilder().WithPrice(-1).Build();
@@ -54,6 +63,20 @@ public class ProductServiceTests
 
         _service.Update(_products, update);
 
+        Assert.That(_products[0].ProductName, Is.EqualTo("New"));
+        Assert.That(_products[0].UnitPrice, Is.EqualTo(999));
+        Assert.That(_products[0].Category, Is.EqualTo("Snack"));
+    }
+
+    [Test]
+    public void Update_WhenProductIdHasTrailingSpace_FindsAndUpdatesTarget()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").WithName("Old").Build());
+        var update = new ProductBuilder().WithId("P001 ").WithName("New").WithPrice(999).WithCategory("Snack").Build();
+
+        _service.Update(_products, update);
+
+        Assert.That(_products[0].ProductId, Is.EqualTo("P001"));
         Assert.That(_products[0].ProductName, Is.EqualTo("New"));
         Assert.That(_products[0].UnitPrice, Is.EqualTo(999));
         Assert.That(_products[0].Category, Is.EqualTo("Snack"));
