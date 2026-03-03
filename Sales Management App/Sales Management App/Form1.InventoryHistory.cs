@@ -67,6 +67,7 @@ namespace Sales_Management_App {
                 h.ResultStock,
                 h.Result
             }).ToList();
+            ApplyJapaneseHeaders(_inventoryHistoryGrid, InventoryHistoryGridHeaders);
         }
 
         private InventoryOperationType? GetSelectedHistoryOperationType() {

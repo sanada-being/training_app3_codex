@@ -55,6 +55,7 @@ namespace Sales_Management_App {
                 r.ProductId,
                 r.Stock
             }).ToList();
+            ApplyJapaneseHeaders(_inventoryGrid, InventoryGridHeaders);
 
             var reorderCount = _inventoryService.GetReorderTargets(_inventories, 5).Count;
             _reorderLabel.Text = string.Format("要発注（在庫5以下）件数: {0}", reorderCount);

@@ -73,6 +73,7 @@ namespace Sales_Management_App {
                 p.UnitPrice,
                 p.Category
             }).ToList();
+            ApplyJapaneseHeaders(_productsGrid, ProductGridHeaders);
         }
 
         private void SearchProducts(object sender, EventArgs e) {
