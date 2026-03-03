@@ -68,8 +68,8 @@ public class CsvDataStoreTests
         var path = Path.Combine(_workDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
-            "SaleDate,StoreId,ProductId,Quantity",
-            "2026/01/01,S001,P001,1"
+            "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
+            "2026/01/01,S001,P001,1,120"
         });
 
         Assert.That(() => _store.ReadSales(path), Throws.TypeOf<DomainValidationException>());

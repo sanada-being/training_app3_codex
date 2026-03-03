@@ -94,20 +94,21 @@ public class CsvDataStore
 
     public IReadOnlyList<SaleRecord> ReadSales(string filePath)
     {
-        var rows = ReadDataRows(filePath, "SaleDate,StoreId,ProductId,Quantity");
+        var rows = ReadDataRows(filePath, "SaleDate,StoreId,ProductId,Quantity,SalesAmount");
         var result = new List<SaleRecord>();
 
         for (var i = 0; i < rows.Count; i++)
         {
             var lineNo = i + 2;
-            var cells = SplitAndValidateColumns(rows[i], 4, lineNo);
+            var cells = SplitAndValidateColumns(rows[i], 5, lineNo);
 
             result.Add(new SaleRecord
             {
                 SaleDate = ParseDate(cells[0], nameof(SaleRecord.SaleDate), lineNo),
                 StoreId = Require(cells[1], nameof(SaleRecord.StoreId), lineNo),
                 ProductId = Require(cells[2], nameof(SaleRecord.ProductId), lineNo),
-                Quantity = ParseInt(cells[3], nameof(SaleRecord.Quantity), lineNo, min: 1)
+                Quantity = ParseInt(cells[3], nameof(SaleRecord.Quantity), lineNo, min: 1),
+                SalesAmount = ParseInt(cells[4], nameof(SaleRecord.SalesAmount), lineNo, min: 0)
             });
         }
 
@@ -157,9 +158,9 @@ public class CsvDataStore
 
     public void WriteSales(string filePath, IEnumerable<SaleRecord> records)
     {
-        var lines = new List<string> { "SaleDate,StoreId,ProductId,Quantity" };
+        var lines = new List<string> { "SaleDate,StoreId,ProductId,Quantity,SalesAmount" };
         lines.AddRange(records.Select(r =>
-            $"{r.SaleDate:yyyy-MM-dd},{r.StoreId},{r.ProductId},{r.Quantity}"));
+            $"{r.SaleDate:yyyy-MM-dd},{r.StoreId},{r.ProductId},{r.Quantity},{r.SalesAmount}"));
         WriteAllLines(filePath, lines);
     }
 
