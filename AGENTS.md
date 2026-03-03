@@ -115,4 +115,12 @@
 - 売上CSVは次の2形式を受け入れる。
   - `SaleDate,StoreId,ProductId,Quantity`
   - `SaleDate,StoreId,ProductId,Quantity,SalesAmount`
-- `SalesAmount` 列がない売上CSVを読み込んだ場合は、`products.csv` の単価を使って `UnitPrice * Quantity` で補完する。
+- 4列売上CSVを読み込んだ場合は、`products.csv` の単価を使って `SalesAmount` を算出し、5列形式へ正規化して保存する。
+- 売上CSVは `sales_yyyyMMdd.csv` 形式のみ読込対象とし、最新日付ファイルを優先する。
+
+## 13. 設計/実装ルール（SRP・DRY）
+- クラス/メソッドは単一責務を維持し、責務が増えた場合は分割する。
+- 重複ロジックは共通化し、同一処理を複数箇所へコピペしない。
+- クラス内クラス（nested class）は禁止し、必要な型は独立 `.cs` に切り出す。
+- WinForms の肥大化を避けるため、画面コードは `partial class` やサービスへ責務分離する。
+- 既存仕様を変えない構造リファクタを優先し、仕様変更はIssue単位で明示して実施する。

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Validation;
 using SalesManagementApp.Core.Domain.Entities;
@@ -17,10 +19,16 @@ public class ProductService
     {
         Validate(input);
         var normalizedId = ValidationGuard.RequireNotEmpty(input.ProductId, "商品ID");
+        var normalizedName = NormalizeProductName(input.ProductName);
 
         if (products.Any(p => p.ProductId == normalizedId))
         {
             throw new DomainValidationException("同一の商品IDが既に登録されています。");
+        }
+
+        if (products.Any(p => NormalizeProductName(p.ProductName) == normalizedName))
+        {
+            throw new DomainValidationException("同一の商品名が既に登録されています。");
         }
 
         products.Add(Clone(input));
@@ -30,11 +38,17 @@ public class ProductService
     {
         Validate(input);
         var normalizedId = ValidationGuard.RequireNotEmpty(input.ProductId, "商品ID");
+        var normalizedName = NormalizeProductName(input.ProductName);
 
         var target = products.FirstOrDefault(p => p.ProductId == normalizedId);
         if (target is null)
         {
             throw new DomainValidationException("更新対象の商品が存在しません。");
+        }
+
+        if (products.Any(p => p.ProductId != normalizedId && NormalizeProductName(p.ProductName) == normalizedName))
+        {
+            throw new DomainValidationException("同一の商品名が既に登録されています。");
         }
 
         target.ProductId = normalizedId;
@@ -73,5 +87,13 @@ public class ProductService
             UnitPrice = input.UnitPrice,
             Category = input.Category.Trim()
         };
+    }
+
+    private static string NormalizeProductName(string productName)
+    {
+        var normalized = ValidationGuard.RequireNotEmpty(productName, "商品名")
+            .Normalize(NormalizationForm.FormKC)
+            .ToUpperInvariant();
+        return normalized;
     }
 }
