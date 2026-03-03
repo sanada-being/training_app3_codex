@@ -13,7 +13,8 @@ namespace Sales_Management_App {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            var dependencies = MainFormDependencies.CreateDefault();
+            Application.Run(new Form1(dependencies));
         }
     }
 }

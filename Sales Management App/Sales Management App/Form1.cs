@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using SalesManagementApp.Core.Application.Exceptions;
-using SalesManagementApp.Core.Application.Models;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace Sales_Management_App {
     public partial class Form1 : Form {
-        private readonly ProductService _productService = new ProductService();
-        private readonly InventoryService _inventoryService = new InventoryService();
-        private readonly InventoryHistoryService _inventoryHistoryService = new InventoryHistoryService();
-        private readonly SalesService _salesService = new SalesService();
-        private readonly SalesAggregationService _salesAggregationService = new SalesAggregationService();
-        private readonly AppDataRepository _appDataRepository = new AppDataRepository();
-        private readonly AppBootstrapper _appBootstrapper = new AppBootstrapper();
+        private readonly ProductService _productService;
+        private readonly InventoryService _inventoryService;
+        private readonly InventoryHistoryService _inventoryHistoryService;
+        private readonly SalesService _salesService;
+        private readonly SalesAggregationService _salesAggregationService;
+        private readonly AppDataRepository _appDataRepository;
+        private readonly AppBootstrapper _appBootstrapper;
 
         private AppState _appState = new AppState();
 
@@ -77,13 +72,40 @@ namespace Sales_Management_App {
 
         private ErrorProvider _errorProvider;
 
-        public Form1() {
-            InitializeComponent();
-            InitializeMainTabs();
-            LoadInitialDataFromRepositoryRoot();
+        public Form1()
+            : this(MainFormDependencies.CreateDefault()) {
         }
 
-        private void InitializeMainTabs() {
+        internal Form1(MainFormDependencies dependencies) {
+            if (dependencies == null) {
+                throw new ArgumentNullException("dependencies");
+            }
+
+            _productService = dependencies.ProductService;
+            _inventoryService = dependencies.InventoryService;
+            _inventoryHistoryService = dependencies.InventoryHistoryService;
+            _salesService = dependencies.SalesService;
+            _salesAggregationService = dependencies.SalesAggregationService;
+            _appDataRepository = dependencies.AppDataRepository;
+            _appBootstrapper = dependencies.AppBootstrapper;
+
+            InitializeComponent();
+            InitializeShell();
+            LoadInitialDataFromRepositoryRoot();
+            InitializeViewsFromState();
+        }
+
+        private void InitializeViewsFromState() {
+            RefreshProductsGrid();
+            RefreshInventoryGrid();
+            RefreshInventoryHistoryGrid();
+            RefreshSaleProductOptions();
+            RefreshSalesGrid();
+            ResetAggregationDisplay();
+            UpdateSaleUnitPriceAndAmountPreview();
+        }
+
+        private void InitializeShell() {
             Text = "Sales Management App";
             Width = 1100;
             Height = 700;
@@ -102,13 +124,6 @@ namespace Sales_Management_App {
             Controls.Add(tabs);
 
             WireSalesInputValidation();
-            RefreshProductsGrid();
-            RefreshInventoryGrid();
-            RefreshInventoryHistoryGrid();
-            RefreshSaleProductOptions();
-            RefreshSalesGrid();
-            ResetAggregationDisplay();
-            UpdateSaleUnitPriceAndAmountPreview();
         }
 
     }

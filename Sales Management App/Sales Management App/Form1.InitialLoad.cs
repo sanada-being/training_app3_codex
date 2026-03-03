@@ -7,14 +7,6 @@ namespace Sales_Management_App {
         private void LoadInitialDataFromRepositoryRoot() {
             try {
                 _appState = _appBootstrapper.LoadFromBaseDirectory(AppDomain.CurrentDomain.BaseDirectory);
-
-                RefreshProductsGrid();
-                RefreshInventoryGrid();
-                RefreshInventoryHistoryGrid();
-                RefreshSaleProductOptions();
-                RefreshSalesGrid();
-                ResetAggregationDisplay();
-                UpdateSaleUnitPriceAndAmountPreview();
             } catch (DomainValidationException ex) {
                 MessageBox.Show(string.Format("初期データの読み込みに失敗しました: {0}", ex.Message), "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             } catch (Exception ex) {
