@@ -12,85 +12,8 @@ namespace Sales_Management_App {
 
         private TabPage CreateInventoryTab() {
             var tab = new TabPage("在庫管理");
-            var root = new TableLayoutPanel {
-                Dock = DockStyle.Fill,
-                RowCount = 4,
-                ColumnCount = 1
-            };
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-
-            var inputPanel = new TableLayoutPanel {
-                Dock = DockStyle.Fill,
-                ColumnCount = 4,
-                RowCount = 3,
-                Padding = new Padding(12)
-            };
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-
-            _inventoryStoreIdText = AddLabeledTextBox(inputPanel, "店舗ID", 0, 0);
-            _inventoryProductIdText = AddLabeledTextBox(inputPanel, "商品ID", 2, 0);
-            _inventoryQuantityText = AddLabeledTextBox(inputPanel, "数量", 0, 1);
-
-            var buttonFlow = new FlowLayoutPanel {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.LeftToRight,
-                AutoSize = true
-            };
-            buttonFlow.Controls.Add(CreateButton("入荷", AddInventory));
-            buttonFlow.Controls.Add(CreateButton("出庫", RemoveInventory));
-            buttonFlow.Controls.Add(CreateButton("クリア", delegate { ClearInventoryInputs(); }));
-            inputPanel.Controls.Add(buttonFlow, 0, 2);
-            inputPanel.SetColumnSpan(buttonFlow, 4);
-
-            var filterPanel = new TableLayoutPanel {
-                Dock = DockStyle.Fill,
-                ColumnCount = 4,
-                RowCount = 2,
-                Padding = new Padding(12, 0, 12, 8)
-            };
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            _inventoryFilterStoreIdText = AddLabeledTextBox(filterPanel, "絞込 店舗ID", 0, 0);
-            _inventoryFilterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 2, 0);
-
-            var inventoryFilterButtons = new FlowLayoutPanel {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.LeftToRight,
-                AutoSize = true
-            };
-            inventoryFilterButtons.Controls.Add(CreateButton("絞り込み", SearchInventories));
-            inventoryFilterButtons.Controls.Add(CreateButton("解除", ClearInventoryFilter));
-            filterPanel.Controls.Add(inventoryFilterButtons, 0, 1);
-            filterPanel.SetColumnSpan(inventoryFilterButtons, 4);
-
-            _reorderLabel = new Label {
-                Dock = DockStyle.Fill,
-                TextAlign = System.Drawing.ContentAlignment.MiddleLeft,
-                Padding = new Padding(12, 0, 0, 0)
-            };
-
-            _inventoryGrid = new DataGridView {
-                Dock = DockStyle.Fill,
-                ReadOnly = true,
-                AutoGenerateColumns = true,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false
-            };
-            _inventoryGrid.SelectionChanged += InventoryGridOnSelectionChanged;
-
-            root.Controls.Add(inputPanel, 0, 0);
-            root.Controls.Add(filterPanel, 0, 1);
-            root.Controls.Add(_reorderLabel, 0, 2);
-            root.Controls.Add(_inventoryGrid, 0, 3);
-            tab.Controls.Add(root);
+            _inventoryView = new Presentation.Tabs.Inventory.InventoryView();
+            tab.Controls.Add(_inventoryView);
             return tab;
         }
 

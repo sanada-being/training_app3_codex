@@ -16,7 +16,7 @@ namespace Sales_Management_App {
                 var registered = _salesService.RegisterSale(_sales, _products, _inventories, input, _inventoryHistories, DateTime.Now);
                 PersistInventoryHistory();
                 RefreshSalesGrid();
-                RefreshInventoryGrid();
+                _inventoryController.Refresh();
                 RefreshInventoryHistoryGrid();
                 ClearSaleInputs();
                 _messageService.ShowInfo(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount));

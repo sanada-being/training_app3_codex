@@ -5,6 +5,7 @@ using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
 using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
+using Sales_Management_App.Presentation.Tabs.Inventory;
 using Sales_Management_App.Presentation.Tabs.Products;
 
 namespace Sales_Management_App {
@@ -33,14 +34,9 @@ namespace Sales_Management_App {
 
         private ProductsView _productsView;
         private ProductsController _productsController;
+        private InventoryView _inventoryView;
+        private InventoryController _inventoryController;
 
-        private DataGridView _inventoryGrid;
-        private TextBox _inventoryStoreIdText;
-        private TextBox _inventoryProductIdText;
-        private TextBox _inventoryQuantityText;
-        private TextBox _inventoryFilterStoreIdText;
-        private TextBox _inventoryFilterProductIdText;
-        private Label _reorderLabel;
         private DataGridView _inventoryHistoryGrid;
         private DateTimePicker _historyStartDatePicker;
         private DateTimePicker _historyEndDatePicker;
@@ -105,11 +101,21 @@ namespace Sales_Management_App {
                 _uiActionExecutor,
                 HandleProductsChanged);
             _productsController.Initialize();
+
+            _inventoryController = new InventoryController(
+                _inventoryView,
+                _inventoryService,
+                _appDataRepository,
+                _appState,
+                _messageService,
+                _uiActionExecutor,
+                HandleInventoryUpdated);
+            _inventoryController.Initialize();
         }
 
         private void InitializeViewsFromState() {
             _productsController.Refresh();
-            RefreshInventoryGrid();
+            _inventoryController.Refresh();
             RefreshInventoryHistoryGrid();
             RefreshSaleProductOptions();
             RefreshSalesGrid();
@@ -120,6 +126,10 @@ namespace Sales_Management_App {
         private void HandleProductsChanged() {
             RefreshSaleProductOptions();
             RefreshSalesGrid();
+        }
+
+        private void HandleInventoryUpdated() {
+            RefreshInventoryHistoryGrid();
         }
 
         private void InitializeShell() {

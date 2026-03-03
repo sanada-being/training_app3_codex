@@ -55,9 +55,6 @@
     <Compile Include="Form1.Layout.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.Inventory.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form1.InventoryHistory.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
@@ -88,6 +85,11 @@
     <Compile Include="Presentation\Tabs\Products\ProductsController.cs" />
     <Compile Include="Presentation\Tabs\Products\ProductsView.cs" />
     <Compile Include="Presentation\Tabs\Products\ProductViewRow.cs" />
+    <Compile Include="Presentation\Tabs\Inventory\InventoryController.cs" />
+    <Compile Include="Presentation\Tabs\Inventory\InventoryFilterModel.cs" />
+    <Compile Include="Presentation\Tabs\Inventory\InventoryInputModel.cs" />
+    <Compile Include="Presentation\Tabs\Inventory\InventoryView.cs" />
+    <Compile Include="Presentation\Tabs\Inventory\InventoryViewRow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
