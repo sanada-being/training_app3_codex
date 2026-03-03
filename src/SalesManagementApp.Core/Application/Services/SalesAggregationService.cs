@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Models;
+using SalesManagementApp.Core.Application.Validation;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
@@ -76,10 +76,7 @@ public class SalesAggregationService
 
     private static void ValidatePeriod(DateTime startDate, DateTime endDate)
     {
-        if (startDate.Date > endDate.Date)
-        {
-            throw new DomainValidationException("開始日は終了日以前で指定してください。");
-        }
+        ValidationGuard.RequireDateRange(startDate, endDate);
     }
 
     private static DateTime GetWeekStartDate(DateTime date)

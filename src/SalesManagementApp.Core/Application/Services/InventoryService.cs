@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
+using SalesManagementApp.Core.Application.Validation;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
@@ -21,30 +22,26 @@ public class InventoryService
 
     public void AddStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
-        ValidateIds(storeId, productId);
-        if (quantity <= 0)
-        {
-            throw new DomainValidationException("入荷数量は1以上である必要があります。");
-        }
+        var normalizedStoreId = ValidationGuard.RequireNotEmpty(storeId, "StoreId");
+        var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
+        ValidationGuard.RequirePositive(quantity, "入荷数量");
 
         lock (_syncRoot)
         {
-            var target = FindOrCreate(records, storeId, productId);
+            var target = FindOrCreate(records, normalizedStoreId, normalizedProductId);
             target.Stock += quantity;
         }
     }
 
     public void RemoveStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
-        ValidateIds(storeId, productId);
-        if (quantity <= 0)
-        {
-            throw new DomainValidationException("出庫数量は1以上である必要があります。");
-        }
+        var normalizedStoreId = ValidationGuard.RequireNotEmpty(storeId, "StoreId");
+        var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
+        ValidationGuard.RequirePositive(quantity, "出庫数量");
 
         lock (_syncRoot)
         {
-            var target = records.FirstOrDefault(r => r.StoreId == storeId && r.ProductId == productId);
+            var target = records.FirstOrDefault(r => r.StoreId == normalizedStoreId && r.ProductId == normalizedProductId);
             if (target is null)
             {
                 throw new DomainValidationException("対象在庫が存在しません。");
@@ -56,19 +53,6 @@ public class InventoryService
             }
 
             target.Stock -= quantity;
-        }
-    }
-
-    private static void ValidateIds(string storeId, string productId)
-    {
-        if (string.IsNullOrWhiteSpace(storeId))
-        {
-            throw new DomainValidationException("StoreId は必須です。");
-        }
-
-        if (string.IsNullOrWhiteSpace(productId))
-        {
-            throw new DomainValidationException("ProductId は必須です。");
         }
     }
 
