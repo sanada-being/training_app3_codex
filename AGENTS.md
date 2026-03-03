@@ -122,7 +122,7 @@
 - クラス/メソッドは単一責務を維持し、責務が増えた場合は分割する。
 - 重複ロジックは共通化し、同一処理を複数箇所へコピペしない。
 - クラス内クラス（nested class）は禁止し、必要な型は独立 `.cs` に切り出す。
-- WinForms の肥大化を避けるため、画面コードは `partial class` やサービスへ責務分離する。
+- WinForms の肥大化を避けるため、`Form1` への機能追加を避け、タブ単位の `UserControl + Controller` とサービスへ責務分離する。
 - 既存仕様を変えない構造リファクタを優先し、仕様変更はIssue単位で明示して実施する。
 
 ## 14. 設計ルール（重要）
@@ -140,7 +140,7 @@
 - 画面表示用の整形データは必要に応じてViewModelを用意し、Domain Entityを直接UIへ露出させない。
 
 ## 16. クラス配置ルール（Form1整理方針）
-- `Form1`（または `MainForm`）は原則 `Form1.cs` と `Form1.Designer.cs` を基本構成とし、巨大partialで機能分割しない。
+- `Form1`（または `MainForm`）は `Form1.cs` と `Form1.Designer.cs` のみで運用し、`Form1.*.cs` の機能partialは作成しない。
 - タブ固有機能は `Form1.*.cs` へ追加せず、必ず独立 `.cs`（View/Controller/Model）へ切り出す。
 - コントロール宣言はDesigner管理を基本とし、動的生成が必要な場合は理由をコメントで明示する。
 - nested classは禁止。必要な型は独立ファイルへ定義する。
@@ -156,3 +156,13 @@
 - 1 Issue = 1 ブランチ = 1 PR を厳守する。
 - 既存機能と等価動作を維持し、リファクタリングで挙動を変える場合は別Issue化する。
 - すべての移行タスクで build/test/主要手動シナリオ確認を実施する。
+
+## 19. 現在のUI構成（2026-03時点）
+- `Form1` はタブの生成・依存配線・初期ロードのみを担当する薄いシェルとする。
+- タブ実装は `Sales Management App/Sales Management App/Presentation/Tabs/` 配下に配置する。
+  - `Products/` : `ProductsView` + `ProductsController`
+  - `Inventory/` : `InventoryView` + `InventoryController`
+  - `InventoryHistory/` : `InventoryHistoryView` + `InventoryHistoryController`
+  - `Sales/` : `SalesView` + `SalesController`
+  - `Aggregation/` : `AggregationView` + `AggregationController`
+- タブ専用の表示モデル/入力モデル/補助型（例: `SaleProductOption`, `AggregationSnapshot`）は、必ず各タブ配下に配置する。

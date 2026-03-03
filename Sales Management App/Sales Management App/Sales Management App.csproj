@@ -49,18 +49,9 @@
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.InitialLoad.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form1.Layout.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="SaleProductOption.cs" />
-    <Compile Include="InventoryHistoryOperationFilterOption.cs" />
-    <Compile Include="AggregationSnapshot.cs" />
     <Compile Include="MainFormDependencies.cs" />
     <Compile Include="Presentation\Common\DataGridHeaderMapper.cs" />
     <Compile Include="Presentation\Common\UiActionExecutor.cs" />
@@ -77,15 +68,18 @@
     <Compile Include="Presentation\Tabs\Inventory\InventoryViewRow.cs" />
     <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryController.cs" />
     <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryFilterModel.cs" />
+    <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryOperationFilterOption.cs" />
     <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryView.cs" />
     <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryViewRow.cs" />
     <Compile Include="Presentation\Tabs\Aggregation\AggregationController.cs" />
     <Compile Include="Presentation\Tabs\Aggregation\AggregationProductSummaryRow.cs" />
+    <Compile Include="Presentation\Tabs\Aggregation\AggregationSnapshot.cs" />
     <Compile Include="Presentation\Tabs\Aggregation\AggregationView.cs" />
     <Compile Include="Presentation\Tabs\Aggregation\AggregationWeeklySummaryRow.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesController.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesFilterModel.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesInputModel.cs" />
+    <Compile Include="Presentation\Tabs\Sales\SaleProductOption.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesView.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesViewRow.cs" />
     <Compile Include="Program.cs" />

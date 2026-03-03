@@ -23,3 +23,16 @@ Core.Domain は他レイヤに依存しない
 - データアクセスはRepositoryインターフェース経由で扱う。
 - 例外は `DomainValidationException` を起点に扱う。
 - 新規機能はテスト先行（Red-Green-Refactor）で実装する。
+
+## 5. WinForms構成（2026-03時点）
+- `Form1` はシェルとして、以下のみを担当する。
+  - タブ `UserControl` の配置
+  - Controller/Service の依存配線
+  - 起動時の初期データ読込
+- 各機能は `UserControl + Controller` に分離する。
+  - `ProductsView` / `ProductsController`
+  - `InventoryView` / `InventoryController`
+  - `InventoryHistoryView` / `InventoryHistoryController`
+  - `SalesView` / `SalesController`
+  - `AggregationView` / `AggregationController`
+- タブ固有の入力モデル・表示モデル・補助型は各タブディレクトリに配置し、`Form1` 直下に置かない。

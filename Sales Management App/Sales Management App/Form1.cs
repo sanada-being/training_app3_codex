@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
 using Sales_Management_App.Presentation.Common;
@@ -144,6 +145,60 @@ namespace Sales_Management_App {
             tabs.TabPages.Add(CreateSalesTab());
             tabs.TabPages.Add(CreateAggregationTab());
             Controls.Add(tabs);
+        }
+
+        private TabPage CreateProductTab() {
+            var tab = new TabPage("商品管理");
+            _productsView = new ProductsView();
+            tab.Controls.Add(_productsView);
+            return tab;
+        }
+
+        private TabPage CreateInventoryTab() {
+            var tab = new TabPage("在庫管理");
+            _inventoryView = new InventoryView();
+            tab.Controls.Add(_inventoryView);
+            return tab;
+        }
+
+        private TabPage CreateSalesTab() {
+            var tab = new TabPage("売上登録");
+            _salesView = new SalesView();
+            tab.Controls.Add(_salesView);
+            return tab;
+        }
+
+        private TabPage CreateInventoryHistoryTab() {
+            var tab = new TabPage("在庫履歴");
+            _inventoryHistoryView = new InventoryHistoryView();
+            tab.Controls.Add(_inventoryHistoryView);
+            return tab;
+        }
+
+        private TabPage CreateAggregationTab() {
+            var tab = new TabPage("売上集計");
+            _aggregationView = new AggregationView();
+            tab.Controls.Add(_aggregationView);
+            return tab;
+        }
+
+        private void LoadInitialDataFromRepositoryRoot() {
+            try {
+                var loaded = _appBootstrapper.LoadFromBaseDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                _appState.Products = loaded.Products;
+                _appState.Inventories = loaded.Inventories;
+                _appState.InventoryHistories = loaded.InventoryHistories;
+                _appState.Sales = loaded.Sales;
+                _appState.RepositoryRootPath = loaded.RepositoryRootPath;
+                _appState.ProductsPath = loaded.ProductsPath;
+                _appState.InventoryPath = loaded.InventoryPath;
+                _appState.SalesPath = loaded.SalesPath;
+                _appState.InventoryHistoryPath = loaded.InventoryHistoryPath;
+            } catch (DomainValidationException ex) {
+                _messageService.ShowWarning(string.Format("初期データの読み込みに失敗しました: {0}", ex.Message), "入力エラー");
+            } catch (Exception ex) {
+                _messageService.ShowError(ex);
+            }
         }
 
     }
