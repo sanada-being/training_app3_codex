@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Domain.Entities;
 using SalesManagementApp.Core.Infrastructure.Csv;
+using ProductEntity = SalesManagementApp.Core.Domain.Entities.Product;
 
 namespace SalesManagementApp.Tests.Csv;
 
@@ -87,5 +88,61 @@ public class CsvDataStoreTests
         Assert.That(loaded.Count, Is.EqualTo(1));
         Assert.That(loaded[0].StoreId, Is.EqualTo("S001"));
         Assert.That(loaded[0].Stock, Is.EqualTo(3));
+    }
+
+    [Test]
+    public void WriteProducts_WhenTargetExists_CreatesBackup()
+    {
+        var path = Path.Combine(_workDir, "products.csv");
+        _store.WriteProducts(path, new[]
+        {
+            new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+        });
+
+        _store.WriteProducts(path, new[]
+        {
+            new ProductEntity { ProductId = "P002", ProductName = "Tea", UnitPrice = 100, Category = "Drink" }
+        });
+
+        var backups = _store.GetBackups(path);
+
+        Assert.That(backups.Count, Is.GreaterThanOrEqualTo(1));
+        Assert.That(File.Exists(backups[0]), Is.True);
+    }
+
+    [Test]
+    public void RestoreLatestBackup_WhenBackupsExist_RestoresPreviousContent()
+    {
+        var path = Path.Combine(_workDir, "products.csv");
+        _store.WriteProducts(path, new[]
+        {
+            new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+        });
+        _store.WriteProducts(path, new[]
+        {
+            new ProductEntity { ProductId = "P002", ProductName = "Tea", UnitPrice = 100, Category = "Drink" }
+        });
+
+        _store.RestoreLatestBackup(path);
+        var restored = _store.ReadProducts(path);
+
+        Assert.That(restored.Count, Is.EqualTo(1));
+        Assert.That(restored[0].ProductId, Is.EqualTo("P001"));
+    }
+
+    [Test]
+    public void WriteProducts_WritesOperationLog()
+    {
+        var path = Path.Combine(_workDir, "products.csv");
+
+        _store.WriteProducts(path, new[]
+        {
+            new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+        });
+
+        var logPath = Path.Combine(_workDir, "logs", "operations.log");
+        Assert.That(File.Exists(logPath), Is.True);
+        var log = File.ReadAllText(logPath);
+        Assert.That(log, Does.Contain("Write succeeded"));
     }
 }

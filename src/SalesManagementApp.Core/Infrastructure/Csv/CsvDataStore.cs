@@ -6,11 +6,24 @@ using System.Linq;
 using System.Text;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Domain.Entities;
+using SalesManagementApp.Core.Infrastructure.DataProtection;
 
 namespace SalesManagementApp.Core.Infrastructure.Csv;
 
 public class CsvDataStore
 {
+    private readonly DataProtectionService _dataProtectionService;
+
+    public CsvDataStore()
+        : this(new DataProtectionService())
+    {
+    }
+
+    internal CsvDataStore(DataProtectionService dataProtectionService)
+    {
+        _dataProtectionService = dataProtectionService;
+    }
+
     public IReadOnlyList<Product> ReadProducts(string filePath)
     {
         var rows = ReadDataRows(filePath, "ProductId,ProductName,UnitPrice,Category");
@@ -103,6 +116,17 @@ public class CsvDataStore
         WriteAllLines(filePath, lines);
     }
 
+    public IReadOnlyList<string> GetBackups(string filePath)
+    {
+        return _dataProtectionService.GetBackupFiles(filePath);
+    }
+
+    public void RestoreLatestBackup(string filePath)
+    {
+        _dataProtectionService.RestoreLatestBackup(filePath);
+        _dataProtectionService.WriteLog(filePath, "WARN", $"Restored from backup: {filePath}");
+    }
+
     private static List<string> ReadDataRows(string filePath, string expectedHeader)
     {
         if (!File.Exists(filePath))
@@ -170,7 +194,7 @@ public class CsvDataStore
         return parsed;
     }
 
-    private static void WriteAllLines(string filePath, IEnumerable<string> lines)
+    private void WriteAllLines(string filePath, IEnumerable<string> lines)
     {
         var directory = Path.GetDirectoryName(filePath);
         if (!string.IsNullOrWhiteSpace(directory))
@@ -178,6 +202,21 @@ public class CsvDataStore
             Directory.CreateDirectory(directory);
         }
 
-        File.WriteAllLines(filePath, lines, Encoding.UTF8);
+        var backupPath = _dataProtectionService.CreateBackupIfExists(filePath);
+        if (!string.IsNullOrWhiteSpace(backupPath))
+        {
+            _dataProtectionService.WriteLog(filePath, "INFO", $"Backup created: {backupPath}");
+        }
+
+        try
+        {
+            File.WriteAllLines(filePath, lines, Encoding.UTF8);
+            _dataProtectionService.WriteLog(filePath, "INFO", $"Write succeeded: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            _dataProtectionService.WriteLog(filePath, "ERROR", $"Write failed: {filePath} / {ex.Message}");
+            throw;
+        }
     }
 }
