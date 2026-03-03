@@ -6,6 +6,7 @@ using SalesManagementApp.Core.Application.State;
 using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 using Sales_Management_App.Presentation.Tabs.Inventory;
+using Sales_Management_App.Presentation.Tabs.InventoryHistory;
 using Sales_Management_App.Presentation.Tabs.Products;
 using Sales_Management_App.Presentation.Tabs.Sales;
 
@@ -23,29 +24,16 @@ namespace Sales_Management_App {
 
         private readonly AppState _appState = new AppState();
 
-        private List<Product> _products { get { return _appState.Products; } }
-
-        private List<InventoryRecord> _inventories { get { return _appState.Inventories; } }
-
-        private List<InventoryHistoryRecord> _inventoryHistories { get { return _appState.InventoryHistories; } }
-
         private List<SaleRecord> _sales { get { return _appState.Sales; } }
-
-        private string _inventoryHistoryPath { get { return _appState.InventoryHistoryPath; } }
 
         private ProductsView _productsView;
         private ProductsController _productsController;
         private InventoryView _inventoryView;
         private InventoryController _inventoryController;
+        private InventoryHistoryView _inventoryHistoryView;
+        private InventoryHistoryController _inventoryHistoryController;
         private SalesView _salesView;
         private SalesController _salesController;
-
-        private DataGridView _inventoryHistoryGrid;
-        private DateTimePicker _historyStartDatePicker;
-        private DateTimePicker _historyEndDatePicker;
-        private ComboBox _historyOperationTypeCombo;
-        private TextBox _historyStoreIdText;
-        private TextBox _historyProductIdText;
 
         private DateTimePicker _summaryStartDatePicker;
         private DateTimePicker _summaryEndDatePicker;
@@ -101,6 +89,13 @@ namespace Sales_Management_App {
                 HandleInventoryUpdated);
             _inventoryController.Initialize();
 
+            _inventoryHistoryController = new InventoryHistoryController(
+                _inventoryHistoryView,
+                _inventoryHistoryService,
+                _appState,
+                _uiActionExecutor);
+            _inventoryHistoryController.Initialize();
+
             _salesController = new SalesController(
                 _salesView,
                 _productService,
@@ -116,7 +111,7 @@ namespace Sales_Management_App {
         private void InitializeViewsFromState() {
             _productsController.Refresh();
             _inventoryController.Refresh();
-            RefreshInventoryHistoryGrid();
+            _inventoryHistoryController.Refresh();
             _salesController.RefreshProductOptions();
             _salesController.RefreshGrid();
             ResetAggregationDisplay();
@@ -130,12 +125,12 @@ namespace Sales_Management_App {
         }
 
         private void HandleInventoryUpdated() {
-            RefreshInventoryHistoryGrid();
+            _inventoryHistoryController.Refresh();
         }
 
         private void HandleSalesRegistered() {
             _inventoryController.Refresh();
-            RefreshInventoryHistoryGrid();
+            _inventoryHistoryController.Refresh();
         }
 
         private void InitializeShell() {
