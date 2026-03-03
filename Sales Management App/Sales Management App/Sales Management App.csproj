@@ -55,9 +55,6 @@
     <Compile Include="Form1.Layout.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.InventoryHistory.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form1.Aggregation.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
@@ -87,6 +84,10 @@
     <Compile Include="Presentation\Tabs\Inventory\InventoryInputModel.cs" />
     <Compile Include="Presentation\Tabs\Inventory\InventoryView.cs" />
     <Compile Include="Presentation\Tabs\Inventory\InventoryViewRow.cs" />
+    <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryController.cs" />
+    <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryFilterModel.cs" />
+    <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryView.cs" />
+    <Compile Include="Presentation\Tabs\InventoryHistory\InventoryHistoryViewRow.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesController.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesFilterModel.cs" />
     <Compile Include="Presentation\Tabs\Sales\SalesInputModel.cs" />
