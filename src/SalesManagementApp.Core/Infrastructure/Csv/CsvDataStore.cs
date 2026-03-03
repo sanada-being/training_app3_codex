@@ -14,6 +14,9 @@ namespace SalesManagementApp.Core.Infrastructure.Csv;
 
 public class CsvDataStore
 {
+    private const string SalesHeaderLegacy = "SaleDate,StoreId,ProductId,Quantity";
+    private const string SalesHeaderStandard = "SaleDate,StoreId,ProductId,Quantity,SalesAmount";
+
     private readonly DataProtectionService _dataProtectionService;
 
     public CsvDataStore()
@@ -97,12 +100,9 @@ public class CsvDataStore
         var rows = ReadDataRows(
             filePath,
             out var header,
-            "SaleDate,StoreId,ProductId,Quantity",
-            "SaleDate,StoreId,ProductId,Quantity,SalesAmount");
-        var hasSalesAmount = string.Equals(
-            header,
-            "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
-            StringComparison.Ordinal);
+            SalesHeaderLegacy,
+            SalesHeaderStandard);
+        var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
         var result = new List<SaleRecord>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -120,6 +120,55 @@ public class CsvDataStore
                     ? ParseInt(cells[4], nameof(SaleRecord.SalesAmount), lineNo, min: 0)
                     : 0
             });
+        }
+
+        return result;
+    }
+
+    public IReadOnlyList<SaleRecord> ReadAndNormalizeSales(string filePath, IReadOnlyCollection<Product> products)
+    {
+        if (products is null)
+        {
+            throw new ArgumentNullException(nameof(products));
+        }
+
+        var rows = ReadDataRows(filePath, out var header, SalesHeaderLegacy, SalesHeaderStandard);
+        var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
+        var unitPriceMap = BuildUnitPriceMap(products);
+        var result = new List<SaleRecord>();
+
+        for (var i = 0; i < rows.Count; i++)
+        {
+            var lineNo = i + 2;
+            var cells = SplitAndValidateColumns(rows[i], hasSalesAmount ? 5 : 4, lineNo);
+            var saleDate = ParseDate(cells[0], nameof(SaleRecord.SaleDate), lineNo);
+            var storeId = Require(cells[1], nameof(SaleRecord.StoreId), lineNo);
+            var productId = Require(cells[2], nameof(SaleRecord.ProductId), lineNo);
+            var quantity = ParseInt(cells[3], nameof(SaleRecord.Quantity), lineNo, min: 1);
+            var expectedAmount = CalculateSalesAmount(unitPriceMap, productId, quantity, lineNo);
+            var salesAmount = hasSalesAmount
+                ? ParseInt(cells[4], nameof(SaleRecord.SalesAmount), lineNo, min: 0)
+                : expectedAmount;
+
+            if (hasSalesAmount && salesAmount != expectedAmount)
+            {
+                throw new DomainValidationException(
+                    $"行{lineNo}: SalesAmount が不正です。期待値={expectedAmount}, 実値={salesAmount}");
+            }
+
+            result.Add(new SaleRecord
+            {
+                SaleDate = saleDate,
+                StoreId = storeId,
+                ProductId = productId,
+                Quantity = quantity,
+                SalesAmount = salesAmount
+            });
+        }
+
+        if (!hasSalesAmount)
+        {
+            WriteSales(filePath, result);
         }
 
         return result;
@@ -168,7 +217,7 @@ public class CsvDataStore
 
     public void WriteSales(string filePath, IEnumerable<SaleRecord> records)
     {
-        var lines = new List<string> { "SaleDate,StoreId,ProductId,Quantity,SalesAmount" };
+        var lines = new List<string> { SalesHeaderStandard };
         lines.AddRange(records.Select(r =>
             $"{r.SaleDate:yyyy-MM-dd},{r.StoreId},{r.ProductId},{r.Quantity},{r.SalesAmount}"));
         WriteAllLines(filePath, lines);
@@ -192,6 +241,44 @@ public class CsvDataStore
     {
         _dataProtectionService.RestoreLatestBackup(filePath);
         _dataProtectionService.WriteLog(filePath, "WARN", $"Restored from backup: {filePath}");
+    }
+
+    private static Dictionary<string, int> BuildUnitPriceMap(IReadOnlyCollection<Product> products)
+    {
+        var duplicate = products
+            .GroupBy(p => p.ProductId)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (duplicate is not null)
+        {
+            throw new DomainValidationException(
+                $"商品マスタに重複したProductIdが存在するため売上金額を算出できません: {duplicate.Key}");
+        }
+
+        return products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
+    }
+
+    private static int CalculateSalesAmount(
+        IReadOnlyDictionary<string, int> unitPriceMap,
+        string productId,
+        int quantity,
+        int lineNo)
+    {
+        if (!unitPriceMap.TryGetValue(productId, out var unitPrice))
+        {
+            throw new DomainValidationException(
+                $"行{lineNo}: ProductId={productId} の商品マスタが存在しないため売上金額を算出できません。");
+        }
+
+        try
+        {
+            return checked(unitPrice * quantity);
+        }
+        catch (OverflowException)
+        {
+            throw new DomainValidationException(
+                $"行{lineNo}: 売上金額が計算上限を超えています。");
+        }
     }
 
     private static List<string> ReadDataRows(string filePath, out string header, params string[] expectedHeaders)

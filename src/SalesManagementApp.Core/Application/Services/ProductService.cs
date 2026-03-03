@@ -16,8 +16,9 @@ public class ProductService
     public void Register(ICollection<Product> products, Product input)
     {
         Validate(input);
+        var normalizedId = ValidationGuard.RequireNotEmpty(input.ProductId, "商品ID");
 
-        if (products.Any(p => p.ProductId == input.ProductId))
+        if (products.Any(p => p.ProductId == normalizedId))
         {
             throw new DomainValidationException("同一の商品IDが既に登録されています。");
         }
@@ -28,13 +29,15 @@ public class ProductService
     public void Update(ICollection<Product> products, Product input)
     {
         Validate(input);
+        var normalizedId = ValidationGuard.RequireNotEmpty(input.ProductId, "商品ID");
 
-        var target = products.FirstOrDefault(p => p.ProductId == input.ProductId);
+        var target = products.FirstOrDefault(p => p.ProductId == normalizedId);
         if (target is null)
         {
             throw new DomainValidationException("更新対象の商品が存在しません。");
         }
 
+        target.ProductId = normalizedId;
         target.ProductName = input.ProductName.Trim();
         target.UnitPrice = input.UnitPrice;
         target.Category = input.Category.Trim();

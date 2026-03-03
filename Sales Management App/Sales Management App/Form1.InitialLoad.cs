@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
-using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using SalesManagementApp.Core.Application.Exceptions;
 
 namespace Sales_Management_App {
     public partial class Form1 {
+        private static readonly Regex SalesFileNamePattern =
+            new Regex(@"^sales_(\d{8})\.csv$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
         private void LoadInitialDataFromRepositoryRoot() {
             var rootPath = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
             if (string.IsNullOrWhiteSpace(rootPath)) {
@@ -29,8 +33,7 @@ namespace Sales_Management_App {
 
                 if (!string.IsNullOrWhiteSpace(salesPath) && File.Exists(salesPath)) {
                     _sales.Clear();
-                    _sales.AddRange(_csvDataStore.ReadSales(salesPath));
-                    BackfillSalesAmounts();
+                    _sales.AddRange(_csvDataStore.ReadAndNormalizeSales(salesPath, _products));
                 }
 
                 RefreshProductsGrid();
@@ -63,26 +66,36 @@ namespace Sales_Management_App {
         }
 
         private static string ResolveSalesPath(string rootPath) {
+            var selectedPath = string.Empty;
+            var selectedDate = DateTime.MinValue;
             var files = Directory.GetFiles(rootPath, "sales_*.csv");
-            if (files.Length == 0) {
-                return string.Empty;
-            }
 
-            return files
-                .OrderByDescending(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
-                .First();
-        }
-
-        private void BackfillSalesAmounts() {
-            var unitPriceMap = _products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
-
-            foreach (var sale in _sales.Where(s => s.SalesAmount == 0)) {
-                if (!unitPriceMap.TryGetValue(sale.ProductId, out var unitPrice)) {
+            foreach (var filePath in files) {
+                var fileName = Path.GetFileName(filePath);
+                var match = SalesFileNamePattern.Match(fileName);
+                if (!match.Success) {
                     continue;
                 }
 
-                sale.SalesAmount = checked(unitPrice * sale.Quantity);
+                DateTime parsedDate;
+                if (!DateTime.TryParseExact(
+                    match.Groups[1].Value,
+                    "yyyyMMdd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out parsedDate)) {
+                    continue;
+                }
+
+                if (parsedDate <= selectedDate) {
+                    continue;
+                }
+
+                selectedDate = parsedDate;
+                selectedPath = filePath;
             }
+
+            return selectedPath;
         }
     }
 }
