@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,9 +10,11 @@ namespace Sales_Management_App {
     public partial class Form1 : Form {
         private readonly ProductService _productService = new ProductService();
         private readonly InventoryService _inventoryService = new InventoryService();
+        private readonly SalesService _salesService = new SalesService();
 
         private readonly List<Product> _products = new List<Product>();
         private readonly List<InventoryRecord> _inventories = new List<InventoryRecord>();
+        private readonly List<SaleRecord> _sales = new List<SaleRecord>();
 
         private DataGridView _productsGrid;
         private TextBox _productIdText;
@@ -26,6 +28,16 @@ namespace Sales_Management_App {
         private TextBox _inventoryQuantityText;
         private Label _reorderLabel;
 
+        private DataGridView _salesGrid;
+        private DateTimePicker _saleDatePicker;
+        private TextBox _saleStoreIdText;
+        private ComboBox _saleProductCombo;
+        private TextBox _saleQuantityText;
+        private Label _saleUnitPriceLabel;
+        private Label _saleAmountPreviewLabel;
+
+        private ErrorProvider _errorProvider;
+
         public Form1() {
             InitializeComponent();
             InitializeMainTabs();
@@ -36,13 +48,23 @@ namespace Sales_Management_App {
             Width = 1100;
             Height = 700;
 
+            _errorProvider = new ErrorProvider {
+                BlinkStyle = ErrorBlinkStyle.NeverBlink
+            };
+            _errorProvider.SetIconAlignment(this, ErrorIconAlignment.MiddleLeft);
+
             var tabs = new TabControl { Dock = DockStyle.Fill };
             tabs.TabPages.Add(CreateProductTab());
             tabs.TabPages.Add(CreateInventoryTab());
+            tabs.TabPages.Add(CreateSalesTab());
             Controls.Add(tabs);
 
+            WireSalesInputValidation();
             RefreshProductsGrid();
             RefreshInventoryGrid();
+            RefreshSaleProductOptions();
+            RefreshSalesGrid();
+            UpdateSaleUnitPriceAndAmountPreview();
         }
 
         private TabPage CreateProductTab() {
@@ -157,6 +179,112 @@ namespace Sales_Management_App {
             return tab;
         }
 
+        private TabPage CreateSalesTab() {
+            var tab = new TabPage("売上登録");
+            var root = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                RowCount = 3,
+                ColumnCount = 1
+            };
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 200));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+            var inputPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 4,
+                RowCount = 4,
+                Padding = new Padding(12)
+            };
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            var saleDateLabel = new Label {
+                Text = "販売日",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _saleDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Short
+            };
+            inputPanel.Controls.Add(saleDateLabel, 0, 0);
+            inputPanel.Controls.Add(_saleDatePicker, 1, 0);
+
+            _saleStoreIdText = AddLabeledTextBox(inputPanel, "店舗ID", 2, 0);
+
+            var productLabel = new Label {
+                Text = "商品",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _saleProductCombo = new ComboBox {
+                Dock = DockStyle.Fill,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            inputPanel.Controls.Add(productLabel, 0, 1);
+            inputPanel.Controls.Add(_saleProductCombo, 1, 1);
+
+            _saleQuantityText = AddLabeledTextBox(inputPanel, "数量", 2, 1);
+
+            var unitPriceHeaderLabel = new Label {
+                Text = "単価",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _saleUnitPriceLabel = new Label {
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            inputPanel.Controls.Add(unitPriceHeaderLabel, 0, 2);
+            inputPanel.Controls.Add(_saleUnitPriceLabel, 1, 2);
+
+            var amountHeaderLabel = new Label {
+                Text = "売上金額見込",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _saleAmountPreviewLabel = new Label {
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            inputPanel.Controls.Add(amountHeaderLabel, 2, 2);
+            inputPanel.Controls.Add(_saleAmountPreviewLabel, 3, 2);
+
+            var buttonFlow = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            buttonFlow.Controls.Add(CreateButton("売上登録", RegisterSale));
+            buttonFlow.Controls.Add(CreateButton("クリア", delegate { ClearSaleInputs(); }));
+            inputPanel.Controls.Add(buttonFlow, 0, 3);
+            inputPanel.SetColumnSpan(buttonFlow, 4);
+
+            var hintLabel = new Label {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(12, 0, 0, 0),
+                Text = "商品選択で単価を表示します。数量は整数で入力してください。",
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+
+            _salesGrid = new DataGridView {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AutoGenerateColumns = true,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+
+            root.Controls.Add(inputPanel, 0, 0);
+            root.Controls.Add(hintLabel, 0, 1);
+            root.Controls.Add(_salesGrid, 0, 2);
+            tab.Controls.Add(root);
+            return tab;
+        }
+
         private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {
             var lbl = new Label {
                 Text = label,
@@ -185,6 +313,8 @@ namespace Sales_Management_App {
             ExecuteWithValidation(delegate {
                 _productService.Register(_products, BuildProductFromInput());
                 RefreshProductsGrid();
+                RefreshSaleProductOptions();
+                RefreshSalesGrid();
                 ClearProductInputs();
             });
         }
@@ -193,6 +323,8 @@ namespace Sales_Management_App {
             ExecuteWithValidation(delegate {
                 _productService.Update(_products, BuildProductFromInput());
                 RefreshProductsGrid();
+                RefreshSaleProductOptions();
+                RefreshSalesGrid();
             });
         }
 
@@ -210,6 +342,8 @@ namespace Sales_Management_App {
             ExecuteWithValidation(delegate {
                 _productService.Delete(_products, id);
                 RefreshProductsGrid();
+                RefreshSaleProductOptions();
+                RefreshSalesGrid();
                 ClearProductInputs();
             });
         }
@@ -306,6 +440,154 @@ namespace Sales_Management_App {
             _inventoryQuantityText.Text = string.Empty;
         }
 
+        private void RegisterSale(object sender, EventArgs e) {
+            if (!ValidateSaleInput(true)) {
+                return;
+            }
+
+            ExecuteWithValidation(delegate {
+                var input = BuildSaleInput();
+                var registered = _salesService.RegisterSale(_sales, _products, _inventories, input);
+                RefreshSalesGrid();
+                RefreshInventoryGrid();
+                ClearSaleInputs();
+                MessageBox.Show(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount), "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            });
+        }
+
+        private SaleRecord BuildSaleInput() {
+            var selected = _saleProductCombo.SelectedItem as SaleProductOption;
+            if (selected == null) {
+                throw new DomainValidationException("商品を選択してください。");
+            }
+
+            int quantity;
+            if (!int.TryParse(_saleQuantityText.Text.Trim(), out quantity)) {
+                throw new DomainValidationException("数量は整数で入力してください。");
+            }
+
+            return new SaleRecord {
+                SaleDate = _saleDatePicker.Value.Date,
+                StoreId = _saleStoreIdText.Text.Trim(),
+                ProductId = selected.ProductId,
+                Quantity = quantity
+            };
+        }
+
+        private void RefreshSaleProductOptions() {
+            var selectedId = GetSelectedSaleProductId();
+
+            var options = _productService.GetAll(_products).Select(p => new SaleProductOption {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                UnitPrice = p.UnitPrice
+            }).ToList();
+
+            _saleProductCombo.DataSource = null;
+            _saleProductCombo.DisplayMember = "DisplayText";
+            _saleProductCombo.ValueMember = "ProductId";
+            _saleProductCombo.DataSource = options;
+
+            if (!string.IsNullOrWhiteSpace(selectedId)) {
+                _saleProductCombo.SelectedValue = selectedId;
+            }
+
+            if (_saleProductCombo.Items.Count == 0) {
+                _saleProductCombo.SelectedIndex = -1;
+            }
+
+            UpdateSaleUnitPriceAndAmountPreview();
+            ValidateSaleInput(false);
+        }
+
+        private string GetSelectedSaleProductId() {
+            var selected = _saleProductCombo == null ? null : _saleProductCombo.SelectedItem as SaleProductOption;
+            return selected == null ? string.Empty : selected.ProductId;
+        }
+
+        private void RefreshSalesGrid() {
+            var productNameMap = _products.ToDictionary(p => p.ProductId, p => p.ProductName);
+
+            _salesGrid.DataSource = null;
+            _salesGrid.DataSource = _salesService.GetAll(_sales).Select(s => new {
+                SaleDate = s.SaleDate.ToString("yyyy/MM/dd"),
+                s.StoreId,
+                s.ProductId,
+                ProductName = productNameMap.ContainsKey(s.ProductId) ? productNameMap[s.ProductId] : "(未登録商品)",
+                s.Quantity,
+                s.SalesAmount
+            }).ToList();
+        }
+
+        private void WireSalesInputValidation() {
+            _saleStoreIdText.TextChanged += delegate { ValidateSaleInput(false); };
+            _saleQuantityText.TextChanged += delegate {
+                ValidateSaleInput(false);
+                UpdateSaleUnitPriceAndAmountPreview();
+            };
+            _saleProductCombo.SelectedIndexChanged += delegate {
+                ValidateSaleInput(false);
+                UpdateSaleUnitPriceAndAmountPreview();
+            };
+        }
+
+        private bool ValidateSaleInput(bool showMessage) {
+            var valid = true;
+
+            if (string.IsNullOrWhiteSpace(_saleStoreIdText.Text)) {
+                _errorProvider.SetError(_saleStoreIdText, "店舗IDを入力してください。");
+                valid = false;
+            } else {
+                _errorProvider.SetError(_saleStoreIdText, string.Empty);
+            }
+
+            if (_saleProductCombo.SelectedItem == null) {
+                _errorProvider.SetError(_saleProductCombo, "商品を選択してください。");
+                valid = false;
+            } else {
+                _errorProvider.SetError(_saleProductCombo, string.Empty);
+            }
+
+            int quantity;
+            if (string.IsNullOrWhiteSpace(_saleQuantityText.Text)) {
+                _errorProvider.SetError(_saleQuantityText, "数量を入力してください。");
+                valid = false;
+            } else if (!int.TryParse(_saleQuantityText.Text.Trim(), out quantity)) {
+                _errorProvider.SetError(_saleQuantityText, "数量は整数で入力してください。");
+                valid = false;
+            } else if (quantity <= 0) {
+                _errorProvider.SetError(_saleQuantityText, "数量は1以上で入力してください。");
+                valid = false;
+            } else {
+                _errorProvider.SetError(_saleQuantityText, string.Empty);
+            }
+
+            if (!valid && showMessage) {
+                MessageBox.Show("入力内容を確認してください。", "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            return valid;
+        }
+
+        private void UpdateSaleUnitPriceAndAmountPreview() {
+            var selected = _saleProductCombo.SelectedItem as SaleProductOption;
+            if (selected == null) {
+                _saleUnitPriceLabel.Text = "-";
+                _saleAmountPreviewLabel.Text = "-";
+                return;
+            }
+
+            _saleUnitPriceLabel.Text = string.Format("{0} 円", selected.UnitPrice);
+
+            int quantity;
+            if (!int.TryParse(_saleQuantityText.Text.Trim(), out quantity) || quantity <= 0) {
+                _saleAmountPreviewLabel.Text = "-";
+                return;
+            }
+
+            _saleAmountPreviewLabel.Text = string.Format("{0} 円", selected.UnitPrice * quantity);
+        }
+
         private static string ToText(object value) {
             return value == null ? string.Empty : value.ToString();
         }
@@ -331,6 +613,27 @@ namespace Sales_Management_App {
             _inventoryStoreIdText.Text = string.Empty;
             _inventoryProductIdText.Text = string.Empty;
             _inventoryQuantityText.Text = string.Empty;
+        }
+
+        private void ClearSaleInputs() {
+            _saleDatePicker.Value = DateTime.Today;
+            _saleStoreIdText.Text = string.Empty;
+            _saleQuantityText.Text = string.Empty;
+            if (_saleProductCombo.Items.Count > 0) {
+                _saleProductCombo.SelectedIndex = 0;
+            }
+            ValidateSaleInput(false);
+            UpdateSaleUnitPriceAndAmountPreview();
+        }
+
+        private class SaleProductOption {
+            public string ProductId { get; set; }
+            public string ProductName { get; set; }
+            public int UnitPrice { get; set; }
+
+            public string DisplayText {
+                get { return string.Format("{0} - {1}", ProductId, ProductName); }
+            }
         }
     }
 }
