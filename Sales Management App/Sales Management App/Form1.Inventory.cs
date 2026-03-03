@@ -14,7 +14,7 @@ namespace Sales_Management_App {
                 RefreshInventoryGrid();
                 RefreshInventoryHistoryGrid();
                 ClearInventoryInputs();
-                MessageBox.Show("入荷を反映しました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _messageService.ShowInfo("入荷を反映しました。");
             });
         }
 
@@ -26,7 +26,7 @@ namespace Sales_Management_App {
                 RefreshInventoryGrid();
                 RefreshInventoryHistoryGrid();
                 ClearInventoryInputs();
-                MessageBox.Show("出庫を反映しました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _messageService.ShowInfo("出庫を反映しました。");
             });
         }
 

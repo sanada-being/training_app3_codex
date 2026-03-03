@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App {
     public partial class Form1 {
@@ -54,16 +55,7 @@ namespace Sales_Management_App {
             };
 
         private static void ApplyJapaneseHeaders(DataGridView grid, IReadOnlyDictionary<string, string> headers) {
-            if (grid == null || headers == null) {
-                return;
-            }
-
-            foreach (DataGridViewColumn column in grid.Columns) {
-                string text;
-                if (headers.TryGetValue(column.Name, out text)) {
-                    column.HeaderText = text;
-                }
-            }
+            DataGridHeaderMapper.Apply(grid, headers);
         }
     }
 }

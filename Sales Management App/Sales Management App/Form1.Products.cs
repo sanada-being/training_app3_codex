@@ -28,11 +28,11 @@ namespace Sales_Management_App {
         private void DeleteProduct(object sender, EventArgs e) {
             var id = _productIdText.Text.Trim();
             if (string.IsNullOrWhiteSpace(id)) {
-                MessageBox.Show("削除対象の商品IDを選択してください。", "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _messageService.ShowWarning("削除対象の商品IDを選択してください。", "入力エラー");
                 return;
             }
 
-            if (MessageBox.Show(string.Format("商品ID={0} を削除します。よろしいですか？", id), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) {
+            if (_messageService.Confirm(string.Format("商品ID={0} を削除します。よろしいですか？", id), "確認") != DialogResult.Yes) {
                 return;
             }
 

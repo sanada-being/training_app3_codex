@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
 using SalesManagementApp.Core.Domain.Entities;
+using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App {
     public partial class Form1 : Form {
@@ -14,6 +15,8 @@ namespace Sales_Management_App {
         private readonly SalesAggregationService _salesAggregationService;
         private readonly AppDataRepository _appDataRepository;
         private readonly AppBootstrapper _appBootstrapper;
+        private readonly UiMessageService _messageService;
+        private readonly UiActionExecutor _uiActionExecutor;
 
         private AppState _appState = new AppState();
 
@@ -88,6 +91,8 @@ namespace Sales_Management_App {
             _salesAggregationService = dependencies.SalesAggregationService;
             _appDataRepository = dependencies.AppDataRepository;
             _appBootstrapper = dependencies.AppBootstrapper;
+            _messageService = new UiMessageService();
+            _uiActionExecutor = new UiActionExecutor(_messageService);
 
             InitializeComponent();
             InitializeShell();

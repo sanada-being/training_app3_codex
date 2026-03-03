@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
-using SalesManagementApp.Core.Application.Exceptions;
 
 namespace Sales_Management_App {
     public partial class Form1 {
@@ -8,14 +6,8 @@ namespace Sales_Management_App {
             return value == null ? string.Empty : value.ToString();
         }
 
-        private static void ExecuteWithValidation(Action action) {
-            try {
-                action.Invoke();
-            } catch (DomainValidationException ex) {
-                MessageBox.Show(ex.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            } catch (Exception ex) {
-                MessageBox.Show(string.Format("予期しないエラーが発生しました: {0}", ex.Message), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        private void ExecuteWithValidation(Action action) {
+            _uiActionExecutor.Execute(action);
         }
 
         private void ClearProductInputs() {
