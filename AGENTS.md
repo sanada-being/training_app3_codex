@@ -104,3 +104,15 @@
   - WinForms アプリの build
   - NUnit テストの実行
 - 品質ゲートが失敗している PR はマージしない。
+
+## 12. ルート配置データの運用
+- 初期データ/運用データはリポジトリ直下に配置する。
+  - `products.csv`
+  - `inventory.csv`
+  - `sales_yyyyMMdd.csv`
+  - `週次売上集計ファイル.xlsx`
+- WinForms 起動時は `AppDomain.CurrentDomain.BaseDirectory` から親ディレクトリを探索し、`AGENTS.md` があるディレクトリをリポジトリルートとして判定する。
+- 売上CSVは次の2形式を受け入れる。
+  - `SaleDate,StoreId,ProductId,Quantity`
+  - `SaleDate,StoreId,ProductId,Quantity,SalesAmount`
+- `SalesAmount` 列がない売上CSVを読み込んだ場合は、`products.csv` の単価を使って `UnitPrice * Quantity` で補完する。

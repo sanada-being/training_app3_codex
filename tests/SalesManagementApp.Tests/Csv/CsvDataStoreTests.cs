@@ -76,6 +76,24 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    public void ReadSales_WhenHeaderWithoutSalesAmount_LoadsSalesWithZeroAmount()
+    {
+        var path = Path.Combine(_workDir, "sales.csv");
+        File.WriteAllLines(path, new[]
+        {
+            "SaleDate,StoreId,ProductId,Quantity",
+            "2026-03-01,S001,P001,2"
+        });
+
+        var sales = _store.ReadSales(path);
+
+        Assert.That(sales.Count, Is.EqualTo(1));
+        Assert.That(sales[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(sales[0].Quantity, Is.EqualTo(2));
+        Assert.That(sales[0].SalesAmount, Is.EqualTo(0));
+    }
+
+    [Test]
     public void WriteAndReadInventories_WhenDataIsValid_RoundTrips()
     {
         var path = Path.Combine(_workDir, "inventory.csv");

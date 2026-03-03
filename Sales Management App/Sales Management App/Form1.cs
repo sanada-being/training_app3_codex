@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -7,6 +8,7 @@ using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Models;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Domain.Entities;
+using SalesManagementApp.Core.Infrastructure.Csv;
 
 namespace Sales_Management_App {
     public partial class Form1 : Form {
@@ -14,6 +16,7 @@ namespace Sales_Management_App {
         private readonly InventoryService _inventoryService = new InventoryService();
         private readonly SalesService _salesService = new SalesService();
         private readonly SalesAggregationService _salesAggregationService = new SalesAggregationService();
+        private readonly CsvDataStore _csvDataStore = new CsvDataStore();
 
         private readonly List<Product> _products = new List<Product>();
         private readonly List<InventoryRecord> _inventories = new List<InventoryRecord>();
@@ -50,6 +53,7 @@ namespace Sales_Management_App {
         public Form1() {
             InitializeComponent();
             InitializeMainTabs();
+            LoadInitialDataFromRepositoryRoot();
         }
 
         private void InitializeMainTabs() {
@@ -76,6 +80,85 @@ namespace Sales_Management_App {
             RefreshSalesGrid();
             ResetAggregationDisplay();
             UpdateSaleUnitPriceAndAmountPreview();
+        }
+
+        private void LoadInitialDataFromRepositoryRoot() {
+            var rootPath = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+            if (string.IsNullOrWhiteSpace(rootPath)) {
+                return;
+            }
+
+            try {
+                var productsPath = Path.Combine(rootPath, "products.csv");
+                var inventoryPath = Path.Combine(rootPath, "inventory.csv");
+                var salesPath = ResolveSalesPath(rootPath);
+
+                if (File.Exists(productsPath)) {
+                    _products.Clear();
+                    _products.AddRange(_csvDataStore.ReadProducts(productsPath));
+                }
+
+                if (File.Exists(inventoryPath)) {
+                    _inventories.Clear();
+                    _inventories.AddRange(_csvDataStore.ReadInventories(inventoryPath));
+                }
+
+                if (!string.IsNullOrWhiteSpace(salesPath) && File.Exists(salesPath)) {
+                    _sales.Clear();
+                    _sales.AddRange(_csvDataStore.ReadSales(salesPath));
+                    BackfillSalesAmounts();
+                }
+
+                RefreshProductsGrid();
+                RefreshInventoryGrid();
+                RefreshSaleProductOptions();
+                RefreshSalesGrid();
+                ResetAggregationDisplay();
+                UpdateSaleUnitPriceAndAmountPreview();
+            } catch (DomainValidationException ex) {
+                MessageBox.Show(string.Format("初期データの読み込みに失敗しました: {0}", ex.Message), "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            } catch (Exception ex) {
+                MessageBox.Show(string.Format("初期データの読み込み中にエラーが発生しました: {0}", ex.Message), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static string FindRepositoryRoot(string baseDirectory) {
+            var current = new DirectoryInfo(baseDirectory);
+            var depth = 0;
+
+            while (current != null && depth < 10) {
+                if (File.Exists(Path.Combine(current.FullName, "AGENTS.md"))) {
+                    return current.FullName;
+                }
+
+                current = current.Parent;
+                depth++;
+            }
+
+            return string.Empty;
+        }
+
+        private static string ResolveSalesPath(string rootPath) {
+            var files = Directory.GetFiles(rootPath, "sales_*.csv");
+            if (files.Length == 0) {
+                return string.Empty;
+            }
+
+            return files
+                .OrderByDescending(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
+                .First();
+        }
+
+        private void BackfillSalesAmounts() {
+            var unitPriceMap = _products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
+
+            foreach (var sale in _sales.Where(s => s.SalesAmount == 0)) {
+                if (!unitPriceMap.TryGetValue(sale.ProductId, out var unitPrice)) {
+                    continue;
+                }
+
+                sale.SalesAmount = checked(unitPrice * sale.Quantity);
+            }
         }
 
         private TabPage CreateProductTab() {
