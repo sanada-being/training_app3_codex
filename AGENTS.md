@@ -90,3 +90,17 @@
   - クラスファイル: `Sales Management App/Sales Management App/Program.cs`
 - 運用ルール
   - `bin/`, `obj/`, `.vs/` などのビルド生成物はコミットしない。
+
+## 10. テスト方針（TDD）
+- 本プロジェクトは TDD（Red-Green-Refactor）で実装を進める。
+- 実装着手前に、要件に対応する失敗テストを先に作成する。
+- 失敗テストを最小実装で成功させた後、リファクタリングを実施する。
+- 不具合修正時も再発防止テストを先に追加してから修正する。
+- テストフレームワークは NUnit を使用する。
+- テストコードは `tests/` 配下に配置する。
+
+## 11. PR品質ゲート（GitHub Actions）
+- Pull Request では GitHub Actions による以下の自動チェックを必須とする。
+  - WinForms アプリの build
+  - NUnit テストの実行
+- 品質ゲートが失敗している PR はマージしない。
