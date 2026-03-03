@@ -21,6 +21,9 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Restore Core Project
+        run: dotnet restore "src/SalesManagementApp.Core/SalesManagementApp.Core.csproj"
+
       - name: Build WinForms App (.NET Framework 4.7.2)
         run: msbuild "Sales Management App\Sales Management App\Sales Management App.csproj" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /nologo
 
