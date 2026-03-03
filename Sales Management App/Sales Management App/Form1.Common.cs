@@ -10,12 +10,6 @@ namespace Sales_Management_App {
             _uiActionExecutor.Execute(action);
         }
 
-        private void ClearInventoryInputs() {
-            _inventoryStoreIdText.Text = string.Empty;
-            _inventoryProductIdText.Text = string.Empty;
-            _inventoryQuantityText.Text = string.Empty;
-        }
-
         private void ClearSaleInputs() {
             _saleDatePicker.Value = DateTime.Today;
             _saleStoreIdText.Text = string.Empty;
