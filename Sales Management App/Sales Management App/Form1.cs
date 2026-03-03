@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using SalesManagementApp.Core.Application.Exceptions;
+using SalesManagementApp.Core.Application.Models;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Domain.Entities;
 
@@ -11,6 +13,7 @@ namespace Sales_Management_App {
         private readonly ProductService _productService = new ProductService();
         private readonly InventoryService _inventoryService = new InventoryService();
         private readonly SalesService _salesService = new SalesService();
+        private readonly SalesAggregationService _salesAggregationService = new SalesAggregationService();
 
         private readonly List<Product> _products = new List<Product>();
         private readonly List<InventoryRecord> _inventories = new List<InventoryRecord>();
@@ -36,6 +39,12 @@ namespace Sales_Management_App {
         private Label _saleUnitPriceLabel;
         private Label _saleAmountPreviewLabel;
 
+        private DateTimePicker _summaryStartDatePicker;
+        private DateTimePicker _summaryEndDatePicker;
+        private Label _summaryTotalLabel;
+        private DataGridView _productSummaryGrid;
+        private DataGridView _weeklySummaryGrid;
+
         private ErrorProvider _errorProvider;
 
         public Form1() {
@@ -57,6 +66,7 @@ namespace Sales_Management_App {
             tabs.TabPages.Add(CreateProductTab());
             tabs.TabPages.Add(CreateInventoryTab());
             tabs.TabPages.Add(CreateSalesTab());
+            tabs.TabPages.Add(CreateAggregationTab());
             Controls.Add(tabs);
 
             WireSalesInputValidation();
@@ -64,6 +74,7 @@ namespace Sales_Management_App {
             RefreshInventoryGrid();
             RefreshSaleProductOptions();
             RefreshSalesGrid();
+            ResetAggregationDisplay();
             UpdateSaleUnitPriceAndAmountPreview();
         }
 
@@ -285,6 +296,132 @@ namespace Sales_Management_App {
             return tab;
         }
 
+        private TabPage CreateAggregationTab() {
+            var tab = new TabPage("売上集計");
+            var root = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                RowCount = 3,
+                ColumnCount = 1
+            };
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+            var inputPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 4,
+                RowCount = 3,
+                Padding = new Padding(12)
+            };
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            var startLabel = new Label {
+                Text = "開始日",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _summaryStartDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Short,
+                Value = DateTime.Today.AddDays(-6)
+            };
+            inputPanel.Controls.Add(startLabel, 0, 0);
+            inputPanel.Controls.Add(_summaryStartDatePicker, 1, 0);
+
+            var endLabel = new Label {
+                Text = "終了日",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _summaryEndDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Short,
+                Value = DateTime.Today
+            };
+            inputPanel.Controls.Add(endLabel, 2, 0);
+            inputPanel.Controls.Add(_summaryEndDatePicker, 3, 0);
+
+            var buttonFlow = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            buttonFlow.Controls.Add(CreateButton("集計実行", ExecuteAggregation));
+            buttonFlow.Controls.Add(CreateButton("集計結果コピー", CopyAggregationResult));
+            inputPanel.Controls.Add(buttonFlow, 0, 1);
+            inputPanel.SetColumnSpan(buttonFlow, 4);
+
+            _summaryTotalLabel = new Label {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(12, 0, 0, 0),
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+
+            var split = new SplitContainer {
+                Dock = DockStyle.Fill,
+                Orientation = Orientation.Horizontal,
+                SplitterDistance = 200
+            };
+
+            var productPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                RowCount = 2,
+                ColumnCount = 1
+            };
+            productPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+            productPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            productPanel.Controls.Add(new Label {
+                Text = "商品別集計",
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8, 0, 0, 0),
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            }, 0, 0);
+
+            _productSummaryGrid = new DataGridView {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AutoGenerateColumns = true,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+            productPanel.Controls.Add(_productSummaryGrid, 0, 1);
+
+            var weeklyPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                RowCount = 2,
+                ColumnCount = 1
+            };
+            weeklyPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+            weeklyPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            weeklyPanel.Controls.Add(new Label {
+                Text = "週次集計",
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8, 0, 0, 0),
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            }, 0, 0);
+
+            _weeklySummaryGrid = new DataGridView {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AutoGenerateColumns = true,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+            weeklyPanel.Controls.Add(_weeklySummaryGrid, 0, 1);
+
+            split.Panel1.Controls.Add(productPanel);
+            split.Panel2.Controls.Add(weeklyPanel);
+
+            root.Controls.Add(inputPanel, 0, 0);
+            root.Controls.Add(_summaryTotalLabel, 0, 1);
+            root.Controls.Add(split, 0, 2);
+            tab.Controls.Add(root);
+            return tab;
+        }
+
         private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {
             var lbl = new Label {
                 Text = label,
@@ -301,7 +438,7 @@ namespace Sales_Management_App {
         private static Button CreateButton(string text, EventHandler onClick) {
             var button = new Button {
                 Text = text,
-                Width = 110,
+                Width = 120,
                 Height = 34,
                 Margin = new Padding(0, 0, 12, 0)
             };
@@ -588,6 +725,93 @@ namespace Sales_Management_App {
             _saleAmountPreviewLabel.Text = string.Format("{0} 円", selected.UnitPrice * quantity);
         }
 
+        private void ExecuteAggregation(object sender, EventArgs e) {
+            ExecuteWithValidation(delegate {
+                var snapshot = BuildAggregationSnapshot();
+                RenderAggregationSnapshot(snapshot);
+            });
+        }
+
+        private void CopyAggregationResult(object sender, EventArgs e) {
+            ExecuteWithValidation(delegate {
+                var snapshot = BuildAggregationSnapshot();
+                RenderAggregationSnapshot(snapshot);
+                Clipboard.SetText(BuildAggregationClipboardText(snapshot));
+                MessageBox.Show("集計結果をクリップボードにコピーしました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            });
+        }
+
+        private AggregationSnapshot BuildAggregationSnapshot() {
+            var startDate = _summaryStartDatePicker.Value.Date;
+            var endDate = _summaryEndDatePicker.Value.Date;
+
+            return new AggregationSnapshot {
+                StartDate = startDate,
+                EndDate = endDate,
+                ProductSummaries = _salesAggregationService.GetProductSummaries(_sales, startDate, endDate).ToList(),
+                WeeklySummaries = _salesAggregationService.GetWeeklySummaries(_sales, startDate, endDate).ToList(),
+                TotalSalesAmount = _salesAggregationService.GetTotalSalesAmount(_sales, startDate, endDate)
+            };
+        }
+
+        private void RenderAggregationSnapshot(AggregationSnapshot snapshot) {
+            _summaryTotalLabel.Text = string.Format(
+                "期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd} / 合計売上: {2} 円",
+                snapshot.StartDate,
+                snapshot.EndDate,
+                snapshot.TotalSalesAmount);
+
+            _productSummaryGrid.DataSource = null;
+            _productSummaryGrid.DataSource = snapshot.ProductSummaries.Select(s => new {
+                s.ProductId,
+                s.TotalQuantity,
+                s.TotalSalesAmount
+            }).ToList();
+
+            _weeklySummaryGrid.DataSource = null;
+            _weeklySummaryGrid.DataSource = snapshot.WeeklySummaries.Select(s => new {
+                Week = string.Format("{0:yyyy/MM/dd} - {1:yyyy/MM/dd}", s.WeekStartDate, s.WeekEndDate),
+                s.TotalQuantity,
+                s.TotalSalesAmount
+            }).ToList();
+        }
+
+        private void ResetAggregationDisplay() {
+            _summaryTotalLabel.Text = "期間を指定して集計を実行してください。";
+            _productSummaryGrid.DataSource = null;
+            _productSummaryGrid.DataSource = new List<object>();
+            _weeklySummaryGrid.DataSource = null;
+            _weeklySummaryGrid.DataSource = new List<object>();
+        }
+
+        private static string BuildAggregationClipboardText(AggregationSnapshot snapshot) {
+            var builder = new StringBuilder();
+            builder.AppendLine(string.Format("期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd}", snapshot.StartDate, snapshot.EndDate));
+            builder.AppendLine(string.Format("合計売上: {0} 円", snapshot.TotalSalesAmount));
+            builder.AppendLine();
+            builder.AppendLine("[商品別集計]");
+            builder.AppendLine("商品ID\t販売数量\t売上金額");
+
+            foreach (var summary in snapshot.ProductSummaries) {
+                builder.AppendLine(string.Format("{0}\t{1}\t{2}", summary.ProductId, summary.TotalQuantity, summary.TotalSalesAmount));
+            }
+
+            builder.AppendLine();
+            builder.AppendLine("[週次集計]");
+            builder.AppendLine("週\t販売数量\t売上金額");
+
+            foreach (var summary in snapshot.WeeklySummaries) {
+                builder.AppendLine(string.Format(
+                    "{0:yyyy/MM/dd}-{1:yyyy/MM/dd}\t{2}\t{3}",
+                    summary.WeekStartDate,
+                    summary.WeekEndDate,
+                    summary.TotalQuantity,
+                    summary.TotalSalesAmount));
+            }
+
+            return builder.ToString();
+        }
+
         private static string ToText(object value) {
             return value == null ? string.Empty : value.ToString();
         }
@@ -634,6 +858,14 @@ namespace Sales_Management_App {
             public string DisplayText {
                 get { return string.Format("{0} - {1}", ProductId, ProductName); }
             }
+        }
+
+        private class AggregationSnapshot {
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+            public List<ProductSalesSummary> ProductSummaries { get; set; }
+            public List<WeeklySalesSummary> WeeklySummaries { get; set; }
+            public int TotalSalesAmount { get; set; }
         }
     }
 }
