@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Domain.Entities;
@@ -144,5 +146,36 @@ public class CsvDataStoreTests
         Assert.That(File.Exists(logPath), Is.True);
         var log = File.ReadAllText(logPath);
         Assert.That(log, Does.Contain("Write succeeded"));
+    }
+
+    [Test]
+    public async Task ReadProductsAsync_WhenCsvIsValid_ReturnsProducts()
+    {
+        var path = Path.Combine(_workDir, "products.csv");
+        File.WriteAllLines(path, new[]
+        {
+            "ProductId,ProductName,UnitPrice,Category",
+            "P001,Cola,120,Drink"
+        });
+
+        var result = await _store.ReadProductsAsync(path);
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].ProductId, Is.EqualTo("P001"));
+    }
+
+    [Test]
+    public void WriteProductsAsync_WhenCanceled_ThrowsOperationCanceledException()
+    {
+        var path = Path.Combine(_workDir, "products.csv");
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        Assert.That(
+            async () => await _store.WriteProductsAsync(path, new[]
+            {
+                new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
+            }, cts.Token),
+            Throws.InstanceOf<OperationCanceledException>());
     }
 }
