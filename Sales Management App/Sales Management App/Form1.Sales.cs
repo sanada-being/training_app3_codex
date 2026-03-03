@@ -91,6 +91,7 @@ namespace Sales_Management_App {
                 s.Quantity,
                 s.SalesAmount
             }).ToList();
+            ApplyJapaneseHeaders(_salesGrid, SalesGridHeaders);
         }
 
         private void SearchSales(object sender, EventArgs e) {

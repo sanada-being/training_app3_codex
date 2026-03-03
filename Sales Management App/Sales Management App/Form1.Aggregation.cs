@@ -81,6 +81,7 @@ namespace Sales_Management_App {
                 s.TotalQuantity,
                 s.TotalSalesAmount
             }).ToList();
+            ApplyJapaneseHeaders(_productSummaryGrid, ProductSummaryGridHeaders);
 
             _weeklySummaryGrid.DataSource = null;
             _weeklySummaryGrid.DataSource = snapshot.WeeklySummaries.Select(s => new {
@@ -88,6 +89,7 @@ namespace Sales_Management_App {
                 s.TotalQuantity,
                 s.TotalSalesAmount
             }).ToList();
+            ApplyJapaneseHeaders(_weeklySummaryGrid, WeeklySummaryGridHeaders);
         }
 
         private void ResetAggregationDisplay() {
