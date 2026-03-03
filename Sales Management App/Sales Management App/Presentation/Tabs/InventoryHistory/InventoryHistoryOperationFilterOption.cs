@@ -1,4 +1,4 @@
-namespace Sales_Management_App {
+namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
     internal sealed class InventoryHistoryOperationFilterOption {
         public InventoryHistoryOperationFilterOption(string value, string label) {
             Value = value;

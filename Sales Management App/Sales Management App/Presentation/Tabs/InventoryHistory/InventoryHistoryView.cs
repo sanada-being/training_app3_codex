@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Forms;
 using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
-using InventoryHistoryOperationFilterOption = Sales_Management_App.InventoryHistoryOperationFilterOption;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
     internal sealed class InventoryHistoryView : UserControl {
