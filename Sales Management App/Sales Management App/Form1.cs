@@ -9,7 +9,10 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace Sales_Management_App {
     public partial class Form1 : Form {
         private readonly ProductService _productService = new ProductService();
+        private readonly InventoryService _inventoryService = new InventoryService();
+
         private readonly List<Product> _products = new List<Product>();
+        private readonly List<InventoryRecord> _inventories = new List<InventoryRecord>();
 
         private DataGridView _productsGrid;
         private TextBox _productIdText;
@@ -17,16 +20,33 @@ namespace Sales_Management_App {
         private TextBox _unitPriceText;
         private TextBox _categoryText;
 
+        private DataGridView _inventoryGrid;
+        private TextBox _inventoryStoreIdText;
+        private TextBox _inventoryProductIdText;
+        private TextBox _inventoryQuantityText;
+        private Label _reorderLabel;
+
         public Form1() {
             InitializeComponent();
-            InitializeProductScreen();
+            InitializeMainTabs();
         }
 
-        private void InitializeProductScreen() {
+        private void InitializeMainTabs() {
             Text = "Sales Management App";
-            Width = 1000;
-            Height = 650;
+            Width = 1100;
+            Height = 700;
 
+            var tabs = new TabControl { Dock = DockStyle.Fill };
+            tabs.TabPages.Add(CreateProductTab());
+            tabs.TabPages.Add(CreateInventoryTab());
+            Controls.Add(tabs);
+
+            RefreshProductsGrid();
+            RefreshInventoryGrid();
+        }
+
+        private TabPage CreateProductTab() {
+            var tab = new TabPage("商品管理");
             var root = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
                 RowCount = 2,
@@ -34,7 +54,6 @@ namespace Sales_Management_App {
             };
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 170));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            Controls.Add(root);
 
             var inputPanel = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -42,7 +61,6 @@ namespace Sales_Management_App {
                 RowCount = 3,
                 Padding = new Padding(12)
             };
-
             inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
             inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
@@ -58,12 +76,10 @@ namespace Sales_Management_App {
                 FlowDirection = FlowDirection.LeftToRight,
                 AutoSize = true
             };
-
             buttonFlow.Controls.Add(CreateButton("登録", RegisterProduct));
             buttonFlow.Controls.Add(CreateButton("更新", UpdateProduct));
             buttonFlow.Controls.Add(CreateButton("削除", DeleteProduct));
             buttonFlow.Controls.Add(CreateButton("クリア", delegate { ClearProductInputs(); }));
-
             inputPanel.Controls.Add(buttonFlow, 0, 2);
             inputPanel.SetColumnSpan(buttonFlow, 4);
 
@@ -78,8 +94,67 @@ namespace Sales_Management_App {
 
             root.Controls.Add(inputPanel, 0, 0);
             root.Controls.Add(_productsGrid, 0, 1);
+            tab.Controls.Add(root);
+            return tab;
+        }
 
-            RefreshProductsGrid();
+        private TabPage CreateInventoryTab() {
+            var tab = new TabPage("在庫管理");
+            var root = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                RowCount = 3,
+                ColumnCount = 1
+            };
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+
+            var inputPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 4,
+                RowCount = 3,
+                Padding = new Padding(12)
+            };
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            _inventoryStoreIdText = AddLabeledTextBox(inputPanel, "店舗ID", 0, 0);
+            _inventoryProductIdText = AddLabeledTextBox(inputPanel, "商品ID", 2, 0);
+            _inventoryQuantityText = AddLabeledTextBox(inputPanel, "数量", 0, 1);
+
+            var buttonFlow = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            buttonFlow.Controls.Add(CreateButton("入荷", AddInventory));
+            buttonFlow.Controls.Add(CreateButton("出庫", RemoveInventory));
+            buttonFlow.Controls.Add(CreateButton("クリア", delegate { ClearInventoryInputs(); }));
+            inputPanel.Controls.Add(buttonFlow, 0, 2);
+            inputPanel.SetColumnSpan(buttonFlow, 4);
+
+            _reorderLabel = new Label {
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft,
+                Padding = new Padding(12, 0, 0, 0)
+            };
+
+            _inventoryGrid = new DataGridView {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AutoGenerateColumns = true,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+            _inventoryGrid.SelectionChanged += InventoryGridOnSelectionChanged;
+
+            root.Controls.Add(inputPanel, 0, 0);
+            root.Controls.Add(_reorderLabel, 0, 1);
+            root.Controls.Add(_inventoryGrid, 0, 2);
+            tab.Controls.Add(root);
+            return tab;
         }
 
         private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {
@@ -169,10 +244,70 @@ namespace Sales_Management_App {
             }
 
             var row = _productsGrid.SelectedRows[0];
-            _productIdText.Text = row.Cells["ProductId"].Value == null ? string.Empty : row.Cells["ProductId"].Value.ToString();
-            _productNameText.Text = row.Cells["ProductName"].Value == null ? string.Empty : row.Cells["ProductName"].Value.ToString();
-            _unitPriceText.Text = row.Cells["UnitPrice"].Value == null ? string.Empty : row.Cells["UnitPrice"].Value.ToString();
-            _categoryText.Text = row.Cells["Category"].Value == null ? string.Empty : row.Cells["Category"].Value.ToString();
+            _productIdText.Text = ToText(row.Cells["ProductId"].Value);
+            _productNameText.Text = ToText(row.Cells["ProductName"].Value);
+            _unitPriceText.Text = ToText(row.Cells["UnitPrice"].Value);
+            _categoryText.Text = ToText(row.Cells["Category"].Value);
+        }
+
+        private void AddInventory(object sender, EventArgs e) {
+            ExecuteWithValidation(delegate {
+                var input = BuildInventoryInput();
+                _inventoryService.AddStock(_inventories, input.StoreId, input.ProductId, input.Stock);
+                RefreshInventoryGrid();
+                ClearInventoryInputs();
+                MessageBox.Show("入荷を反映しました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            });
+        }
+
+        private void RemoveInventory(object sender, EventArgs e) {
+            ExecuteWithValidation(delegate {
+                var input = BuildInventoryInput();
+                _inventoryService.RemoveStock(_inventories, input.StoreId, input.ProductId, input.Stock);
+                RefreshInventoryGrid();
+                ClearInventoryInputs();
+                MessageBox.Show("出庫を反映しました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            });
+        }
+
+        private InventoryRecord BuildInventoryInput() {
+            int quantity;
+            if (!int.TryParse(_inventoryQuantityText.Text.Trim(), out quantity)) {
+                throw new DomainValidationException("数量は整数で入力してください。");
+            }
+
+            return new InventoryRecord {
+                StoreId = _inventoryStoreIdText.Text.Trim(),
+                ProductId = _inventoryProductIdText.Text.Trim(),
+                Stock = quantity
+            };
+        }
+
+        private void RefreshInventoryGrid() {
+            _inventoryGrid.DataSource = null;
+            _inventoryGrid.DataSource = _inventoryService.GetAll(_inventories).Select(r => new {
+                r.StoreId,
+                r.ProductId,
+                r.Stock
+            }).ToList();
+
+            var reorderCount = _inventoryService.GetReorderTargets(_inventories, 5).Count;
+            _reorderLabel.Text = string.Format("要発注（在庫5以下）件数: {0}", reorderCount);
+        }
+
+        private void InventoryGridOnSelectionChanged(object sender, EventArgs e) {
+            if (_inventoryGrid.SelectedRows.Count == 0) {
+                return;
+            }
+
+            var row = _inventoryGrid.SelectedRows[0];
+            _inventoryStoreIdText.Text = ToText(row.Cells["StoreId"].Value);
+            _inventoryProductIdText.Text = ToText(row.Cells["ProductId"].Value);
+            _inventoryQuantityText.Text = string.Empty;
+        }
+
+        private static string ToText(object value) {
+            return value == null ? string.Empty : value.ToString();
         }
 
         private static void ExecuteWithValidation(Action action) {
@@ -190,6 +325,12 @@ namespace Sales_Management_App {
             _productNameText.Text = string.Empty;
             _unitPriceText.Text = string.Empty;
             _categoryText.Text = string.Empty;
+        }
+
+        private void ClearInventoryInputs() {
+            _inventoryStoreIdText.Text = string.Empty;
+            _inventoryProductIdText.Text = string.Empty;
+            _inventoryQuantityText.Text = string.Empty;
         }
     }
 }
