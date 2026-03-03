@@ -48,6 +48,33 @@ public class ProductServiceTests
     }
 
     [Test]
+    public void Register_WhenProductNameIsDuplicateAfterTrim_ThrowsValidationException()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").WithName("Coffee").Build());
+        var duplicate = new ProductBuilder().WithId("P002").WithName("  Coffee  ").Build();
+
+        Assert.That(() => _service.Register(_products, duplicate), Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
+    public void Register_WhenProductNameDiffersOnlyByCase_ThrowsValidationException()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").WithName("Coffee").Build());
+        var duplicate = new ProductBuilder().WithId("P002").WithName("coffee").Build();
+
+        Assert.That(() => _service.Register(_products, duplicate), Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
+    public void Register_WhenProductNameDiffersOnlyByFullHalfWidth_ThrowsValidationException()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").WithName("ｺｰﾋｰ").Build());
+        var duplicate = new ProductBuilder().WithId("P002").WithName("コーヒー").Build();
+
+        Assert.That(() => _service.Register(_products, duplicate), Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
     public void Register_WhenPriceIsNegative_ThrowsValidationException()
     {
         var invalid = new ProductBuilder().WithPrice(-1).Build();
@@ -80,6 +107,16 @@ public class ProductServiceTests
         Assert.That(_products[0].ProductName, Is.EqualTo("New"));
         Assert.That(_products[0].UnitPrice, Is.EqualTo(999));
         Assert.That(_products[0].Category, Is.EqualTo("Snack"));
+    }
+
+    [Test]
+    public void Update_WhenProductNameDuplicatesAnotherProduct_ThrowsValidationException()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").WithName("Coffee").Build());
+        _products.Add(new ProductBuilder().WithId("P002").WithName("Tea").Build());
+        var update = new ProductBuilder().WithId("P002").WithName(" coffee ").Build();
+
+        Assert.That(() => _service.Update(_products, update), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
