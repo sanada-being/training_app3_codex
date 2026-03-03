@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
-using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
+using Sales_Management_App.Presentation.Tabs.Aggregation;
 using Sales_Management_App.Presentation.Tabs.Inventory;
 using Sales_Management_App.Presentation.Tabs.InventoryHistory;
 using Sales_Management_App.Presentation.Tabs.Products;
@@ -24,8 +23,6 @@ namespace Sales_Management_App {
 
         private readonly AppState _appState = new AppState();
 
-        private List<SaleRecord> _sales { get { return _appState.Sales; } }
-
         private ProductsView _productsView;
         private ProductsController _productsController;
         private InventoryView _inventoryView;
@@ -34,14 +31,8 @@ namespace Sales_Management_App {
         private InventoryHistoryController _inventoryHistoryController;
         private SalesView _salesView;
         private SalesController _salesController;
-
-        private DateTimePicker _summaryStartDatePicker;
-        private DateTimePicker _summaryEndDatePicker;
-        private Label _summaryTotalLabel;
-        private DataGridView _productSummaryGrid;
-        private DataGridView _weeklySummaryGrid;
-        private TextBox _aggregationFilterProductIdText;
-        private AggregationSnapshot _currentAggregationSnapshot;
+        private AggregationView _aggregationView;
+        private AggregationController _aggregationController;
 
         public Form1()
             : this(MainFormDependencies.CreateDefault()) {
@@ -106,6 +97,14 @@ namespace Sales_Management_App {
                 _uiActionExecutor,
                 HandleSalesRegistered);
             _salesController.Initialize();
+
+            _aggregationController = new AggregationController(
+                _aggregationView,
+                _salesAggregationService,
+                _appState,
+                _messageService,
+                _uiActionExecutor);
+            _aggregationController.Initialize();
         }
 
         private void InitializeViewsFromState() {
@@ -114,7 +113,7 @@ namespace Sales_Management_App {
             _inventoryHistoryController.Refresh();
             _salesController.RefreshProductOptions();
             _salesController.RefreshGrid();
-            ResetAggregationDisplay();
+            _aggregationController.Reset();
             _salesController.UpdatePricePreview();
         }
 
