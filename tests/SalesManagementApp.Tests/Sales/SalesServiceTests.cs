@@ -87,4 +87,23 @@ public class SalesServiceTests
         Assert.That(histories[0].ResultStock, Is.EqualTo(8));
         Assert.That(histories[0].Result, Is.EqualTo("Success"));
     }
+
+    [Test]
+    public void GetFiltered_WhenDateAndStoreFilterSpecified_ReturnsMatchedSales()
+    {
+        _sales.Add(new SaleRecordBuilder().WithDate(new DateTime(2026, 3, 1)).WithStoreId("S001").WithProductId("P001").WithQuantity(1).WithSalesAmount(120).Build());
+        _sales.Add(new SaleRecordBuilder().WithDate(new DateTime(2026, 3, 2)).WithStoreId("S002").WithProductId("P001").WithQuantity(1).WithSalesAmount(120).Build());
+        _sales.Add(new SaleRecordBuilder().WithDate(new DateTime(2026, 3, 3)).WithStoreId("S001").WithProductId("P002").WithQuantity(1).WithSalesAmount(140).Build());
+
+        var filtered = _service.GetFiltered(
+            _sales,
+            new DateTime(2026, 3, 1),
+            new DateTime(2026, 3, 2),
+            "S001",
+            string.Empty);
+
+        Assert.That(filtered.Count, Is.EqualTo(1));
+        Assert.That(filtered[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(filtered[0].SaleDate, Is.EqualTo(new DateTime(2026, 3, 1)));
+    }
 }

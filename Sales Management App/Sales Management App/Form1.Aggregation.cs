@@ -36,14 +36,47 @@ namespace Sales_Management_App {
         }
 
         private void RenderAggregationSnapshot(AggregationSnapshot snapshot) {
+            _currentAggregationSnapshot = snapshot;
             _summaryTotalLabel.Text = string.Format(
                 "期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd} / 合計売上: {2} 円",
                 snapshot.StartDate,
                 snapshot.EndDate,
                 snapshot.TotalSalesAmount);
 
+            ApplyAggregationFilter();
+        }
+
+        private void SearchAggregationFilter(object sender, EventArgs e) {
+            ApplyAggregationFilter();
+        }
+
+        private void ClearAggregationFilter(object sender, EventArgs e) {
+            _aggregationFilterProductIdText.Text = string.Empty;
+            ApplyAggregationFilter();
+        }
+
+        private void ApplyAggregationFilter() {
+            if (_currentAggregationSnapshot == null) {
+                _productSummaryGrid.DataSource = null;
+                _productSummaryGrid.DataSource = new List<object>();
+                _weeklySummaryGrid.DataSource = null;
+                _weeklySummaryGrid.DataSource = new List<object>();
+                return;
+            }
+
+            var snapshot = _currentAggregationSnapshot;
+            var productIdFilter = _aggregationFilterProductIdText == null
+                ? string.Empty
+                : _aggregationFilterProductIdText.Text.Trim();
+            var filteredProductSummaries = snapshot.ProductSummaries;
+            if (!string.IsNullOrWhiteSpace(productIdFilter)) {
+                filteredProductSummaries = filteredProductSummaries
+                    .Where(s => s.ProductId.IndexOf(productIdFilter, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+            }
+
             _productSummaryGrid.DataSource = null;
-            _productSummaryGrid.DataSource = snapshot.ProductSummaries.Select(s => new {
+            _productSummaryGrid.DataSource = filteredProductSummaries.Select(s => new {
                 s.ProductId,
                 s.TotalQuantity,
                 s.TotalSalesAmount
@@ -59,6 +92,7 @@ namespace Sales_Management_App {
 
         private void ResetAggregationDisplay() {
             _summaryTotalLabel.Text = "期間を指定して集計を実行してください。";
+            _currentAggregationSnapshot = null;
             _productSummaryGrid.DataSource = null;
             _productSummaryGrid.DataSource = new List<object>();
             _weeklySummaryGrid.DataSource = null;

@@ -30,11 +30,16 @@ namespace Sales_Management_App {
         private TextBox _productNameText;
         private TextBox _unitPriceText;
         private TextBox _categoryText;
+        private TextBox _productFilterIdText;
+        private TextBox _productFilterNameText;
+        private TextBox _productFilterCategoryText;
 
         private DataGridView _inventoryGrid;
         private TextBox _inventoryStoreIdText;
         private TextBox _inventoryProductIdText;
         private TextBox _inventoryQuantityText;
+        private TextBox _inventoryFilterStoreIdText;
+        private TextBox _inventoryFilterProductIdText;
         private Label _reorderLabel;
         private DataGridView _inventoryHistoryGrid;
         private DateTimePicker _historyStartDatePicker;
@@ -48,6 +53,10 @@ namespace Sales_Management_App {
         private TextBox _saleStoreIdText;
         private ComboBox _saleProductCombo;
         private TextBox _saleQuantityText;
+        private DateTimePicker _salesFilterStartDatePicker;
+        private DateTimePicker _salesFilterEndDatePicker;
+        private TextBox _salesFilterStoreIdText;
+        private TextBox _salesFilterProductIdText;
         private Label _saleUnitPriceLabel;
         private Label _saleAmountPreviewLabel;
 
@@ -56,6 +65,8 @@ namespace Sales_Management_App {
         private Label _summaryTotalLabel;
         private DataGridView _productSummaryGrid;
         private DataGridView _weeklySummaryGrid;
+        private TextBox _aggregationFilterProductIdText;
+        private AggregationSnapshot _currentAggregationSnapshot;
 
         private ErrorProvider _errorProvider;
 

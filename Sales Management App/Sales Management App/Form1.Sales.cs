@@ -75,9 +75,15 @@ namespace Sales_Management_App {
 
         private void RefreshSalesGrid() {
             var productNameMap = _products.ToDictionary(p => p.ProductId, p => p.ProductName);
+            var filtered = _salesService.GetFiltered(
+                _sales,
+                _salesFilterStartDatePicker != null && _salesFilterStartDatePicker.Checked ? _salesFilterStartDatePicker.Value.Date : (DateTime?)null,
+                _salesFilterEndDatePicker != null && _salesFilterEndDatePicker.Checked ? _salesFilterEndDatePicker.Value.Date : (DateTime?)null,
+                _salesFilterStoreIdText == null ? string.Empty : _salesFilterStoreIdText.Text,
+                _salesFilterProductIdText == null ? string.Empty : _salesFilterProductIdText.Text);
 
             _salesGrid.DataSource = null;
-            _salesGrid.DataSource = _salesService.GetAll(_sales).Select(s => new {
+            _salesGrid.DataSource = filtered.Select(s => new {
                 SaleDate = s.SaleDate.ToString("yyyy/MM/dd"),
                 s.StoreId,
                 s.ProductId,
@@ -85,6 +91,20 @@ namespace Sales_Management_App {
                 s.Quantity,
                 s.SalesAmount
             }).ToList();
+        }
+
+        private void SearchSales(object sender, EventArgs e) {
+            ExecuteWithValidation(delegate {
+                RefreshSalesGrid();
+            });
+        }
+
+        private void ClearSalesFilter(object sender, EventArgs e) {
+            _salesFilterStartDatePicker.Checked = false;
+            _salesFilterEndDatePicker.Checked = false;
+            _salesFilterStoreIdText.Text = string.Empty;
+            _salesFilterProductIdText.Text = string.Empty;
+            RefreshSalesGrid();
         }
 
         private void WireSalesInputValidation() {
