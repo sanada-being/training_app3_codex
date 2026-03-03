@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
@@ -10,15 +11,19 @@ public class InventoryService
 {
     private readonly object _syncRoot = new();
     private readonly InventoryStockCalculator _stockCalculator;
+    private readonly InventoryHistoryService _historyService;
 
     public InventoryService()
-        : this(new InventoryStockCalculator())
+        : this(new InventoryStockCalculator(), new InventoryHistoryService())
     {
     }
 
-    internal InventoryService(InventoryStockCalculator stockCalculator)
+    internal InventoryService(
+        InventoryStockCalculator stockCalculator,
+        InventoryHistoryService historyService)
     {
         _stockCalculator = stockCalculator;
+        _historyService = historyService;
     }
 
     public IReadOnlyList<InventoryRecord> GetAll(IReadOnlyCollection<InventoryRecord> records)
@@ -33,22 +38,45 @@ public class InventoryService
 
     public void AddStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
+        AddStock(records, storeId, productId, quantity, null, default);
+    }
+
+    public void AddStock(
+        ICollection<InventoryRecord> records,
+        string storeId,
+        string productId,
+        int quantity,
+        ICollection<InventoryHistoryRecord>? histories,
+        DateTime occurredAt)
+    {
         var normalizedStoreId = ValidationGuard.RequireNotEmpty(storeId, "StoreId");
         var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
-        ValidationGuard.RequirePositive(quantity, "入荷数量");
+        ValidationGuard.RequirePositive(quantity, "Quantity");
 
         lock (_syncRoot)
         {
             var target = FindOrCreate(records, normalizedStoreId, normalizedProductId);
             target.Stock = _stockCalculator.CalculateAfterInbound(target.Stock, quantity);
+            RecordHistory(histories, occurredAt, InventoryOperationType.Inbound, normalizedStoreId, normalizedProductId, quantity, target.Stock);
         }
     }
 
     public void RemoveStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
+        RemoveStock(records, storeId, productId, quantity, null, default);
+    }
+
+    public void RemoveStock(
+        ICollection<InventoryRecord> records,
+        string storeId,
+        string productId,
+        int quantity,
+        ICollection<InventoryHistoryRecord>? histories,
+        DateTime occurredAt)
+    {
         var normalizedStoreId = ValidationGuard.RequireNotEmpty(storeId, "StoreId");
         var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
-        ValidationGuard.RequirePositive(quantity, "出庫数量");
+        ValidationGuard.RequirePositive(quantity, "Quantity");
 
         lock (_syncRoot)
         {
@@ -59,6 +87,7 @@ public class InventoryService
             }
 
             target.Stock = _stockCalculator.CalculateAfterOutbound(target.Stock, quantity);
+            RecordHistory(histories, occurredAt, InventoryOperationType.Outbound, normalizedStoreId, normalizedProductId, quantity, target.Stock);
         }
     }
 
@@ -78,5 +107,31 @@ public class InventoryService
         };
         records.Add(target);
         return target;
+    }
+
+    private void RecordHistory(
+        ICollection<InventoryHistoryRecord>? histories,
+        DateTime occurredAt,
+        InventoryOperationType operationType,
+        string storeId,
+        string productId,
+        int quantity,
+        int resultStock)
+    {
+        if (histories is null)
+        {
+            return;
+        }
+
+        var timestamp = occurredAt == default ? DateTime.Now : occurredAt;
+        _historyService.Record(
+            histories,
+            timestamp,
+            operationType,
+            storeId,
+            productId,
+            quantity,
+            resultStock,
+            "Success");
     }
 }

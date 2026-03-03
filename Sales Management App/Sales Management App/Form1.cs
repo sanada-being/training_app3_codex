@@ -14,13 +14,16 @@ namespace Sales_Management_App {
     public partial class Form1 : Form {
         private readonly ProductService _productService = new ProductService();
         private readonly InventoryService _inventoryService = new InventoryService();
+        private readonly InventoryHistoryService _inventoryHistoryService = new InventoryHistoryService();
         private readonly SalesService _salesService = new SalesService();
         private readonly SalesAggregationService _salesAggregationService = new SalesAggregationService();
         private readonly CsvDataStore _csvDataStore = new CsvDataStore();
 
         private readonly List<Product> _products = new List<Product>();
         private readonly List<InventoryRecord> _inventories = new List<InventoryRecord>();
+        private readonly List<InventoryHistoryRecord> _inventoryHistories = new List<InventoryHistoryRecord>();
         private readonly List<SaleRecord> _sales = new List<SaleRecord>();
+        private string _inventoryHistoryPath = string.Empty;
 
         private DataGridView _productsGrid;
         private TextBox _productIdText;
@@ -33,6 +36,12 @@ namespace Sales_Management_App {
         private TextBox _inventoryProductIdText;
         private TextBox _inventoryQuantityText;
         private Label _reorderLabel;
+        private DataGridView _inventoryHistoryGrid;
+        private DateTimePicker _historyStartDatePicker;
+        private DateTimePicker _historyEndDatePicker;
+        private ComboBox _historyOperationTypeCombo;
+        private TextBox _historyStoreIdText;
+        private TextBox _historyProductIdText;
 
         private DataGridView _salesGrid;
         private DateTimePicker _saleDatePicker;
@@ -69,6 +78,7 @@ namespace Sales_Management_App {
             var tabs = new TabControl { Dock = DockStyle.Fill };
             tabs.TabPages.Add(CreateProductTab());
             tabs.TabPages.Add(CreateInventoryTab());
+            tabs.TabPages.Add(CreateInventoryHistoryTab());
             tabs.TabPages.Add(CreateSalesTab());
             tabs.TabPages.Add(CreateAggregationTab());
             Controls.Add(tabs);
@@ -76,6 +86,7 @@ namespace Sales_Management_App {
             WireSalesInputValidation();
             RefreshProductsGrid();
             RefreshInventoryGrid();
+            RefreshInventoryHistoryGrid();
             RefreshSaleProductOptions();
             RefreshSalesGrid();
             ResetAggregationDisplay();

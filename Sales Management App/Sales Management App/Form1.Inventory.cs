@@ -9,8 +9,10 @@ namespace Sales_Management_App {
         private void AddInventory(object sender, EventArgs e) {
             ExecuteWithValidation(delegate {
                 var input = BuildInventoryInput();
-                _inventoryService.AddStock(_inventories, input.StoreId, input.ProductId, input.Stock);
+                _inventoryService.AddStock(_inventories, input.StoreId, input.ProductId, input.Stock, _inventoryHistories, DateTime.Now);
+                PersistInventoryHistory();
                 RefreshInventoryGrid();
+                RefreshInventoryHistoryGrid();
                 ClearInventoryInputs();
                 MessageBox.Show("入荷を反映しました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
             });
@@ -19,8 +21,10 @@ namespace Sales_Management_App {
         private void RemoveInventory(object sender, EventArgs e) {
             ExecuteWithValidation(delegate {
                 var input = BuildInventoryInput();
-                _inventoryService.RemoveStock(_inventories, input.StoreId, input.ProductId, input.Stock);
+                _inventoryService.RemoveStock(_inventories, input.StoreId, input.ProductId, input.Stock, _inventoryHistories, DateTime.Now);
+                PersistInventoryHistory();
                 RefreshInventoryGrid();
+                RefreshInventoryHistoryGrid();
                 ClearInventoryInputs();
                 MessageBox.Show("出庫を反映しました。", "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
             });

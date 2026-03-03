@@ -61,6 +61,9 @@
     <Compile Include="Form1.Inventory.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form1.InventoryHistory.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.Sales.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
@@ -74,6 +77,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="SaleProductOption.cs" />
+    <Compile Include="InventoryHistoryOperationFilterOption.cs" />
     <Compile Include="AggregationSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

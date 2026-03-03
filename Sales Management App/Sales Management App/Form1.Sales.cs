@@ -13,9 +13,11 @@ namespace Sales_Management_App {
 
             ExecuteWithValidation(delegate {
                 var input = BuildSaleInput();
-                var registered = _salesService.RegisterSale(_sales, _products, _inventories, input);
+                var registered = _salesService.RegisterSale(_sales, _products, _inventories, input, _inventoryHistories, DateTime.Now);
+                PersistInventoryHistory();
                 RefreshSalesGrid();
                 RefreshInventoryGrid();
+                RefreshInventoryHistoryGrid();
                 ClearSaleInputs();
                 MessageBox.Show(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount), "完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
             });

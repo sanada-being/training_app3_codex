@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Services;
+using SalesManagementApp.Core.Domain.Entities;
 using SalesManagementApp.Tests.TestHelpers;
 
 namespace SalesManagementApp.Tests.Inventory;
@@ -70,5 +71,23 @@ public class InventoryServiceTests
         Assert.That(
             () => _service.AddStock(_records, "S001", "P001", 1),
             Throws.TypeOf<DomainValidationException>());
+    }
+
+    [Test]
+    public void AddStock_WhenHistoryCollectionIsProvided_RecordsInboundHistory()
+    {
+        var histories = new List<InventoryHistoryRecord>();
+        var occurredAt = new DateTime(2026, 3, 3, 9, 30, 0);
+
+        _service.AddStock(_records, "S001", "P001", 3, histories, occurredAt);
+
+        Assert.That(histories.Count, Is.EqualTo(1));
+        Assert.That(histories[0].OccurredAt, Is.EqualTo(occurredAt));
+        Assert.That(histories[0].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
+        Assert.That(histories[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(histories[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(histories[0].Quantity, Is.EqualTo(3));
+        Assert.That(histories[0].ResultStock, Is.EqualTo(3));
+        Assert.That(histories[0].Result, Is.EqualTo("Success"));
     }
 }

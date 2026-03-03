@@ -68,4 +68,23 @@ public class SalesServiceTests
 
         Assert.That(() => _service.RegisterSale(_sales, _products, _inventories, input), Throws.TypeOf<DomainValidationException>());
     }
+
+    [Test]
+    public void RegisterSale_WhenHistoryCollectionIsProvided_RecordsSaleHistory()
+    {
+        var input = new SaleRecordBuilder().WithDate(new DateTime(2026, 3, 1)).WithStoreId("S001").WithProductId("P001").WithQuantity(2).Build();
+        var histories = new List<InventoryHistoryRecord>();
+        var occurredAt = new DateTime(2026, 3, 1, 12, 0, 0);
+
+        _service.RegisterSale(_sales, _products, _inventories, input, histories, occurredAt);
+
+        Assert.That(histories.Count, Is.EqualTo(1));
+        Assert.That(histories[0].OccurredAt, Is.EqualTo(occurredAt));
+        Assert.That(histories[0].OperationType, Is.EqualTo(InventoryOperationType.Sale));
+        Assert.That(histories[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(histories[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(histories[0].Quantity, Is.EqualTo(2));
+        Assert.That(histories[0].ResultStock, Is.EqualTo(8));
+        Assert.That(histories[0].Result, Is.EqualTo("Success"));
+    }
 }
