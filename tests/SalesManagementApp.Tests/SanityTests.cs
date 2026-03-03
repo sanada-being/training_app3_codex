@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Tests;
 
@@ -14,7 +13,13 @@ public class SanityTests
     [Test]
     public void CoreProjectReference_ShouldBeAvailable()
     {
-        var product = new Product { ProductId = "P001", ProductName = "Sample", UnitPrice = 100, Category = "Drink" };
+        var product = new SalesManagementApp.Core.Domain.Entities.Product
+        {
+            ProductId = "P001",
+            ProductName = "Sample",
+            UnitPrice = 100,
+            Category = "Drink"
+        };
         Assert.That(product.ProductId, Is.EqualTo("P001"));
     }
 }

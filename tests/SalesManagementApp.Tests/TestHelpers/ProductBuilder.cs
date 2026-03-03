@@ -1,10 +1,8 @@
-using SalesManagementApp.Core.Domain.Entities;
-
 namespace SalesManagementApp.Tests.TestHelpers;
 
 public class ProductBuilder
 {
-    private readonly Product _product = new()
+    private readonly SalesManagementApp.Core.Domain.Entities.Product _product = new()
     {
         ProductId = "P001",
         ProductName = "Cola",
@@ -36,5 +34,5 @@ public class ProductBuilder
         return this;
     }
 
-    public Product Build() => _product;
+    public SalesManagementApp.Core.Domain.Entities.Product Build() => _product;
 }
