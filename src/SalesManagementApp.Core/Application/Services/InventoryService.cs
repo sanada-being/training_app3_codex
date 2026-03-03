@@ -9,6 +9,17 @@ namespace SalesManagementApp.Core.Application.Services;
 public class InventoryService
 {
     private readonly object _syncRoot = new();
+    private readonly InventoryStockCalculator _stockCalculator;
+
+    public InventoryService()
+        : this(new InventoryStockCalculator())
+    {
+    }
+
+    internal InventoryService(InventoryStockCalculator stockCalculator)
+    {
+        _stockCalculator = stockCalculator;
+    }
 
     public IReadOnlyList<InventoryRecord> GetAll(IReadOnlyCollection<InventoryRecord> records)
     {
@@ -29,7 +40,7 @@ public class InventoryService
         lock (_syncRoot)
         {
             var target = FindOrCreate(records, normalizedStoreId, normalizedProductId);
-            target.Stock += quantity;
+            target.Stock = _stockCalculator.CalculateAfterInbound(target.Stock, quantity);
         }
     }
 
@@ -47,12 +58,7 @@ public class InventoryService
                 throw new DomainValidationException("対象在庫が存在しません。");
             }
 
-            if (target.Stock < quantity)
-            {
-                throw new DomainValidationException("在庫が不足しています。");
-            }
-
-            target.Stock -= quantity;
+            target.Stock = _stockCalculator.CalculateAfterOutbound(target.Stock, quantity);
         }
     }
 

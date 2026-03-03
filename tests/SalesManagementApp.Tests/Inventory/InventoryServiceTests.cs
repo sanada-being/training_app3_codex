@@ -61,4 +61,14 @@ public class InventoryServiceTests
 
         Assert.That(_records[0].Stock, Is.EqualTo(30));
     }
+
+    [Test]
+    public void AddStock_WhenStockCalculationOverflows_ThrowsValidationException()
+    {
+        _records.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P001").WithStock(int.MaxValue).Build());
+
+        Assert.That(
+            () => _service.AddStock(_records, "S001", "P001", 1),
+            Throws.TypeOf<DomainValidationException>());
+    }
 }
