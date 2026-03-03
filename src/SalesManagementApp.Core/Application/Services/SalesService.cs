@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
+using SalesManagementApp.Core.Application.Validation;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
@@ -25,15 +26,18 @@ public class SalesService
     {
         ValidateInput(input);
 
-        var product = products.FirstOrDefault(p => p.ProductId == input.ProductId.Trim());
+        var normalizedStoreId = input.StoreId.Trim();
+        var normalizedProductId = input.ProductId.Trim();
+
+        var product = products.FirstOrDefault(p => p.ProductId == normalizedProductId);
         if (product is null)
         {
             throw new DomainValidationException("存在しない商品です。");
         }
 
         var inventory = inventories.FirstOrDefault(i =>
-            i.StoreId == input.StoreId.Trim() &&
-            i.ProductId == input.ProductId.Trim());
+            i.StoreId == normalizedStoreId &&
+            i.ProductId == normalizedProductId);
 
         if (inventory is null || inventory.Stock < input.Quantity)
         {
@@ -43,8 +47,8 @@ public class SalesService
         var record = new SaleRecord
         {
             SaleDate = input.SaleDate,
-            StoreId = input.StoreId.Trim(),
-            ProductId = input.ProductId.Trim(),
+            StoreId = normalizedStoreId,
+            ProductId = normalizedProductId,
             Quantity = input.Quantity,
             SalesAmount = checked(product.UnitPrice * input.Quantity)
         };
@@ -62,19 +66,8 @@ public class SalesService
             throw new DomainValidationException("販売日は必須です。");
         }
 
-        if (string.IsNullOrWhiteSpace(input.StoreId))
-        {
-            throw new DomainValidationException("StoreId は必須です。");
-        }
-
-        if (string.IsNullOrWhiteSpace(input.ProductId))
-        {
-            throw new DomainValidationException("ProductId は必須です。");
-        }
-
-        if (input.Quantity <= 0)
-        {
-            throw new DomainValidationException("数量は1以上で入力してください。");
-        }
+        ValidationGuard.RequireNotEmpty(input.StoreId, "StoreId");
+        ValidationGuard.RequireNotEmpty(input.ProductId, "ProductId");
+        ValidationGuard.RequirePositive(input.Quantity, "数量");
     }
 }

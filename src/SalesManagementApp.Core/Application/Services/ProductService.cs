@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
+using SalesManagementApp.Core.Application.Validation;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
@@ -18,7 +19,7 @@ public class ProductService
 
         if (products.Any(p => p.ProductId == input.ProductId))
         {
-            throw new DomainValidationException("同じ商品IDが既に存在します。");
+            throw new DomainValidationException("同一の商品IDが既に登録されています。");
         }
 
         products.Add(Clone(input));
@@ -41,12 +42,9 @@ public class ProductService
 
     public void Delete(ICollection<Product> products, string productId)
     {
-        if (string.IsNullOrWhiteSpace(productId))
-        {
-            throw new DomainValidationException("商品IDは必須です。");
-        }
+        var id = ValidationGuard.RequireNotEmpty(productId, "商品ID");
 
-        var target = products.FirstOrDefault(p => p.ProductId == productId.Trim());
+        var target = products.FirstOrDefault(p => p.ProductId == id);
         if (target is null)
         {
             throw new DomainValidationException("削除対象の商品が存在しません。");
@@ -57,25 +55,10 @@ public class ProductService
 
     public void Validate(Product product)
     {
-        if (string.IsNullOrWhiteSpace(product.ProductId))
-        {
-            throw new DomainValidationException("商品IDは必須です。");
-        }
-
-        if (string.IsNullOrWhiteSpace(product.ProductName))
-        {
-            throw new DomainValidationException("商品名は必須です。");
-        }
-
-        if (string.IsNullOrWhiteSpace(product.Category))
-        {
-            throw new DomainValidationException("区分は必須です。");
-        }
-
-        if (product.UnitPrice < 0)
-        {
-            throw new DomainValidationException("単価は0以上である必要があります。");
-        }
+        ValidationGuard.RequireNotEmpty(product.ProductId, "商品ID");
+        ValidationGuard.RequireNotEmpty(product.ProductName, "商品名");
+        ValidationGuard.RequireNotEmpty(product.Category, "区分");
+        ValidationGuard.RequireNonNegative(product.UnitPrice, "単価");
     }
 
     private static Product Clone(Product input)
