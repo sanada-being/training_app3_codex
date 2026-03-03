@@ -30,6 +30,51 @@ public class SalesService
             .ToList();
     }
 
+    public IReadOnlyList<SaleRecord> GetFiltered(
+        IReadOnlyCollection<SaleRecord> sales,
+        DateTime? startDate,
+        DateTime? endDate,
+        string? storeIdFilter,
+        string? productIdFilter)
+    {
+        if (startDate.HasValue && endDate.HasValue && startDate.Value.Date > endDate.Value.Date)
+        {
+            throw new DomainValidationException("Start date must be earlier than or equal to end date.");
+        }
+
+        var normalizedStoreId = NormalizeOptionalFilter(storeIdFilter);
+        var normalizedProductId = NormalizeOptionalFilter(productIdFilter);
+        var query = sales.AsEnumerable();
+
+        if (startDate.HasValue)
+        {
+            var start = startDate.Value.Date;
+            query = query.Where(s => s.SaleDate.Date >= start);
+        }
+
+        if (endDate.HasValue)
+        {
+            var end = endDate.Value.Date;
+            query = query.Where(s => s.SaleDate.Date <= end);
+        }
+
+        if (!string.IsNullOrWhiteSpace(normalizedStoreId))
+        {
+            query = query.Where(s => ContainsIgnoreCase(s.StoreId, normalizedStoreId));
+        }
+
+        if (!string.IsNullOrWhiteSpace(normalizedProductId))
+        {
+            query = query.Where(s => ContainsIgnoreCase(s.ProductId, normalizedProductId));
+        }
+
+        return query
+            .OrderByDescending(s => s.SaleDate)
+            .ThenBy(s => s.StoreId)
+            .ThenBy(s => s.ProductId)
+            .ToList();
+    }
+
     public SaleRecord RegisterSale(
         ICollection<SaleRecord> sales,
         IReadOnlyCollection<Product> products,
@@ -106,5 +151,20 @@ public class SalesService
         ValidationGuard.RequireNotEmpty(input.StoreId, "StoreId");
         ValidationGuard.RequireNotEmpty(input.ProductId, "ProductId");
         ValidationGuard.RequirePositive(input.Quantity, "Quantity");
+    }
+
+    private static string NormalizeOptionalFilter(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value!.Trim();
+    }
+
+    private static bool ContainsIgnoreCase(string source, string keyword)
+    {
+        return source?.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 }

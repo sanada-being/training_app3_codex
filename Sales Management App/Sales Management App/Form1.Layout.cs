@@ -7,10 +7,11 @@ namespace Sales_Management_App {
             var tab = new TabPage("商品管理");
             var root = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
-                RowCount = 2,
+                RowCount = 3,
                 ColumnCount = 1
             };
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 170));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 96));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
             var inputPanel = new TableLayoutPanel {
@@ -41,6 +42,30 @@ namespace Sales_Management_App {
             inputPanel.Controls.Add(buttonFlow, 0, 2);
             inputPanel.SetColumnSpan(buttonFlow, 4);
 
+            var filterPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 4,
+                RowCount = 2,
+                Padding = new Padding(12, 0, 12, 8)
+            };
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            _productFilterIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 0, 0);
+            _productFilterNameText = AddLabeledTextBox(filterPanel, "絞込 商品名", 2, 0);
+            _productFilterCategoryText = AddLabeledTextBox(filterPanel, "絞込 区分", 0, 1);
+
+            var productFilterButtons = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            productFilterButtons.Controls.Add(CreateButton("絞り込み", SearchProducts));
+            productFilterButtons.Controls.Add(CreateButton("解除", ClearProductFilter));
+            filterPanel.Controls.Add(productFilterButtons, 2, 1);
+            filterPanel.SetColumnSpan(productFilterButtons, 2);
+
             _productsGrid = new DataGridView {
                 Dock = DockStyle.Fill,
                 ReadOnly = true,
@@ -51,7 +76,8 @@ namespace Sales_Management_App {
             _productsGrid.SelectionChanged += ProductsGridOnSelectionChanged;
 
             root.Controls.Add(inputPanel, 0, 0);
-            root.Controls.Add(_productsGrid, 0, 1);
+            root.Controls.Add(filterPanel, 0, 1);
+            root.Controls.Add(_productsGrid, 0, 2);
             tab.Controls.Add(root);
             return tab;
         }
@@ -60,10 +86,11 @@ namespace Sales_Management_App {
             var tab = new TabPage("在庫管理");
             var root = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
-                RowCount = 3,
+                RowCount = 4,
                 ColumnCount = 1
             };
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
@@ -93,6 +120,29 @@ namespace Sales_Management_App {
             inputPanel.Controls.Add(buttonFlow, 0, 2);
             inputPanel.SetColumnSpan(buttonFlow, 4);
 
+            var filterPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 4,
+                RowCount = 2,
+                Padding = new Padding(12, 0, 12, 8)
+            };
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            _inventoryFilterStoreIdText = AddLabeledTextBox(filterPanel, "絞込 店舗ID", 0, 0);
+            _inventoryFilterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 2, 0);
+
+            var inventoryFilterButtons = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            inventoryFilterButtons.Controls.Add(CreateButton("絞り込み", SearchInventories));
+            inventoryFilterButtons.Controls.Add(CreateButton("解除", ClearInventoryFilter));
+            filterPanel.Controls.Add(inventoryFilterButtons, 0, 1);
+            filterPanel.SetColumnSpan(inventoryFilterButtons, 4);
+
             _reorderLabel = new Label {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft,
@@ -109,8 +159,9 @@ namespace Sales_Management_App {
             _inventoryGrid.SelectionChanged += InventoryGridOnSelectionChanged;
 
             root.Controls.Add(inputPanel, 0, 0);
-            root.Controls.Add(_reorderLabel, 0, 1);
-            root.Controls.Add(_inventoryGrid, 0, 2);
+            root.Controls.Add(filterPanel, 0, 1);
+            root.Controls.Add(_reorderLabel, 0, 2);
+            root.Controls.Add(_inventoryGrid, 0, 3);
             tab.Controls.Add(root);
             return tab;
         }
@@ -119,10 +170,11 @@ namespace Sales_Management_App {
             var tab = new TabPage("売上登録");
             var root = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
-                RowCount = 3,
+                RowCount = 4,
                 ColumnCount = 1
             };
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 200));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
@@ -199,6 +251,58 @@ namespace Sales_Management_App {
             inputPanel.Controls.Add(buttonFlow, 0, 3);
             inputPanel.SetColumnSpan(buttonFlow, 4);
 
+            var filterPanel = new TableLayoutPanel {
+                Dock = DockStyle.Fill,
+                ColumnCount = 4,
+                RowCount = 3,
+                Padding = new Padding(12, 0, 12, 8)
+            };
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+
+            var salesFilterStartLabel = new Label {
+                Text = "絞込 開始日",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _salesFilterStartDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Short,
+                ShowCheckBox = true,
+                Checked = false
+            };
+            filterPanel.Controls.Add(salesFilterStartLabel, 0, 0);
+            filterPanel.Controls.Add(_salesFilterStartDatePicker, 1, 0);
+
+            var salesFilterEndLabel = new Label {
+                Text = "絞込 終了日",
+                Dock = DockStyle.Fill,
+                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+            };
+            _salesFilterEndDatePicker = new DateTimePicker {
+                Dock = DockStyle.Fill,
+                Format = DateTimePickerFormat.Short,
+                ShowCheckBox = true,
+                Checked = false
+            };
+            filterPanel.Controls.Add(salesFilterEndLabel, 2, 0);
+            filterPanel.Controls.Add(_salesFilterEndDatePicker, 3, 0);
+
+            _salesFilterStoreIdText = AddLabeledTextBox(filterPanel, "絞込 店舗ID", 0, 1);
+            _salesFilterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 2, 1);
+
+            var salesFilterButtons = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            salesFilterButtons.Controls.Add(CreateButton("絞り込み", SearchSales));
+            salesFilterButtons.Controls.Add(CreateButton("解除", ClearSalesFilter));
+            filterPanel.Controls.Add(salesFilterButtons, 0, 2);
+            filterPanel.SetColumnSpan(salesFilterButtons, 4);
+
             var hintLabel = new Label {
                 Dock = DockStyle.Fill,
                 Padding = new Padding(12, 0, 0, 0),
@@ -215,8 +319,9 @@ namespace Sales_Management_App {
             };
 
             root.Controls.Add(inputPanel, 0, 0);
-            root.Controls.Add(hintLabel, 0, 1);
-            root.Controls.Add(_salesGrid, 0, 2);
+            root.Controls.Add(filterPanel, 0, 1);
+            root.Controls.Add(hintLabel, 0, 2);
+            root.Controls.Add(_salesGrid, 0, 3);
             tab.Controls.Add(root);
             return tab;
         }
@@ -322,14 +427,14 @@ namespace Sales_Management_App {
                 RowCount = 3,
                 ColumnCount = 1
             };
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 154));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
             var inputPanel = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
                 ColumnCount = 4,
-                RowCount = 3,
+                RowCount = 4,
                 Padding = new Padding(12)
             };
             inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
@@ -372,6 +477,17 @@ namespace Sales_Management_App {
             buttonFlow.Controls.Add(CreateButton("集計結果コピー", CopyAggregationResult));
             inputPanel.Controls.Add(buttonFlow, 0, 1);
             inputPanel.SetColumnSpan(buttonFlow, 4);
+
+            _aggregationFilterProductIdText = AddLabeledTextBox(inputPanel, "絞込 商品ID", 0, 2);
+            var aggregationFilterButtons = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            aggregationFilterButtons.Controls.Add(CreateButton("絞り込み", SearchAggregationFilter));
+            aggregationFilterButtons.Controls.Add(CreateButton("解除", ClearAggregationFilter));
+            inputPanel.Controls.Add(aggregationFilterButtons, 2, 2);
+            inputPanel.SetColumnSpan(aggregationFilterButtons, 2);
 
             _summaryTotalLabel = new Label {
                 Dock = DockStyle.Fill,

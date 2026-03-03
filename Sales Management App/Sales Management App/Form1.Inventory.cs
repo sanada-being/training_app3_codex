@@ -44,8 +44,13 @@ namespace Sales_Management_App {
         }
 
         private void RefreshInventoryGrid() {
+            var filtered = _inventoryService.GetFiltered(
+                _inventories,
+                _inventoryFilterStoreIdText == null ? string.Empty : _inventoryFilterStoreIdText.Text,
+                _inventoryFilterProductIdText == null ? string.Empty : _inventoryFilterProductIdText.Text);
+
             _inventoryGrid.DataSource = null;
-            _inventoryGrid.DataSource = _inventoryService.GetAll(_inventories).Select(r => new {
+            _inventoryGrid.DataSource = filtered.Select(r => new {
                 r.StoreId,
                 r.ProductId,
                 r.Stock
@@ -53,6 +58,16 @@ namespace Sales_Management_App {
 
             var reorderCount = _inventoryService.GetReorderTargets(_inventories, 5).Count;
             _reorderLabel.Text = string.Format("要発注（在庫5以下）件数: {0}", reorderCount);
+        }
+
+        private void SearchInventories(object sender, EventArgs e) {
+            RefreshInventoryGrid();
+        }
+
+        private void ClearInventoryFilter(object sender, EventArgs e) {
+            _inventoryFilterStoreIdText.Text = string.Empty;
+            _inventoryFilterProductIdText.Text = string.Empty;
+            RefreshInventoryGrid();
         }
 
         private void InventoryGridOnSelectionChanged(object sender, EventArgs e) {

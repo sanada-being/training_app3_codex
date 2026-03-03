@@ -36,6 +36,29 @@ public class InventoryService
         return records.Where(r => r.Stock <= threshold).OrderBy(r => r.StoreId).ThenBy(r => r.ProductId).ToList();
     }
 
+    public IReadOnlyList<InventoryRecord> GetFiltered(
+        IReadOnlyCollection<InventoryRecord> records,
+        string? storeIdFilter,
+        string? productIdFilter)
+    {
+        var normalizedStoreId = NormalizeOptionalFilter(storeIdFilter);
+        var normalizedProductId = NormalizeOptionalFilter(productIdFilter);
+
+        var query = records.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(normalizedStoreId))
+        {
+            query = query.Where(r => ContainsIgnoreCase(r.StoreId, normalizedStoreId));
+        }
+
+        if (!string.IsNullOrWhiteSpace(normalizedProductId))
+        {
+            query = query.Where(r => ContainsIgnoreCase(r.ProductId, normalizedProductId));
+        }
+
+        return query.OrderBy(r => r.StoreId).ThenBy(r => r.ProductId).ToList();
+    }
+
     public void AddStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
         AddStock(records, storeId, productId, quantity, null, default);
@@ -133,5 +156,20 @@ public class InventoryService
             quantity,
             resultStock,
             "Success");
+    }
+
+    private static string NormalizeOptionalFilter(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value!.Trim();
+    }
+
+    private static bool ContainsIgnoreCase(string source, string keyword)
+    {
+        return source?.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 }

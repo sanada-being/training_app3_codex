@@ -60,13 +60,30 @@ namespace Sales_Management_App {
         }
 
         private void RefreshProductsGrid() {
+            var filtered = _productService.GetFiltered(
+                _products,
+                _productFilterIdText == null ? string.Empty : _productFilterIdText.Text,
+                _productFilterNameText == null ? string.Empty : _productFilterNameText.Text,
+                _productFilterCategoryText == null ? string.Empty : _productFilterCategoryText.Text);
+
             _productsGrid.DataSource = null;
-            _productsGrid.DataSource = _productService.GetAll(_products).Select(p => new {
+            _productsGrid.DataSource = filtered.Select(p => new {
                 p.ProductId,
                 p.ProductName,
                 p.UnitPrice,
                 p.Category
             }).ToList();
+        }
+
+        private void SearchProducts(object sender, EventArgs e) {
+            RefreshProductsGrid();
+        }
+
+        private void ClearProductFilter(object sender, EventArgs e) {
+            _productFilterIdText.Text = string.Empty;
+            _productFilterNameText.Text = string.Empty;
+            _productFilterCategoryText.Text = string.Empty;
+            RefreshProductsGrid();
         }
 
         private void ProductsGridOnSelectionChanged(object sender, EventArgs e) {

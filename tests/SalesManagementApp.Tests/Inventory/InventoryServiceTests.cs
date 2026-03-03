@@ -90,4 +90,18 @@ public class InventoryServiceTests
         Assert.That(histories[0].ResultStock, Is.EqualTo(3));
         Assert.That(histories[0].Result, Is.EqualTo("Success"));
     }
+
+    [Test]
+    public void GetFiltered_WhenStoreAndProductFiltersSpecified_ReturnsMatchedRecords()
+    {
+        _records.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P001").WithStock(2).Build());
+        _records.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P002").WithStock(3).Build());
+        _records.Add(new InventoryRecordBuilder().WithStoreId("S002").WithProductId("P001").WithStock(4).Build());
+
+        var filtered = _service.GetFiltered(_records, "S001", "P002");
+
+        Assert.That(filtered.Count, Is.EqualTo(1));
+        Assert.That(filtered[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(filtered[0].ProductId, Is.EqualTo("P002"));
+    }
 }

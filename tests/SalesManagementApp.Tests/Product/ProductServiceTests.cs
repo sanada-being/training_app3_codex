@@ -128,4 +128,17 @@ public class ProductServiceTests
 
         Assert.That(_products, Is.Empty);
     }
+
+    [Test]
+    public void GetFiltered_WhenConditionsMatch_ReturnsFilteredProducts()
+    {
+        _products.Add(new ProductBuilder().WithId("P001").WithName("Cola").WithCategory("Drink").Build());
+        _products.Add(new ProductBuilder().WithId("P002").WithName("Tea").WithCategory("Drink").Build());
+        _products.Add(new ProductBuilder().WithId("P003").WithName("Bread").WithCategory("Food").Build());
+
+        var filtered = _service.GetFiltered(_products, "P00", "ea", "Drink");
+
+        Assert.That(filtered.Count, Is.EqualTo(1));
+        Assert.That(filtered[0].ProductId, Is.EqualTo("P002"));
+    }
 }
