@@ -5,8 +5,11 @@ using System.Windows.Forms;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// SalesView クラスです。
+    /// </summary>
     internal sealed class SalesView : UserControl {
-        private static readonly IReadOnlyDictionary<string, string> HeaderMap =
+        private static readonly IReadOnlyDictionary<string, string> FHeaderMap =
             new Dictionary<string, string> {
                 { "SaleDate", "販売日" },
                 { "StoreId", "店舗ID" },
@@ -16,17 +19,17 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 { "SalesAmount", "売上金額" }
             };
 
-        private readonly DataGridView _grid;
-        private readonly DateTimePicker _saleDatePicker;
-        private readonly TextBox _storeIdText;
-        private readonly ComboBox _productCombo;
-        private readonly TextBox _quantityText;
-        private readonly Label _unitPriceLabel;
-        private readonly Label _amountPreviewLabel;
-        private readonly DateTimePicker _filterStartDatePicker;
-        private readonly DateTimePicker _filterEndDatePicker;
-        private readonly TextBox _filterStoreIdText;
-        private readonly TextBox _filterProductIdText;
+        private readonly DataGridView FGrid;
+        private readonly DateTimePicker FSaleDatePicker;
+        private readonly TextBox FStoreIdText;
+        private readonly ComboBox FProductCombo;
+        private readonly TextBox FQuantityText;
+        private readonly Label FUnitPriceLabel;
+        private readonly Label FAmountPreviewLabel;
+        private readonly DateTimePicker FFilterStartDatePicker;
+        private readonly DateTimePicker FFilterEndDatePicker;
+        private readonly TextBox FFilterStoreIdText;
+        private readonly TextBox FFilterProductIdText;
 
         internal event EventHandler RegisterRequested;
         internal event EventHandler ClearInputRequested;
@@ -63,52 +66,52 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _saleDatePicker = new DateTimePicker {
+            FSaleDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Short
             };
             inputPanel.Controls.Add(saleDateLabel, 0, 0);
-            inputPanel.Controls.Add(_saleDatePicker, 1, 0);
+            inputPanel.Controls.Add(FSaleDatePicker, 1, 0);
 
-            _storeIdText = AddLabeledTextBox(inputPanel, "店舗ID", 2, 0);
+            FStoreIdText = AddLabeledTextBox(inputPanel, "店舗ID", 2, 0);
 
             var productLabel = new Label {
                 Text = "商品",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _productCombo = new ComboBox {
+            FProductCombo = new ComboBox {
                 Dock = DockStyle.Fill,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
             inputPanel.Controls.Add(productLabel, 0, 1);
-            inputPanel.Controls.Add(_productCombo, 1, 1);
+            inputPanel.Controls.Add(FProductCombo, 1, 1);
 
-            _quantityText = AddLabeledTextBox(inputPanel, "数量", 2, 1);
+            FQuantityText = AddLabeledTextBox(inputPanel, "数量", 2, 1);
 
             var unitPriceHeaderLabel = new Label {
                 Text = "単価",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _unitPriceLabel = new Label {
+            FUnitPriceLabel = new Label {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
             inputPanel.Controls.Add(unitPriceHeaderLabel, 0, 2);
-            inputPanel.Controls.Add(_unitPriceLabel, 1, 2);
+            inputPanel.Controls.Add(FUnitPriceLabel, 1, 2);
 
             var amountHeaderLabel = new Label {
                 Text = "売上金額見込",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _amountPreviewLabel = new Label {
+            FAmountPreviewLabel = new Label {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
             inputPanel.Controls.Add(amountHeaderLabel, 2, 2);
-            inputPanel.Controls.Add(_amountPreviewLabel, 3, 2);
+            inputPanel.Controls.Add(FAmountPreviewLabel, 3, 2);
 
             var buttonFlow = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -136,31 +139,31 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _filterStartDatePicker = new DateTimePicker {
+            FFilterStartDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Short,
                 ShowCheckBox = true,
                 Checked = false
             };
             filterPanel.Controls.Add(startLabel, 0, 0);
-            filterPanel.Controls.Add(_filterStartDatePicker, 1, 0);
+            filterPanel.Controls.Add(FFilterStartDatePicker, 1, 0);
 
             var endLabel = new Label {
                 Text = "絞込 終了日",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _filterEndDatePicker = new DateTimePicker {
+            FFilterEndDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Short,
                 ShowCheckBox = true,
                 Checked = false
             };
             filterPanel.Controls.Add(endLabel, 2, 0);
-            filterPanel.Controls.Add(_filterEndDatePicker, 3, 0);
+            filterPanel.Controls.Add(FFilterEndDatePicker, 3, 0);
 
-            _filterStoreIdText = AddLabeledTextBox(filterPanel, "絞込 店舗ID", 0, 1);
-            _filterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 2, 1);
+            FFilterStoreIdText = AddLabeledTextBox(filterPanel, "絞込 店舗ID", 0, 1);
+            FFilterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 2, 1);
 
             var filterButtons = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -179,7 +182,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
 
-            _grid = new DataGridView {
+            FGrid = new DataGridView {
                 Dock = DockStyle.Fill,
                 ReadOnly = true,
                 AutoGenerateColumns = true,
@@ -187,84 +190,84 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 MultiSelect = false
             };
 
-            _storeIdText.TextChanged += delegate { InputChanged?.Invoke(this, EventArgs.Empty); };
-            _quantityText.TextChanged += delegate { InputChanged?.Invoke(this, EventArgs.Empty); };
-            _productCombo.SelectedIndexChanged += delegate { InputChanged?.Invoke(this, EventArgs.Empty); };
+            FStoreIdText.TextChanged += delegate { InputChanged?.Invoke(this, EventArgs.Empty); };
+            FQuantityText.TextChanged += delegate { InputChanged?.Invoke(this, EventArgs.Empty); };
+            FProductCombo.SelectedIndexChanged += delegate { InputChanged?.Invoke(this, EventArgs.Empty); };
 
             root.Controls.Add(inputPanel, 0, 0);
             root.Controls.Add(filterPanel, 0, 1);
             root.Controls.Add(hintLabel, 0, 2);
-            root.Controls.Add(_grid, 0, 3);
+            root.Controls.Add(FGrid, 0, 3);
             Controls.Add(root);
         }
 
         internal SalesInputModel GetInput() {
-            var selected = _productCombo.SelectedItem as SaleProductOption;
+            var selected = FProductCombo.SelectedItem as SaleProductOption;
             return new SalesInputModel {
-                SaleDate = _saleDatePicker.Value.Date,
-                StoreId = _storeIdText.Text.Trim(),
+                SaleDate = FSaleDatePicker.Value.Date,
+                StoreId = FStoreIdText.Text.Trim(),
                 ProductId = selected == null ? string.Empty : selected.ProductId,
-                QuantityText = _quantityText.Text.Trim()
+                QuantityText = FQuantityText.Text.Trim()
             };
         }
 
         internal SalesFilterModel GetFilter() {
             return new SalesFilterModel {
-                StartDate = _filterStartDatePicker.Checked ? _filterStartDatePicker.Value.Date : (DateTime?)null,
-                EndDate = _filterEndDatePicker.Checked ? _filterEndDatePicker.Value.Date : (DateTime?)null,
-                StoreId = _filterStoreIdText.Text.Trim(),
-                ProductId = _filterProductIdText.Text.Trim()
+                StartDate = FFilterStartDatePicker.Checked ? FFilterStartDatePicker.Value.Date : (DateTime?)null,
+                EndDate = FFilterEndDatePicker.Checked ? FFilterEndDatePicker.Value.Date : (DateTime?)null,
+                StoreId = FFilterStoreIdText.Text.Trim(),
+                ProductId = FFilterProductIdText.Text.Trim()
             };
         }
 
         internal SaleProductOption GetSelectedProductOption() {
-            return _productCombo.SelectedItem as SaleProductOption;
+            return FProductCombo.SelectedItem as SaleProductOption;
         }
 
         internal void SetProductOptions(IReadOnlyCollection<SaleProductOption> options, string selectedProductId) {
             var selectedId = string.IsNullOrWhiteSpace(selectedProductId) ? string.Empty : selectedProductId;
-            _productCombo.DataSource = null;
-            _productCombo.DisplayMember = "DisplayText";
-            _productCombo.ValueMember = "ProductId";
-            _productCombo.DataSource = options.ToList();
+            FProductCombo.DataSource = null;
+            FProductCombo.DisplayMember = "DisplayText";
+            FProductCombo.ValueMember = "ProductId";
+            FProductCombo.DataSource = options.ToList();
 
             if (!string.IsNullOrWhiteSpace(selectedId)) {
-                _productCombo.SelectedValue = selectedId;
+                FProductCombo.SelectedValue = selectedId;
             }
 
-            if (_productCombo.Items.Count == 0) {
-                _productCombo.SelectedIndex = -1;
+            if (FProductCombo.Items.Count == 0) {
+                FProductCombo.SelectedIndex = -1;
             }
         }
 
         internal void SetRows(IReadOnlyCollection<SalesViewRow> rows) {
-            _grid.DataSource = null;
-            _grid.DataSource = rows.ToList();
-            DataGridHeaderMapper.Apply(_grid, HeaderMap);
+            FGrid.DataSource = null;
+            FGrid.DataSource = rows.ToList();
+            DataGridHeaderMapper.Apply(FGrid, FHeaderMap);
         }
 
         internal void ClearInput() {
-            _saleDatePicker.Value = DateTime.Today;
-            _storeIdText.Text = string.Empty;
-            _quantityText.Text = string.Empty;
-            if (_productCombo.Items.Count > 0) {
-                _productCombo.SelectedIndex = 0;
+            FSaleDatePicker.Value = DateTime.Today;
+            FStoreIdText.Text = string.Empty;
+            FQuantityText.Text = string.Empty;
+            if (FProductCombo.Items.Count > 0) {
+                FProductCombo.SelectedIndex = 0;
             }
         }
 
         internal void ClearFilter() {
-            _filterStartDatePicker.Checked = false;
-            _filterEndDatePicker.Checked = false;
-            _filterStoreIdText.Text = string.Empty;
-            _filterProductIdText.Text = string.Empty;
+            FFilterStartDatePicker.Checked = false;
+            FFilterEndDatePicker.Checked = false;
+            FFilterStoreIdText.Text = string.Empty;
+            FFilterProductIdText.Text = string.Empty;
         }
 
         internal void SetUnitPriceLabel(string text) {
-            _unitPriceLabel.Text = text;
+            FUnitPriceLabel.Text = text;
         }
 
         internal void SetAmountPreviewLabel(string text) {
-            _amountPreviewLabel.Text = text;
+            FAmountPreviewLabel.Text = text;
         }
 
         private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {

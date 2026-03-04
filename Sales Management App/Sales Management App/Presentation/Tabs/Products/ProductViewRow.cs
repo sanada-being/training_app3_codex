@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Products {
+    /// <summary>
+    /// ProductViewRow クラスです。
+    /// </summary>
     internal sealed class ProductViewRow {
         /// <summary>
         /// 商品IDを取得または設定します。

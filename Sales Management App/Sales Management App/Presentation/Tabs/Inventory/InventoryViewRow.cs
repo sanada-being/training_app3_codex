@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Inventory {
+    /// <summary>
+    /// InventoryViewRow クラスです。
+    /// </summary>
     internal sealed class InventoryViewRow {
         /// <summary>
         /// 店舗IDを取得または設定します。

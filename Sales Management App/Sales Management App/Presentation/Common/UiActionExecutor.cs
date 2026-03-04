@@ -2,20 +2,23 @@ using System;
 using SalesManagementApp.Core.Application.Exceptions;
 
 namespace Sales_Management_App.Presentation.Common {
+    /// <summary>
+    /// UiActionExecutor クラスです。
+    /// </summary>
     internal sealed class UiActionExecutor {
-        private readonly UiMessageService _messageService;
+        private readonly UiMessageService FMessageService;
 
         internal UiActionExecutor(UiMessageService messageService) {
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
+            FMessageService = messageService ?? throw new ArgumentNullException("messageService");
         }
 
         internal void Execute(Action action) {
             try {
                 action.Invoke();
             } catch (DomainValidationException ex) {
-                _messageService.ShowWarning(ex.Message, "入力エラー");
+                FMessageService.ShowWarning(ex.Message, "入力エラー");
             } catch (Exception ex) {
-                _messageService.ShowError(ex);
+                FMessageService.ShowError(ex);
             }
         }
     }

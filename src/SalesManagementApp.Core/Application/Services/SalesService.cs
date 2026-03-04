@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
@@ -7,10 +7,16 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// SalesService クラスです。
+/// </summary>
 public class SalesService
 {
-    private readonly InventoryHistoryService _historyService;
+    private readonly InventoryHistoryService FHistoryService;
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SalesService()
         : this(new InventoryHistoryService())
     {
@@ -18,9 +24,12 @@ public class SalesService
 
     internal SalesService(InventoryHistoryService historyService)
     {
-        _historyService = historyService;
+        FHistoryService = historyService;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<SaleRecord> GetAll(IReadOnlyCollection<SaleRecord> sales)
     {
         return sales
@@ -30,6 +39,9 @@ public class SalesService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<SaleRecord> GetFiltered(
         IReadOnlyCollection<SaleRecord> sales,
         DateTime? startDate,
@@ -75,6 +87,9 @@ public class SalesService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecord RegisterSale(
         ICollection<SaleRecord> sales,
         IReadOnlyCollection<Product> products,
@@ -84,6 +99,9 @@ public class SalesService
         return RegisterSale(sales, products, inventories, input, null, default);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecord RegisterSale(
         ICollection<SaleRecord> sales,
         IReadOnlyCollection<Product> products,
@@ -127,7 +145,7 @@ public class SalesService
         if (histories is not null)
         {
             var timestamp = occurredAt == default ? DateTime.Now : occurredAt;
-            _historyService.Record(
+            FHistoryService.Record(
                 histories,
                 timestamp,
                 InventoryOperationType.Sale,

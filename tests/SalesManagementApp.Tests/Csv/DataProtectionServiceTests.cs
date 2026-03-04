@@ -6,45 +6,60 @@ using SalesManagementApp.Core.Infrastructure.DataProtection;
 
 namespace SalesManagementApp.Tests.Csv;
 
+/// <summary>
+/// DataProtectionServiceTests クラスです。
+/// </summary>
 public class DataProtectionServiceTests
 {
-    private string _workDir = string.Empty;
-    private DataProtectionService _service = null!;
+    private string FWorkDir = string.Empty;
+    private DataProtectionService FService = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _workDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(_workDir);
-        _service = new DataProtectionService();
+        FWorkDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(FWorkDir);
+        FService = new DataProtectionService();
     }
 
     [TearDown]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void TearDown()
     {
-        if (Directory.Exists(_workDir))
+        if (Directory.Exists(FWorkDir))
         {
-            Directory.Delete(_workDir, true);
+            Directory.Delete(FWorkDir, true);
         }
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CreateBackupIfExists_WhenFileDoesNotExist_ReturnsNull()
     {
-        var path = Path.Combine(_workDir, "missing.csv");
+        var path = Path.Combine(FWorkDir, "missing.csv");
 
-        var backup = _service.CreateBackupIfExists(path);
+        var backup = FService.CreateBackupIfExists(path);
 
         Assert.That(backup, Is.Null);
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RestoreLatestBackup_WhenNoBackupExists_ThrowsValidationException()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
 
         Assert.That(
-            () => _service.RestoreLatestBackup(path),
+            () => FService.RestoreLatestBackup(path),
             Throws.TypeOf<DomainValidationException>());
     }
 }

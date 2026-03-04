@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Sales_Management_App.Presentation.Common {
+    /// <summary>
+    /// DataGridHeaderMapper クラスです。
+    /// </summary>
     internal static class DataGridHeaderMapper {
         internal static void Apply(DataGridView grid, IReadOnlyDictionary<string, string> headers) {
             if (grid == null || headers == null) {

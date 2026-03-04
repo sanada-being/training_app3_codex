@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SalesManagementApp.Core.Application.Exceptions;
 using SalesManagementApp.Core.Application.Services;
@@ -15,28 +15,28 @@ namespace Sales_Management_App {
     /// 販売管理アプリケーションのメインフォームです。
     /// </summary>
     public partial class Form1 : Form {
-        private readonly ProductService _productService;
-        private readonly InventoryService _inventoryService;
-        private readonly InventoryHistoryService _inventoryHistoryService;
-        private readonly SalesService _salesService;
-        private readonly SalesAggregationService _salesAggregationService;
-        private readonly AppDataRepository _appDataRepository;
-        private readonly AppBootstrapper _appBootstrapper;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _uiActionExecutor;
+        private readonly ProductService FProductService;
+        private readonly InventoryService FInventoryService;
+        private readonly InventoryHistoryService FInventoryHistoryService;
+        private readonly SalesService FSalesService;
+        private readonly SalesAggregationService FSalesAggregationService;
+        private readonly AppDataRepository FAppDataRepository;
+        private readonly AppBootstrapper FAppBootstrapper;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FUiActionExecutor;
 
-        private readonly AppState _appState = new AppState();
+        private readonly AppState FAppState = new AppState();
 
-        private ProductsView _productsView;
-        private ProductsController _productsController;
-        private InventoryView _inventoryView;
-        private InventoryController _inventoryController;
-        private InventoryHistoryView _inventoryHistoryView;
-        private InventoryHistoryController _inventoryHistoryController;
-        private SalesView _salesView;
-        private SalesController _salesController;
-        private AggregationView _aggregationView;
-        private AggregationController _aggregationController;
+        private ProductsView FProductsView;
+        private ProductsController FProductsController;
+        private InventoryView FInventoryView;
+        private InventoryController FInventoryController;
+        private InventoryHistoryView FInventoryHistoryView;
+        private InventoryHistoryController FInventoryHistoryController;
+        private SalesView FSalesView;
+        private SalesController FSalesController;
+        private AggregationView FAggregationView;
+        private AggregationController FAggregationController;
 
         /// <summary>
         /// 依存関係を既定設定で初期化してフォームを生成します。
@@ -50,15 +50,15 @@ namespace Sales_Management_App {
                 throw new ArgumentNullException("dependencies");
             }
 
-            _productService = dependencies.ProductService;
-            _inventoryService = dependencies.InventoryService;
-            _inventoryHistoryService = dependencies.InventoryHistoryService;
-            _salesService = dependencies.SalesService;
-            _salesAggregationService = dependencies.SalesAggregationService;
-            _appDataRepository = dependencies.AppDataRepository;
-            _appBootstrapper = dependencies.AppBootstrapper;
-            _messageService = new UiMessageService();
-            _uiActionExecutor = new UiActionExecutor(_messageService);
+            FProductService = dependencies.ProductService;
+            FInventoryService = dependencies.InventoryService;
+            FInventoryHistoryService = dependencies.InventoryHistoryService;
+            FSalesService = dependencies.SalesService;
+            FSalesAggregationService = dependencies.SalesAggregationService;
+            FAppDataRepository = dependencies.AppDataRepository;
+            FAppBootstrapper = dependencies.AppBootstrapper;
+            FMessageService = new UiMessageService();
+            FUiActionExecutor = new UiActionExecutor(FMessageService);
 
             InitializeComponent();
             InitializeShell();
@@ -68,75 +68,75 @@ namespace Sales_Management_App {
         }
 
         private void InitializeControllers() {
-            _productsController = new ProductsController(
-                _productsView,
-                _productService,
-                _appState,
-                _messageService,
-                _uiActionExecutor,
+            FProductsController = new ProductsController(
+                FProductsView,
+                FProductService,
+                FAppState,
+                FMessageService,
+                FUiActionExecutor,
                 HandleProductsChanged);
-            _productsController.Initialize();
+            FProductsController.Initialize();
 
-            _inventoryController = new InventoryController(
-                _inventoryView,
-                _inventoryService,
-                _appDataRepository,
-                _appState,
-                _messageService,
-                _uiActionExecutor,
+            FInventoryController = new InventoryController(
+                FInventoryView,
+                FInventoryService,
+                FAppDataRepository,
+                FAppState,
+                FMessageService,
+                FUiActionExecutor,
                 HandleInventoryUpdated);
-            _inventoryController.Initialize();
+            FInventoryController.Initialize();
 
-            _inventoryHistoryController = new InventoryHistoryController(
-                _inventoryHistoryView,
-                _inventoryHistoryService,
-                _appState,
-                _uiActionExecutor);
-            _inventoryHistoryController.Initialize();
+            FInventoryHistoryController = new InventoryHistoryController(
+                FInventoryHistoryView,
+                FInventoryHistoryService,
+                FAppState,
+                FUiActionExecutor);
+            FInventoryHistoryController.Initialize();
 
-            _salesController = new SalesController(
-                _salesView,
-                _productService,
-                _salesService,
-                _appDataRepository,
-                _appState,
-                _messageService,
-                _uiActionExecutor,
+            FSalesController = new SalesController(
+                FSalesView,
+                FProductService,
+                FSalesService,
+                FAppDataRepository,
+                FAppState,
+                FMessageService,
+                FUiActionExecutor,
                 HandleSalesRegistered);
-            _salesController.Initialize();
+            FSalesController.Initialize();
 
-            _aggregationController = new AggregationController(
-                _aggregationView,
-                _salesAggregationService,
-                _appState,
-                _messageService,
-                _uiActionExecutor);
-            _aggregationController.Initialize();
+            FAggregationController = new AggregationController(
+                FAggregationView,
+                FSalesAggregationService,
+                FAppState,
+                FMessageService,
+                FUiActionExecutor);
+            FAggregationController.Initialize();
         }
 
         private void InitializeViewsFromState() {
-            _productsController.Refresh();
-            _inventoryController.Refresh();
-            _inventoryHistoryController.Refresh();
-            _salesController.RefreshProductOptions();
-            _salesController.RefreshGrid();
-            _aggregationController.Reset();
-            _salesController.UpdatePricePreview();
+            FProductsController.Refresh();
+            FInventoryController.Refresh();
+            FInventoryHistoryController.Refresh();
+            FSalesController.RefreshProductOptions();
+            FSalesController.RefreshGrid();
+            FAggregationController.Reset();
+            FSalesController.UpdatePricePreview();
         }
 
         private void HandleProductsChanged() {
-            _salesController.RefreshProductOptions();
-            _salesController.RefreshGrid();
-            _salesController.UpdatePricePreview();
+            FSalesController.RefreshProductOptions();
+            FSalesController.RefreshGrid();
+            FSalesController.UpdatePricePreview();
         }
 
         private void HandleInventoryUpdated() {
-            _inventoryHistoryController.Refresh();
+            FInventoryHistoryController.Refresh();
         }
 
         private void HandleSalesRegistered() {
-            _inventoryController.Refresh();
-            _inventoryHistoryController.Refresh();
+            FInventoryController.Refresh();
+            FInventoryHistoryController.Refresh();
         }
 
         private void InitializeShell() {
@@ -155,55 +155,55 @@ namespace Sales_Management_App {
 
         private TabPage CreateProductTab() {
             var tab = new TabPage("商品管理");
-            _productsView = new ProductsView();
-            tab.Controls.Add(_productsView);
+            FProductsView = new ProductsView();
+            tab.Controls.Add(FProductsView);
             return tab;
         }
 
         private TabPage CreateInventoryTab() {
             var tab = new TabPage("在庫管理");
-            _inventoryView = new InventoryView();
-            tab.Controls.Add(_inventoryView);
+            FInventoryView = new InventoryView();
+            tab.Controls.Add(FInventoryView);
             return tab;
         }
 
         private TabPage CreateSalesTab() {
             var tab = new TabPage("売上登録");
-            _salesView = new SalesView();
-            tab.Controls.Add(_salesView);
+            FSalesView = new SalesView();
+            tab.Controls.Add(FSalesView);
             return tab;
         }
 
         private TabPage CreateInventoryHistoryTab() {
             var tab = new TabPage("在庫履歴");
-            _inventoryHistoryView = new InventoryHistoryView();
-            tab.Controls.Add(_inventoryHistoryView);
+            FInventoryHistoryView = new InventoryHistoryView();
+            tab.Controls.Add(FInventoryHistoryView);
             return tab;
         }
 
         private TabPage CreateAggregationTab() {
             var tab = new TabPage("売上集計");
-            _aggregationView = new AggregationView();
-            tab.Controls.Add(_aggregationView);
+            FAggregationView = new AggregationView();
+            tab.Controls.Add(FAggregationView);
             return tab;
         }
 
         private void LoadInitialDataFromRepositoryRoot() {
             try {
-                var loaded = _appBootstrapper.LoadFromBaseDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                _appState.Products = loaded.Products;
-                _appState.Inventories = loaded.Inventories;
-                _appState.InventoryHistories = loaded.InventoryHistories;
-                _appState.Sales = loaded.Sales;
-                _appState.RepositoryRootPath = loaded.RepositoryRootPath;
-                _appState.ProductsPath = loaded.ProductsPath;
-                _appState.InventoryPath = loaded.InventoryPath;
-                _appState.SalesPath = loaded.SalesPath;
-                _appState.InventoryHistoryPath = loaded.InventoryHistoryPath;
+                var loaded = FAppBootstrapper.LoadFromBaseDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                FAppState.Products = loaded.Products;
+                FAppState.Inventories = loaded.Inventories;
+                FAppState.InventoryHistories = loaded.InventoryHistories;
+                FAppState.Sales = loaded.Sales;
+                FAppState.RepositoryRootPath = loaded.RepositoryRootPath;
+                FAppState.ProductsPath = loaded.ProductsPath;
+                FAppState.InventoryPath = loaded.InventoryPath;
+                FAppState.SalesPath = loaded.SalesPath;
+                FAppState.InventoryHistoryPath = loaded.InventoryHistoryPath;
             } catch (DomainValidationException ex) {
-                _messageService.ShowWarning(string.Format("初期データの読み込みに失敗しました: {0}", ex.Message), "入力エラー");
+                FMessageService.ShowWarning(string.Format("初期データの読み込みに失敗しました: {0}", ex.Message), "入力エラー");
             } catch (Exception ex) {
-                _messageService.ShowError(ex);
+                FMessageService.ShowError(ex);
             }
         }
 

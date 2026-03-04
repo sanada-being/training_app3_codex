@@ -4,8 +4,14 @@ using SalesManagementApp.Core.Application.Validation;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// InventoryStockCalculator クラスです。
+/// </summary>
 public class InventoryStockCalculator
 {
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public int CalculateAfterInbound(int currentStock, int inboundQuantity)
     {
         ValidationGuard.RequireNonNegative(currentStock, "在庫数");
@@ -21,6 +27,9 @@ public class InventoryStockCalculator
         }
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public int CalculateAfterOutbound(int currentStock, int outboundQuantity)
     {
         ValidationGuard.RequireNonNegative(currentStock, "在庫数");

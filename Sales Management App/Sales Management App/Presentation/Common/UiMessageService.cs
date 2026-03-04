@@ -2,6 +2,9 @@ using System;
 using System.Windows.Forms;
 
 namespace Sales_Management_App.Presentation.Common {
+    /// <summary>
+    /// UiMessageService クラスです。
+    /// </summary>
     internal sealed class UiMessageService {
         internal void ShowInfo(string message, string title = "完了") {
             MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);

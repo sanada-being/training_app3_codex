@@ -8,16 +8,22 @@ using SalesManagementApp.Tests.TestHelpers;
 
 namespace SalesManagementApp.Tests.Sales;
 
+/// <summary>
+/// SalesAggregationServiceTests クラスです。
+/// </summary>
 public class SalesAggregationServiceTests
 {
-    private SalesAggregationService _service = null!;
-    private List<SalesManagementApp.Core.Domain.Entities.SaleRecord> _sales = null!;
+    private SalesAggregationService FService = null!;
+    private List<SalesManagementApp.Core.Domain.Entities.SaleRecord> FSales = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _service = new SalesAggregationService();
-        _sales = new List<SalesManagementApp.Core.Domain.Entities.SaleRecord>
+        FService = new SalesAggregationService();
+        FSales = new List<SalesManagementApp.Core.Domain.Entities.SaleRecord>
         {
             new SaleRecordBuilder().WithDate(new DateTime(2026, 3, 1)).WithStoreId("S001").WithProductId("P001").WithQuantity(2).WithSalesAmount(200).Build(),
             new SaleRecordBuilder().WithDate(new DateTime(2026, 3, 2)).WithStoreId("S001").WithProductId("P001").WithQuantity(1).WithSalesAmount(100).Build(),
@@ -28,9 +34,12 @@ public class SalesAggregationServiceTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void FilterByPeriod_IncludesBoundaryDates()
     {
-        var result = _service.FilterByPeriod(_sales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var result = FService.FilterByPeriod(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
 
         Assert.That(result.Count, Is.EqualTo(4));
         Assert.That(result.First().SaleDate.Date, Is.EqualTo(new DateTime(2026, 3, 1)));
@@ -38,9 +47,12 @@ public class SalesAggregationServiceTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void GetProductSummaries_ReturnsAmountAndQuantityByProduct()
     {
-        var summaries = _service.GetProductSummaries(_sales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var summaries = FService.GetProductSummaries(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
         var p001 = summaries.Single(s => s.ProductId == "P001");
         var p002 = summaries.Single(s => s.ProductId == "P002");
 
@@ -51,9 +63,12 @@ public class SalesAggregationServiceTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void GetWeeklySummaries_ReturnsWeeklyTotals()
     {
-        var summaries = _service.GetWeeklySummaries(_sales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var summaries = FService.GetWeeklySummaries(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
 
         Assert.That(summaries.Count, Is.EqualTo(2));
         Assert.That(summaries[0].TotalSalesAmount, Is.EqualTo(200));
@@ -61,18 +76,24 @@ public class SalesAggregationServiceTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void GetTotalSalesAmount_ReturnsPeriodAmount()
     {
-        var total = _service.GetTotalSalesAmount(_sales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var total = FService.GetTotalSalesAmount(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
 
         Assert.That(total, Is.EqualTo(1050));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void FilterByPeriod_WhenStartDateIsAfterEndDate_ThrowsValidationException()
     {
         Assert.That(
-            () => _service.FilterByPeriod(_sales, new DateTime(2026, 3, 9), new DateTime(2026, 3, 8)),
+            () => FService.FilterByPeriod(FSales, new DateTime(2026, 3, 9), new DateTime(2026, 3, 8)),
             Throws.TypeOf<DomainValidationException>());
     }
 }

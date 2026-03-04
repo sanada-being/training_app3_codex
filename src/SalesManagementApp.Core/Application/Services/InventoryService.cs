@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
@@ -7,12 +7,18 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// InventoryService クラスです。
+/// </summary>
 public class InventoryService
 {
-    private readonly object _syncRoot = new();
-    private readonly InventoryStockCalculator _stockCalculator;
-    private readonly InventoryHistoryService _historyService;
+    private readonly object FSyncRoot = new();
+    private readonly InventoryStockCalculator FStockCalculator;
+    private readonly InventoryHistoryService FHistoryService;
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public InventoryService()
         : this(new InventoryStockCalculator(), new InventoryHistoryService())
     {
@@ -22,20 +28,29 @@ public class InventoryService
         InventoryStockCalculator stockCalculator,
         InventoryHistoryService historyService)
     {
-        _stockCalculator = stockCalculator;
-        _historyService = historyService;
+        FStockCalculator = stockCalculator;
+        FHistoryService = historyService;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryRecord> GetAll(IReadOnlyCollection<InventoryRecord> records)
     {
         return records.OrderBy(r => r.StoreId).ThenBy(r => r.ProductId).ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryRecord> GetReorderTargets(IReadOnlyCollection<InventoryRecord> records, int threshold = 5)
     {
         return records.Where(r => r.Stock <= threshold).OrderBy(r => r.StoreId).ThenBy(r => r.ProductId).ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryRecord> GetFiltered(
         IReadOnlyCollection<InventoryRecord> records,
         string? storeIdFilter,
@@ -59,11 +74,17 @@ public class InventoryService
         return query.OrderBy(r => r.StoreId).ThenBy(r => r.ProductId).ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void AddStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
         AddStock(records, storeId, productId, quantity, null, default);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void AddStock(
         ICollection<InventoryRecord> records,
         string storeId,
@@ -76,19 +97,25 @@ public class InventoryService
         var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
         ValidationGuard.RequirePositive(quantity, "Quantity");
 
-        lock (_syncRoot)
+        lock (FSyncRoot)
         {
             var target = FindOrCreate(records, normalizedStoreId, normalizedProductId);
-            target.Stock = _stockCalculator.CalculateAfterInbound(target.Stock, quantity);
+            target.Stock = FStockCalculator.CalculateAfterInbound(target.Stock, quantity);
             RecordHistory(histories, occurredAt, InventoryOperationType.Inbound, normalizedStoreId, normalizedProductId, quantity, target.Stock);
         }
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RemoveStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
         RemoveStock(records, storeId, productId, quantity, null, default);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RemoveStock(
         ICollection<InventoryRecord> records,
         string storeId,
@@ -101,7 +128,7 @@ public class InventoryService
         var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
         ValidationGuard.RequirePositive(quantity, "Quantity");
 
-        lock (_syncRoot)
+        lock (FSyncRoot)
         {
             var target = records.FirstOrDefault(r => r.StoreId == normalizedStoreId && r.ProductId == normalizedProductId);
             if (target is null)
@@ -109,7 +136,7 @@ public class InventoryService
                 throw new DomainValidationException("対象在庫が存在しません。");
             }
 
-            target.Stock = _stockCalculator.CalculateAfterOutbound(target.Stock, quantity);
+            target.Stock = FStockCalculator.CalculateAfterOutbound(target.Stock, quantity);
             RecordHistory(histories, occurredAt, InventoryOperationType.Outbound, normalizedStoreId, normalizedProductId, quantity, target.Stock);
         }
     }
@@ -147,7 +174,7 @@ public class InventoryService
         }
 
         var timestamp = occurredAt == default ? DateTime.Now : occurredAt;
-        _historyService.Record(
+        FHistoryService.Record(
             histories,
             timestamp,
             operationType,

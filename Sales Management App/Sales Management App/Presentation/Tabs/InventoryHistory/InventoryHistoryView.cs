@@ -6,8 +6,11 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
+    /// <summary>
+    /// InventoryHistoryView クラスです。
+    /// </summary>
     internal sealed class InventoryHistoryView : UserControl {
-        private static readonly IReadOnlyDictionary<string, string> HeaderMap =
+        private static readonly IReadOnlyDictionary<string, string> FHeaderMap =
             new Dictionary<string, string> {
                 { "OccurredAt", "日時" },
                 { "OperationType", "操作種別" },
@@ -18,12 +21,12 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 { "Result", "実行結果" }
             };
 
-        private readonly DataGridView _grid;
-        private readonly DateTimePicker _startDatePicker;
-        private readonly DateTimePicker _endDatePicker;
-        private readonly ComboBox _operationTypeCombo;
-        private readonly TextBox _storeIdText;
-        private readonly TextBox _productIdText;
+        private readonly DataGridView FGrid;
+        private readonly DateTimePicker FStartDatePicker;
+        private readonly DateTimePicker FEndDatePicker;
+        private readonly ComboBox FOperationTypeCombo;
+        private readonly TextBox FStoreIdText;
+        private readonly TextBox FProductIdText;
 
         internal event EventHandler FilterRequested;
         internal event EventHandler FilterClearRequested;
@@ -57,7 +60,7 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _startDatePicker = new DateTimePicker {
+            FStartDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Custom,
                 CustomFormat = "yyyy/MM/dd HH:mm:ss",
@@ -65,14 +68,14 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 Checked = false
             };
             filterPanel.Controls.Add(startLabel, 0, 0);
-            filterPanel.Controls.Add(_startDatePicker, 1, 0);
+            filterPanel.Controls.Add(FStartDatePicker, 1, 0);
 
             var endLabel = new Label {
                 Text = "終了日時",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _endDatePicker = new DateTimePicker {
+            FEndDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Custom,
                 CustomFormat = "yyyy/MM/dd HH:mm:ss",
@@ -80,22 +83,22 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 Checked = false
             };
             filterPanel.Controls.Add(endLabel, 2, 0);
-            filterPanel.Controls.Add(_endDatePicker, 3, 0);
+            filterPanel.Controls.Add(FEndDatePicker, 3, 0);
 
             var operationLabel = new Label {
                 Text = "操作種別",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _operationTypeCombo = new ComboBox {
+            FOperationTypeCombo = new ComboBox {
                 Dock = DockStyle.Fill,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
             filterPanel.Controls.Add(operationLabel, 4, 0);
-            filterPanel.Controls.Add(_operationTypeCombo, 5, 0);
+            filterPanel.Controls.Add(FOperationTypeCombo, 5, 0);
 
-            _storeIdText = AddLabeledTextBox(filterPanel, "店舗ID", 0, 1);
-            _productIdText = AddLabeledTextBox(filterPanel, "商品ID", 2, 1);
+            FStoreIdText = AddLabeledTextBox(filterPanel, "店舗ID", 0, 1);
+            FProductIdText = AddLabeledTextBox(filterPanel, "商品ID", 2, 1);
 
             var buttonFlow = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -107,7 +110,7 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
             filterPanel.Controls.Add(buttonFlow, 0, 2);
             filterPanel.SetColumnSpan(buttonFlow, 6);
 
-            _grid = new DataGridView {
+            FGrid = new DataGridView {
                 Dock = DockStyle.Fill,
                 ReadOnly = true,
                 AutoGenerateColumns = true,
@@ -116,7 +119,7 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
             };
 
             root.Controls.Add(filterPanel, 0, 0);
-            root.Controls.Add(_grid, 0, 1);
+            root.Controls.Add(FGrid, 0, 1);
             Controls.Add(root);
 
             BindOperationOptions();
@@ -124,26 +127,26 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
 
         internal InventoryHistoryFilterModel GetFilter() {
             return new InventoryHistoryFilterModel {
-                StartDateTime = _startDatePicker.Checked ? _startDatePicker.Value : (DateTime?)null,
-                EndDateTime = _endDatePicker.Checked ? _endDatePicker.Value : (DateTime?)null,
-                StoreId = _storeIdText.Text.Trim(),
-                ProductId = _productIdText.Text.Trim(),
+                StartDateTime = FStartDatePicker.Checked ? FStartDatePicker.Value : (DateTime?)null,
+                EndDateTime = FEndDatePicker.Checked ? FEndDatePicker.Value : (DateTime?)null,
+                StoreId = FStoreIdText.Text.Trim(),
+                ProductId = FProductIdText.Text.Trim(),
                 OperationType = GetSelectedOperationType()
             };
         }
 
         internal void SetRows(IReadOnlyCollection<InventoryHistoryViewRow> rows) {
-            _grid.DataSource = null;
-            _grid.DataSource = rows.ToList();
-            DataGridHeaderMapper.Apply(_grid, HeaderMap);
+            FGrid.DataSource = null;
+            FGrid.DataSource = rows.ToList();
+            DataGridHeaderMapper.Apply(FGrid, FHeaderMap);
         }
 
         internal void ClearFilter() {
-            _startDatePicker.Checked = false;
-            _endDatePicker.Checked = false;
-            _storeIdText.Text = string.Empty;
-            _productIdText.Text = string.Empty;
-            _operationTypeCombo.SelectedIndex = 0;
+            FStartDatePicker.Checked = false;
+            FEndDatePicker.Checked = false;
+            FStoreIdText.Text = string.Empty;
+            FProductIdText.Text = string.Empty;
+            FOperationTypeCombo.SelectedIndex = 0;
         }
 
         private void BindOperationOptions() {
@@ -154,15 +157,15 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 new InventoryHistoryOperationFilterOption(InventoryOperationType.Sale.ToString(), "売上連動")
             };
 
-            _operationTypeCombo.DataSource = null;
-            _operationTypeCombo.DisplayMember = "Label";
-            _operationTypeCombo.ValueMember = "Value";
-            _operationTypeCombo.DataSource = options;
-            _operationTypeCombo.SelectedIndex = 0;
+            FOperationTypeCombo.DataSource = null;
+            FOperationTypeCombo.DisplayMember = "Label";
+            FOperationTypeCombo.ValueMember = "Value";
+            FOperationTypeCombo.DataSource = options;
+            FOperationTypeCombo.SelectedIndex = 0;
         }
 
         private InventoryOperationType? GetSelectedOperationType() {
-            var option = _operationTypeCombo.SelectedItem as InventoryHistoryOperationFilterOption;
+            var option = FOperationTypeCombo.SelectedItem as InventoryHistoryOperationFilterOption;
             if (option == null || string.IsNullOrWhiteSpace(option.Value)) {
                 return null;
             }

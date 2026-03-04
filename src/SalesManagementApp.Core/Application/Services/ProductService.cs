@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +8,22 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// ProductService クラスです。
+/// </summary>
 public class ProductService
 {
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<Product> GetAll(IReadOnlyCollection<Product> products)
     {
         return products.OrderBy(p => p.ProductId).ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<Product> GetFiltered(
         IReadOnlyCollection<Product> products,
         string? productIdFilter,
@@ -45,6 +54,9 @@ public class ProductService
         return query.OrderBy(p => p.ProductId).ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Register(ICollection<Product> products, Product input)
     {
         Validate(input);
@@ -64,6 +76,9 @@ public class ProductService
         products.Add(Clone(input));
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Update(ICollection<Product> products, Product input)
     {
         Validate(input);
@@ -87,6 +102,9 @@ public class ProductService
         target.Category = input.Category.Trim();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Delete(ICollection<Product> products, string productId)
     {
         var id = ValidationGuard.RequireNotEmpty(productId, "ProductId");
@@ -100,6 +118,9 @@ public class ProductService
         products.Remove(target);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Validate(Product product)
     {
         ValidationGuard.RequireNotEmpty(product.ProductId, "ProductId");

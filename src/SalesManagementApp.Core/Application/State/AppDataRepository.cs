@@ -6,10 +6,16 @@ using SalesManagementApp.Core.Infrastructure.Csv;
 
 namespace SalesManagementApp.Core.Application.State;
 
+/// <summary>
+/// AppDataRepository クラスです。
+/// </summary>
 public class AppDataRepository
 {
-    private readonly CsvDataStore _csvDataStore;
+    private readonly CsvDataStore FCsvDataStore;
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public AppDataRepository()
         : this(new CsvDataStore())
     {
@@ -17,29 +23,44 @@ public class AppDataRepository
 
     internal AppDataRepository(CsvDataStore csvDataStore)
     {
-        _csvDataStore = csvDataStore ?? throw new ArgumentNullException(nameof(csvDataStore));
+        FCsvDataStore = csvDataStore ?? throw new ArgumentNullException(nameof(csvDataStore));
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<Product> ReadProductsIfExists(string filePath)
     {
-        return File.Exists(filePath) ? _csvDataStore.ReadProducts(filePath) : Array.Empty<Product>();
+        return File.Exists(filePath) ? FCsvDataStore.ReadProducts(filePath) : Array.Empty<Product>();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryRecord> ReadInventoriesIfExists(string filePath)
     {
-        return File.Exists(filePath) ? _csvDataStore.ReadInventories(filePath) : Array.Empty<InventoryRecord>();
+        return File.Exists(filePath) ? FCsvDataStore.ReadInventories(filePath) : Array.Empty<InventoryRecord>();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<SaleRecord> ReadAndNormalizeSalesIfExists(string filePath, IReadOnlyCollection<Product> products)
     {
-        return File.Exists(filePath) ? _csvDataStore.ReadAndNormalizeSales(filePath, products) : Array.Empty<SaleRecord>();
+        return File.Exists(filePath) ? FCsvDataStore.ReadAndNormalizeSales(filePath, products) : Array.Empty<SaleRecord>();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistoriesIfExists(string filePath)
     {
-        return File.Exists(filePath) ? _csvDataStore.ReadInventoryHistories(filePath) : Array.Empty<InventoryHistoryRecord>();
+        return File.Exists(filePath) ? FCsvDataStore.ReadInventoryHistories(filePath) : Array.Empty<InventoryHistoryRecord>();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -47,6 +68,6 @@ public class AppDataRepository
             return;
         }
 
-        _csvDataStore.WriteInventoryHistories(filePath, records);
+        FCsvDataStore.WriteInventoryHistories(filePath, records);
     }
 }

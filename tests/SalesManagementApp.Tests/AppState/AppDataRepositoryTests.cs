@@ -8,42 +8,57 @@ using ProductEntity = SalesManagementApp.Core.Domain.Entities.Product;
 
 namespace SalesManagementApp.Tests.AppState;
 
+/// <summary>
+/// AppDataRepositoryTests クラスです。
+/// </summary>
 public class AppDataRepositoryTests
 {
-    private string _workDir = string.Empty;
-    private AppDataRepository _repository = null!;
+    private string FWorkDir = string.Empty;
+    private AppDataRepository FRepository = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _workDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(_workDir);
-        _repository = new AppDataRepository();
+        FWorkDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(FWorkDir);
+        FRepository = new AppDataRepository();
     }
 
     [TearDown]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void TearDown()
     {
-        if (Directory.Exists(_workDir))
+        if (Directory.Exists(FWorkDir))
         {
-            Directory.Delete(_workDir, true);
+            Directory.Delete(FWorkDir, true);
         }
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadProductsIfExists_WhenFileDoesNotExist_ReturnsEmpty()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
 
-        var result = _repository.ReadProductsIfExists(path);
+        var result = FRepository.ReadProductsIfExists(path);
 
         Assert.That(result, Is.Empty);
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadAndNormalizeSalesIfExists_WhenLegacyHeader_ReturnsSalesAndNormalizesCsv()
     {
-        var path = Path.Combine(_workDir, "sales.csv");
+        var path = Path.Combine(FWorkDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity",
@@ -54,7 +69,7 @@ public class AppDataRepositoryTests
             new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
         };
 
-        var result = _repository.ReadAndNormalizeSalesIfExists(path, products);
+        var result = FRepository.ReadAndNormalizeSalesIfExists(path, products);
 
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0].SalesAmount, Is.EqualTo(240));
@@ -63,9 +78,12 @@ public class AppDataRepositoryTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteInventoryHistories_WhenPathIsProvided_WritesCsv()
     {
-        var path = Path.Combine(_workDir, "inventory_history.csv");
+        var path = Path.Combine(FWorkDir, "inventory_history.csv");
         var records = new[]
         {
             new InventoryHistoryRecord
@@ -80,7 +98,7 @@ public class AppDataRepositoryTests
             }
         };
 
-        _repository.WriteInventoryHistories(path, records);
+        FRepository.WriteInventoryHistories(path, records);
 
         var reloaded = new CsvDataStore().ReadInventoryHistories(path);
         Assert.That(reloaded.Count, Is.EqualTo(1));

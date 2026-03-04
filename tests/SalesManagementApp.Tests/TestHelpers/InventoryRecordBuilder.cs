@@ -2,32 +2,47 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Tests.TestHelpers;
 
+/// <summary>
+/// InventoryRecordBuilder クラスです。
+/// </summary>
 public class InventoryRecordBuilder
 {
-    private readonly InventoryRecord _record = new()
+    private readonly InventoryRecord FRecord = new()
     {
         StoreId = "S001",
         ProductId = "P001",
         Stock = 10
     };
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public InventoryRecordBuilder WithStoreId(string value)
     {
-        _record.StoreId = value;
+        FRecord.StoreId = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public InventoryRecordBuilder WithProductId(string value)
     {
-        _record.ProductId = value;
+        FRecord.ProductId = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public InventoryRecordBuilder WithStock(int value)
     {
-        _record.Stock = value;
+        FRecord.Stock = value;
         return this;
     }
 
-    public InventoryRecord Build() => _record;
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
+    public InventoryRecord Build() => FRecord;
 }

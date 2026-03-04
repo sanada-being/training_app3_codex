@@ -3,6 +3,9 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Domain.Interfaces;
 
+/// <summary>
+/// インターフェイスです。
+/// </summary>
 public interface IInventoryRepository
 {
     IReadOnlyList<InventoryRecord> GetAll();

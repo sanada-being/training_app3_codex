@@ -6,16 +6,22 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Tests.InventoryHistory;
 
+/// <summary>
+/// InventoryHistoryServiceTests クラスです。
+/// </summary>
 public class InventoryHistoryServiceTests
 {
-    private InventoryHistoryService _service = null!;
-    private List<InventoryHistoryRecord> _histories = null!;
+    private InventoryHistoryService FService = null!;
+    private List<InventoryHistoryRecord> FHistories = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _service = new InventoryHistoryService();
-        _histories = new List<InventoryHistoryRecord>
+        FService = new InventoryHistoryService();
+        FHistories = new List<InventoryHistoryRecord>
         {
             new InventoryHistoryRecord
             {
@@ -51,10 +57,13 @@ public class InventoryHistoryServiceTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Record_WhenInputIsValid_AppendsHistory()
     {
-        _service.Record(
-            _histories,
+        FService.Record(
+            FHistories,
             new DateTime(2026, 3, 3, 10, 0, 0),
             InventoryOperationType.Inbound,
             "S001",
@@ -63,16 +72,19 @@ public class InventoryHistoryServiceTests
             12,
             "Success");
 
-        Assert.That(_histories.Count, Is.EqualTo(4));
-        Assert.That(_histories[3].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
-        Assert.That(_histories[3].ProductId, Is.EqualTo("P003"));
+        Assert.That(FHistories.Count, Is.EqualTo(4));
+        Assert.That(FHistories[3].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
+        Assert.That(FHistories[3].ProductId, Is.EqualTo("P003"));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Filter_WhenConditionsProvided_ReturnsMatchedRecords()
     {
-        var filtered = _service.Filter(
-            _histories,
+        var filtered = FService.Filter(
+            FHistories,
             new DateTime(2026, 3, 2, 0, 0, 0),
             new DateTime(2026, 3, 2, 23, 59, 59),
             "S001",

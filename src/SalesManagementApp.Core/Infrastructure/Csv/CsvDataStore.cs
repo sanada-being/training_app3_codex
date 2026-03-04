@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,16 +12,22 @@ using SalesManagementApp.Core.Infrastructure.DataProtection;
 
 namespace SalesManagementApp.Core.Infrastructure.Csv;
 
+/// <summary>
+/// CsvDataStore クラスです。
+/// </summary>
 public class CsvDataStore
 {
-    private const string ProductsHeader = "ProductId,ProductName,UnitPrice,Category";
-    private const string InventoryHeader = "StoreId,ProductId,Stock";
-    private const string SalesHeaderLegacy = "SaleDate,StoreId,ProductId,Quantity";
-    private const string SalesHeaderStandard = "SaleDate,StoreId,ProductId,Quantity,SalesAmount";
-    private const string InventoryHistoryHeader = "OccurredAt,OperationType,StoreId,ProductId,Quantity,ResultStock,Result";
+    private const string C_ProductsHeader = "ProductId,ProductName,UnitPrice,Category";
+    private const string C_InventoryHeader = "StoreId,ProductId,Stock";
+    private const string C_SalesHeaderLegacy = "SaleDate,StoreId,ProductId,Quantity";
+    private const string C_SalesHeaderStandard = "SaleDate,StoreId,ProductId,Quantity,SalesAmount";
+    private const string C_InventoryHistoryHeader = "OccurredAt,OperationType,StoreId,ProductId,Quantity,ResultStock,Result";
 
-    private readonly DataProtectionService _dataProtectionService;
+    private readonly DataProtectionService FDataProtectionService;
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public CsvDataStore()
         : this(new DataProtectionService())
     {
@@ -29,12 +35,15 @@ public class CsvDataStore
 
     internal CsvDataStore(DataProtectionService dataProtectionService)
     {
-        _dataProtectionService = dataProtectionService;
+        FDataProtectionService = dataProtectionService;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<Product> ReadProducts(string filePath)
     {
-        var rows = ReadDataRows(filePath, out _, ProductsHeader);
+        var rows = ReadDataRows(filePath, out _, C_ProductsHeader);
         var result = new List<Product>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -59,6 +68,9 @@ public class CsvDataStore
         return result;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task<IReadOnlyList<Product>> ReadProductsAsync(string filePath, CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>
@@ -68,9 +80,12 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryRecord> ReadInventories(string filePath)
     {
-        var rows = ReadDataRows(filePath, out _, InventoryHeader);
+        var rows = ReadDataRows(filePath, out _, C_InventoryHeader);
         var result = new List<InventoryRecord>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -89,6 +104,9 @@ public class CsvDataStore
         return result;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task<IReadOnlyList<InventoryRecord>> ReadInventoriesAsync(string filePath, CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>
@@ -98,9 +116,12 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistories(string filePath)
     {
-        var rows = ReadDataRows(filePath, out _, InventoryHistoryHeader);
+        var rows = ReadDataRows(filePath, out _, C_InventoryHistoryHeader);
         var result = new List<InventoryHistoryRecord>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -123,6 +144,9 @@ public class CsvDataStore
         return result;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task<IReadOnlyList<InventoryHistoryRecord>> ReadInventoryHistoriesAsync(
         string filePath,
         CancellationToken cancellationToken = default)
@@ -134,10 +158,13 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<SaleRecord> ReadSales(string filePath)
     {
-        var rows = ReadDataRows(filePath, out var header, SalesHeaderLegacy, SalesHeaderStandard);
-        var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
+        var rows = ReadDataRows(filePath, out var header, C_SalesHeaderLegacy, C_SalesHeaderStandard);
+        var hasSalesAmount = string.Equals(header, C_SalesHeaderStandard, StringComparison.Ordinal);
         var result = new List<SaleRecord>();
 
         for (var i = 0; i < rows.Count; i++)
@@ -160,6 +187,9 @@ public class CsvDataStore
         return result;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<SaleRecord> ReadAndNormalizeSales(string filePath, IReadOnlyCollection<Product> products)
     {
         if (products is null)
@@ -167,8 +197,8 @@ public class CsvDataStore
             throw new ArgumentNullException(nameof(products));
         }
 
-        var rows = ReadDataRows(filePath, out var header, SalesHeaderLegacy, SalesHeaderStandard);
-        var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
+        var rows = ReadDataRows(filePath, out var header, C_SalesHeaderLegacy, C_SalesHeaderStandard);
+        var hasSalesAmount = string.Equals(header, C_SalesHeaderStandard, StringComparison.Ordinal);
         var unitPriceMap = BuildUnitPriceMap(products);
         var result = new List<SaleRecord>();
 
@@ -209,6 +239,9 @@ public class CsvDataStore
         return result;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task<IReadOnlyList<SaleRecord>> ReadSalesAsync(string filePath, CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>
@@ -218,13 +251,19 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteProducts(string filePath, IEnumerable<Product> products)
     {
-        var lines = new List<string> { ProductsHeader };
+        var lines = new List<string> { C_ProductsHeader };
         lines.AddRange(products.Select(p => $"{p.ProductId},{p.ProductName},{p.UnitPrice},{p.Category}"));
         WriteAllLines(filePath, lines);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task WriteProductsAsync(string filePath, IEnumerable<Product> products, CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>
@@ -234,13 +273,19 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteInventories(string filePath, IEnumerable<InventoryRecord> records)
     {
-        var lines = new List<string> { InventoryHeader };
+        var lines = new List<string> { C_InventoryHeader };
         lines.AddRange(records.Select(r => $"{r.StoreId},{r.ProductId},{r.Stock}"));
         WriteAllLines(filePath, lines);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task WriteInventoriesAsync(string filePath, IEnumerable<InventoryRecord> records, CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>
@@ -250,14 +295,20 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
     {
-        var lines = new List<string> { InventoryHistoryHeader };
+        var lines = new List<string> { C_InventoryHistoryHeader };
         lines.AddRange(records.Select(r =>
             $"{r.OccurredAt:yyyy-MM-dd HH:mm:ss},{r.OperationType},{r.StoreId},{r.ProductId},{r.Quantity},{r.ResultStock},{r.Result}"));
         WriteAllLines(filePath, lines);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task WriteInventoryHistoriesAsync(
         string filePath,
         IEnumerable<InventoryHistoryRecord> records,
@@ -270,14 +321,20 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteSales(string filePath, IEnumerable<SaleRecord> records)
     {
-        var lines = new List<string> { SalesHeaderStandard };
+        var lines = new List<string> { C_SalesHeaderStandard };
         lines.AddRange(records.Select(r =>
             $"{r.SaleDate:yyyy-MM-dd},{r.StoreId},{r.ProductId},{r.Quantity},{r.SalesAmount}"));
         WriteAllLines(filePath, lines);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public Task WriteSalesAsync(string filePath, IEnumerable<SaleRecord> records, CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>
@@ -287,15 +344,21 @@ public class CsvDataStore
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<string> GetBackups(string filePath)
     {
-        return _dataProtectionService.GetBackupFiles(filePath);
+        return FDataProtectionService.GetBackupFiles(filePath);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RestoreLatestBackup(string filePath)
     {
-        _dataProtectionService.RestoreLatestBackup(filePath);
-        _dataProtectionService.WriteLog(filePath, "WARN", $"Restored from backup: {filePath}");
+        FDataProtectionService.RestoreLatestBackup(filePath);
+        FDataProtectionService.WriteLog(filePath, "WARN", $"Restored from backup: {filePath}");
     }
 
     private static Dictionary<string, int> BuildUnitPriceMap(IReadOnlyCollection<Product> products)
@@ -439,20 +502,20 @@ public class CsvDataStore
             Directory.CreateDirectory(directory);
         }
 
-        var backupPath = _dataProtectionService.CreateBackupIfExists(filePath);
+        var backupPath = FDataProtectionService.CreateBackupIfExists(filePath);
         if (!string.IsNullOrWhiteSpace(backupPath))
         {
-            _dataProtectionService.WriteLog(filePath, "INFO", $"Backup created: {backupPath}");
+            FDataProtectionService.WriteLog(filePath, "INFO", $"Backup created: {backupPath}");
         }
 
         try
         {
             File.WriteAllLines(filePath, lines, Encoding.UTF8);
-            _dataProtectionService.WriteLog(filePath, "INFO", $"Write succeeded: {filePath}");
+            FDataProtectionService.WriteLog(filePath, "INFO", $"Write succeeded: {filePath}");
         }
         catch (Exception ex)
         {
-            _dataProtectionService.WriteLog(filePath, "ERROR", $"Write failed: {filePath} / {ex.Message}");
+            FDataProtectionService.WriteLog(filePath, "ERROR", $"Write failed: {filePath} / {ex.Message}");
             throw;
         }
     }

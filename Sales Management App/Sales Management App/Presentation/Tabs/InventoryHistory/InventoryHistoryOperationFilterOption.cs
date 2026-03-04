@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
+    /// <summary>
+    /// InventoryHistoryOperationFilterOption クラスです。
+    /// </summary>
     internal sealed class InventoryHistoryOperationFilterOption {
         /// <summary>
         /// フィルタ選択肢を初期化します。

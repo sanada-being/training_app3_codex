@@ -1,8 +1,11 @@
 namespace SalesManagementApp.Tests.TestHelpers;
 
+/// <summary>
+/// ProductBuilder クラスです。
+/// </summary>
 public class ProductBuilder
 {
-    private readonly SalesManagementApp.Core.Domain.Entities.Product _product = new()
+    private readonly SalesManagementApp.Core.Domain.Entities.Product FProduct = new()
     {
         ProductId = "P001",
         ProductName = "Cola",
@@ -10,29 +13,44 @@ public class ProductBuilder
         Category = "Drink"
     };
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public ProductBuilder WithId(string value)
     {
-        _product.ProductId = value;
+        FProduct.ProductId = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public ProductBuilder WithName(string value)
     {
-        _product.ProductName = value;
+        FProduct.ProductName = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public ProductBuilder WithPrice(int value)
     {
-        _product.UnitPrice = value;
+        FProduct.UnitPrice = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public ProductBuilder WithCategory(string value)
     {
-        _product.Category = value;
+        FProduct.Category = value;
         return this;
     }
 
-    public SalesManagementApp.Core.Domain.Entities.Product Build() => _product;
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
+    public SalesManagementApp.Core.Domain.Entities.Product Build() => FProduct;
 }

@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
+    /// <summary>
+    /// InventoryHistoryViewRow クラスです。
+    /// </summary>
     internal sealed class InventoryHistoryViewRow {
         /// <summary>
         /// 発生日時の表示文字列を取得または設定します。

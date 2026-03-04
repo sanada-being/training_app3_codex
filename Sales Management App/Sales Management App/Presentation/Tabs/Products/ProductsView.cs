@@ -5,8 +5,11 @@ using System.Windows.Forms;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Products {
+    /// <summary>
+    /// ProductsView クラスです。
+    /// </summary>
     internal sealed class ProductsView : UserControl {
-        private static readonly IReadOnlyDictionary<string, string> HeaderMap =
+        private static readonly IReadOnlyDictionary<string, string> FHeaderMap =
             new Dictionary<string, string> {
                 { "ProductId", "商品ID" },
                 { "ProductName", "商品名" },
@@ -14,14 +17,14 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
                 { "Category", "区分" }
             };
 
-        private readonly DataGridView _grid;
-        private readonly TextBox _productIdText;
-        private readonly TextBox _productNameText;
-        private readonly TextBox _unitPriceText;
-        private readonly TextBox _categoryText;
-        private readonly TextBox _filterProductIdText;
-        private readonly TextBox _filterProductNameText;
-        private readonly TextBox _filterCategoryText;
+        private readonly DataGridView FGrid;
+        private readonly TextBox FProductIdText;
+        private readonly TextBox FProductNameText;
+        private readonly TextBox FUnitPriceText;
+        private readonly TextBox FCategoryText;
+        private readonly TextBox FFilterProductIdText;
+        private readonly TextBox FFilterProductNameText;
+        private readonly TextBox FFilterCategoryText;
 
         internal event EventHandler RegisterRequested;
         internal event EventHandler UpdateRequested;
@@ -54,10 +57,10 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
             inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
             inputPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
 
-            _productIdText = AddLabeledTextBox(inputPanel, "商品ID", 0, 0);
-            _productNameText = AddLabeledTextBox(inputPanel, "商品名", 2, 0);
-            _unitPriceText = AddLabeledTextBox(inputPanel, "単価", 0, 1);
-            _categoryText = AddLabeledTextBox(inputPanel, "区分", 2, 1);
+            FProductIdText = AddLabeledTextBox(inputPanel, "商品ID", 0, 0);
+            FProductNameText = AddLabeledTextBox(inputPanel, "商品名", 2, 0);
+            FUnitPriceText = AddLabeledTextBox(inputPanel, "単価", 0, 1);
+            FCategoryText = AddLabeledTextBox(inputPanel, "区分", 2, 1);
 
             var buttonFlow = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -82,9 +85,9 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
             filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
             filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
 
-            _filterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 0, 0);
-            _filterProductNameText = AddLabeledTextBox(filterPanel, "絞込 商品名", 2, 0);
-            _filterCategoryText = AddLabeledTextBox(filterPanel, "絞込 区分", 0, 1);
+            FFilterProductIdText = AddLabeledTextBox(filterPanel, "絞込 商品ID", 0, 0);
+            FFilterProductNameText = AddLabeledTextBox(filterPanel, "絞込 商品名", 2, 0);
+            FFilterCategoryText = AddLabeledTextBox(filterPanel, "絞込 区分", 0, 1);
 
             var filterButtonFlow = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -96,48 +99,48 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
             filterPanel.Controls.Add(filterButtonFlow, 2, 1);
             filterPanel.SetColumnSpan(filterButtonFlow, 2);
 
-            _grid = new DataGridView {
+            FGrid = new DataGridView {
                 Dock = DockStyle.Fill,
                 ReadOnly = true,
                 AutoGenerateColumns = true,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 MultiSelect = false
             };
-            _grid.SelectionChanged += delegate { SelectedProductChanged?.Invoke(this, EventArgs.Empty); };
+            FGrid.SelectionChanged += delegate { SelectedProductChanged?.Invoke(this, EventArgs.Empty); };
 
             root.Controls.Add(inputPanel, 0, 0);
             root.Controls.Add(filterPanel, 0, 1);
-            root.Controls.Add(_grid, 0, 2);
+            root.Controls.Add(FGrid, 0, 2);
             Controls.Add(root);
         }
 
         internal ProductInputModel GetInput() {
             return new ProductInputModel {
-                ProductId = _productIdText.Text.Trim(),
-                ProductName = _productNameText.Text.Trim(),
-                UnitPriceText = _unitPriceText.Text.Trim(),
-                Category = _categoryText.Text.Trim()
+                ProductId = FProductIdText.Text.Trim(),
+                ProductName = FProductNameText.Text.Trim(),
+                UnitPriceText = FUnitPriceText.Text.Trim(),
+                Category = FCategoryText.Text.Trim()
             };
         }
 
         internal ProductFilterModel GetFilter() {
             return new ProductFilterModel {
-                ProductId = _filterProductIdText.Text.Trim(),
-                ProductName = _filterProductNameText.Text.Trim(),
-                Category = _filterCategoryText.Text.Trim()
+                ProductId = FFilterProductIdText.Text.Trim(),
+                ProductName = FFilterProductNameText.Text.Trim(),
+                Category = FFilterCategoryText.Text.Trim()
             };
         }
 
         internal string GetDeleteTargetProductId() {
-            return _productIdText.Text.Trim();
+            return FProductIdText.Text.Trim();
         }
 
         internal ProductViewRow GetSelectedRow() {
-            if (_grid.SelectedRows.Count == 0) {
+            if (FGrid.SelectedRows.Count == 0) {
                 return null;
             }
 
-            var row = _grid.SelectedRows[0];
+            var row = FGrid.SelectedRows[0];
 
             return new ProductViewRow {
                 ProductId = ToText(row.Cells["ProductId"].Value),
@@ -149,36 +152,36 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
 
         internal void SetInput(ProductInputModel input) {
             if (input == null) {
-                _productIdText.Text = string.Empty;
-                _productNameText.Text = string.Empty;
-                _unitPriceText.Text = string.Empty;
-                _categoryText.Text = string.Empty;
+                FProductIdText.Text = string.Empty;
+                FProductNameText.Text = string.Empty;
+                FUnitPriceText.Text = string.Empty;
+                FCategoryText.Text = string.Empty;
                 return;
             }
 
-            _productIdText.Text = input.ProductId;
-            _productNameText.Text = input.ProductName;
-            _unitPriceText.Text = input.UnitPriceText;
-            _categoryText.Text = input.Category;
+            FProductIdText.Text = input.ProductId;
+            FProductNameText.Text = input.ProductName;
+            FUnitPriceText.Text = input.UnitPriceText;
+            FCategoryText.Text = input.Category;
         }
 
         internal void ClearInput() {
-            _productIdText.Text = string.Empty;
-            _productNameText.Text = string.Empty;
-            _unitPriceText.Text = string.Empty;
-            _categoryText.Text = string.Empty;
+            FProductIdText.Text = string.Empty;
+            FProductNameText.Text = string.Empty;
+            FUnitPriceText.Text = string.Empty;
+            FCategoryText.Text = string.Empty;
         }
 
         internal void ClearFilter() {
-            _filterProductIdText.Text = string.Empty;
-            _filterProductNameText.Text = string.Empty;
-            _filterCategoryText.Text = string.Empty;
+            FFilterProductIdText.Text = string.Empty;
+            FFilterProductNameText.Text = string.Empty;
+            FFilterCategoryText.Text = string.Empty;
         }
 
         internal void SetRows(IReadOnlyCollection<ProductViewRow> rows) {
-            _grid.DataSource = null;
-            _grid.DataSource = rows.ToList();
-            DataGridHeaderMapper.Apply(_grid, HeaderMap);
+            FGrid.DataSource = null;
+            FGrid.DataSource = rows.ToList();
+            DataGridHeaderMapper.Apply(FGrid, FHeaderMap);
         }
 
         private static string ToText(object value) {

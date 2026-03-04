@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// SaleProductOption クラスです。
+    /// </summary>
     internal sealed class SaleProductOption {
         /// <summary>
         /// 商品IDを取得または設定します。

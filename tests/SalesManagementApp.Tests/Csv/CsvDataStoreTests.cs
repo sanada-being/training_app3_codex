@@ -10,39 +10,51 @@ using ProductEntity = SalesManagementApp.Core.Domain.Entities.Product;
 
 namespace SalesManagementApp.Tests.Csv;
 
+/// <summary>
+/// CsvDataStoreTests クラスです。
+/// </summary>
 public class CsvDataStoreTests
 {
-    private string _workDir = string.Empty;
-    private CsvDataStore _store = null!;
+    private string FWorkDir = string.Empty;
+    private CsvDataStore FStore = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _workDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(_workDir);
-        _store = new CsvDataStore();
+        FWorkDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(FWorkDir);
+        FStore = new CsvDataStore();
     }
 
     [TearDown]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void TearDown()
     {
-        if (Directory.Exists(_workDir))
+        if (Directory.Exists(FWorkDir))
         {
-            Directory.Delete(_workDir, true);
+            Directory.Delete(FWorkDir, true);
         }
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadProducts_WhenCsvIsValid_ReturnsProducts()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
         File.WriteAllLines(path, new[]
         {
             "ProductId,ProductName,UnitPrice,Category",
             "P001,Cola,120,Drink"
         });
 
-        var products = _store.ReadProducts(path);
+        var products = FStore.ReadProducts(path);
 
         Assert.That(products.Count, Is.EqualTo(1));
         Assert.That(products[0].ProductId, Is.EqualTo("P001"));
@@ -50,42 +62,51 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadProducts_WhenPriceIsInvalid_ThrowsValidationException()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
         File.WriteAllLines(path, new[]
         {
             "ProductId,ProductName,UnitPrice,Category",
             "P001,Cola,abc,Drink"
         });
 
-        Assert.That(() => _store.ReadProducts(path), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FStore.ReadProducts(path), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadSales_WhenDateFormatIsInvalid_ThrowsValidationException()
     {
-        var path = Path.Combine(_workDir, "sales.csv");
+        var path = Path.Combine(FWorkDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
             "2026/01/01,S001,P001,1,120"
         });
 
-        Assert.That(() => _store.ReadSales(path), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FStore.ReadSales(path), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadSales_WhenHeaderWithoutSalesAmount_LoadsSalesWithZeroAmount()
     {
-        var path = Path.Combine(_workDir, "sales.csv");
+        var path = Path.Combine(FWorkDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity",
             "2026-03-01,S001,P001,2"
         });
 
-        var sales = _store.ReadSales(path);
+        var sales = FStore.ReadSales(path);
 
         Assert.That(sales.Count, Is.EqualTo(1));
         Assert.That(sales[0].ProductId, Is.EqualTo("P001"));
@@ -94,9 +115,12 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadAndNormalizeSales_WhenHeaderWithoutSalesAmount_ComputesAmountAndRewritesCsv()
     {
-        var path = Path.Combine(_workDir, "sales.csv");
+        var path = Path.Combine(FWorkDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity",
@@ -107,7 +131,7 @@ public class CsvDataStoreTests
             new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
         };
 
-        var sales = _store.ReadAndNormalizeSales(path, products);
+        var sales = FStore.ReadAndNormalizeSales(path, products);
 
         Assert.That(sales.Count, Is.EqualTo(1));
         Assert.That(sales[0].SalesAmount, Is.EqualTo(240));
@@ -118,9 +142,12 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadAndNormalizeSales_WhenProductMasterIsMissing_ThrowsValidationException()
     {
-        var path = Path.Combine(_workDir, "sales.csv");
+        var path = Path.Combine(FWorkDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity",
@@ -132,14 +159,17 @@ public class CsvDataStoreTests
         };
 
         Assert.That(
-            () => _store.ReadAndNormalizeSales(path, products),
+            () => FStore.ReadAndNormalizeSales(path, products),
             Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ReadAndNormalizeSales_WhenSalesAmountDoesNotMatchUnitPrice_ThrowsValidationException()
     {
-        var path = Path.Combine(_workDir, "sales.csv");
+        var path = Path.Combine(FWorkDir, "sales.csv");
         File.WriteAllLines(path, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
@@ -151,21 +181,24 @@ public class CsvDataStoreTests
         };
 
         Assert.That(
-            () => _store.ReadAndNormalizeSales(path, products),
+            () => FStore.ReadAndNormalizeSales(path, products),
             Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteAndReadInventories_WhenDataIsValid_RoundTrips()
     {
-        var path = Path.Combine(_workDir, "inventory.csv");
+        var path = Path.Combine(FWorkDir, "inventory.csv");
         var input = new[]
         {
             new InventoryRecord { StoreId = "S001", ProductId = "P001", Stock = 3 }
         };
 
-        _store.WriteInventories(path, input);
-        var loaded = _store.ReadInventories(path);
+        FStore.WriteInventories(path, input);
+        var loaded = FStore.ReadInventories(path);
 
         Assert.That(loaded.Count, Is.EqualTo(1));
         Assert.That(loaded[0].StoreId, Is.EqualTo("S001"));
@@ -173,9 +206,12 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteAndReadInventoryHistories_WhenDataIsValid_RoundTrips()
     {
-        var path = Path.Combine(_workDir, "inventory_history.csv");
+        var path = Path.Combine(FWorkDir, "inventory_history.csv");
         var input = new[]
         {
             new InventoryHistoryRecord
@@ -190,8 +226,8 @@ public class CsvDataStoreTests
             }
         };
 
-        _store.WriteInventoryHistories(path, input);
-        var loaded = _store.ReadInventoryHistories(path);
+        FStore.WriteInventoryHistories(path, input);
+        var loaded = FStore.ReadInventoryHistories(path);
 
         Assert.That(loaded.Count, Is.EqualTo(1));
         Assert.That(loaded[0].OccurredAt, Is.EqualTo(new DateTime(2026, 3, 3, 10, 15, 0)));
@@ -204,86 +240,101 @@ public class CsvDataStoreTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteProducts_WhenTargetExists_CreatesBackup()
     {
-        var path = Path.Combine(_workDir, "products.csv");
-        _store.WriteProducts(path, new[]
+        var path = Path.Combine(FWorkDir, "products.csv");
+        FStore.WriteProducts(path, new[]
         {
             new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
         });
 
-        _store.WriteProducts(path, new[]
+        FStore.WriteProducts(path, new[]
         {
             new ProductEntity { ProductId = "P002", ProductName = "Tea", UnitPrice = 100, Category = "Drink" }
         });
 
-        var backups = _store.GetBackups(path);
+        var backups = FStore.GetBackups(path);
 
         Assert.That(backups.Count, Is.GreaterThanOrEqualTo(1));
         Assert.That(File.Exists(backups[0]), Is.True);
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RestoreLatestBackup_WhenBackupsExist_RestoresPreviousContent()
     {
-        var path = Path.Combine(_workDir, "products.csv");
-        _store.WriteProducts(path, new[]
+        var path = Path.Combine(FWorkDir, "products.csv");
+        FStore.WriteProducts(path, new[]
         {
             new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
         });
-        _store.WriteProducts(path, new[]
+        FStore.WriteProducts(path, new[]
         {
             new ProductEntity { ProductId = "P002", ProductName = "Tea", UnitPrice = 100, Category = "Drink" }
         });
 
-        _store.RestoreLatestBackup(path);
-        var restored = _store.ReadProducts(path);
+        FStore.RestoreLatestBackup(path);
+        var restored = FStore.ReadProducts(path);
 
         Assert.That(restored.Count, Is.EqualTo(1));
         Assert.That(restored[0].ProductId, Is.EqualTo("P001"));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteProducts_WritesOperationLog()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
 
-        _store.WriteProducts(path, new[]
+        FStore.WriteProducts(path, new[]
         {
             new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
         });
 
-        var logPath = Path.Combine(_workDir, "logs", "operations.log");
+        var logPath = Path.Combine(FWorkDir, "logs", "operations.log");
         Assert.That(File.Exists(logPath), Is.True);
         var log = File.ReadAllText(logPath);
         Assert.That(log, Does.Contain("Write succeeded"));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public async Task ReadProductsAsync_WhenCsvIsValid_ReturnsProducts()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
         File.WriteAllLines(path, new[]
         {
             "ProductId,ProductName,UnitPrice,Category",
             "P001,Cola,120,Drink"
         });
 
-        var result = await _store.ReadProductsAsync(path);
+        var result = await FStore.ReadProductsAsync(path);
 
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0].ProductId, Is.EqualTo("P001"));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteProductsAsync_WhenCanceled_ThrowsOperationCanceledException()
     {
-        var path = Path.Combine(_workDir, "products.csv");
+        var path = Path.Combine(FWorkDir, "products.csv");
         using var cts = new CancellationTokenSource();
         cts.Cancel();
 
         Assert.That(
-            async () => await _store.WriteProductsAsync(path, new[]
+            async () => await FStore.WriteProductsAsync(path, new[]
             {
                 new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
             }, cts.Token),

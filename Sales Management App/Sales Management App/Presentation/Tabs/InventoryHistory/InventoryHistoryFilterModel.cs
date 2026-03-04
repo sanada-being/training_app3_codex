@@ -2,6 +2,9 @@ using System;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
+    /// <summary>
+    /// InventoryHistoryFilterModel クラスです。
+    /// </summary>
     internal sealed class InventoryHistoryFilterModel {
         internal DateTime? StartDateTime { get; set; }
 

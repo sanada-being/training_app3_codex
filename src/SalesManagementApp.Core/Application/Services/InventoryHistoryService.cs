@@ -6,8 +6,14 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// InventoryHistoryService クラスです。
+/// </summary>
 public class InventoryHistoryService
 {
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> GetAll(IReadOnlyCollection<InventoryHistoryRecord> histories)
     {
         return histories
@@ -17,6 +23,9 @@ public class InventoryHistoryService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> Filter(
         IReadOnlyCollection<InventoryHistoryRecord> histories,
         DateTime? startDateTime,
@@ -71,6 +80,9 @@ public class InventoryHistoryService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void Record(
         ICollection<InventoryHistoryRecord> histories,
         DateTime occurredAt,

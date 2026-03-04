@@ -3,9 +3,15 @@ using SalesManagementApp.Tests.TestHelpers;
 
 namespace SalesManagementApp.Tests.TestHelpersTests;
 
+/// <summary>
+/// BuilderTests クラスです。
+/// </summary>
 public class BuilderTests
 {
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void ProductBuilder_WithPrice_ReflectsSpecifiedValue()
     {
         var product = new ProductBuilder().WithPrice(500).Build();
@@ -13,6 +19,9 @@ public class BuilderTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void InventoryRecordBuilder_WithStock_ReflectsSpecifiedValue()
     {
         var record = new InventoryRecordBuilder().WithStock(0).Build();
@@ -20,6 +29,9 @@ public class BuilderTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SaleRecordBuilder_WithQuantity_ReflectsSpecifiedValue()
     {
         var sale = new SaleRecordBuilder().WithQuantity(5).Build();

@@ -5,32 +5,44 @@ using SalesManagementApp.Core.Application.State;
 
 namespace SalesManagementApp.Tests.AppState;
 
+/// <summary>
+/// AppBootstrapperTests クラスです。
+/// </summary>
 public class AppBootstrapperTests
 {
-    private string _workDir = string.Empty;
-    private AppBootstrapper _bootstrapper = null!;
+    private string FWorkDir = string.Empty;
+    private AppBootstrapper FBootstrapper = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _workDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(_workDir);
-        _bootstrapper = new AppBootstrapper();
+        FWorkDir = Path.Combine(Path.GetTempPath(), "SalesManagementApp.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(FWorkDir);
+        FBootstrapper = new AppBootstrapper();
     }
 
     [TearDown]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void TearDown()
     {
-        if (Directory.Exists(_workDir))
+        if (Directory.Exists(FWorkDir))
         {
-            Directory.Delete(_workDir, true);
+            Directory.Delete(FWorkDir, true);
         }
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void LoadFromBaseDirectory_WhenRepositoryRootExists_LoadsStateAndResolvesLatestSalesFile()
     {
-        var root = Path.Combine(_workDir, "repo");
+        var root = Path.Combine(FWorkDir, "repo");
         Directory.CreateDirectory(root);
         File.WriteAllText(Path.Combine(root, "AGENTS.md"), "marker");
         File.WriteAllLines(Path.Combine(root, "products.csv"), new[]
@@ -62,7 +74,7 @@ public class AppBootstrapperTests
         var nestedBase = Path.Combine(root, "Sales Management App", "Sales Management App", "bin", "Debug");
         Directory.CreateDirectory(nestedBase);
 
-        var state = _bootstrapper.LoadFromBaseDirectory(nestedBase);
+        var state = FBootstrapper.LoadFromBaseDirectory(nestedBase);
 
         Assert.That(state.RepositoryRootPath, Is.EqualTo(root));
         Assert.That(state.Products.Count, Is.EqualTo(1));
@@ -74,12 +86,15 @@ public class AppBootstrapperTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_ReturnsEmptyState()
     {
-        var baseDir = Path.Combine(_workDir, "standalone");
+        var baseDir = Path.Combine(FWorkDir, "standalone");
         Directory.CreateDirectory(baseDir);
 
-        var state = _bootstrapper.LoadFromBaseDirectory(baseDir);
+        var state = FBootstrapper.LoadFromBaseDirectory(baseDir);
 
         Assert.That(state.RepositoryRootPath, Is.Empty);
         Assert.That(state.Products, Is.Empty);

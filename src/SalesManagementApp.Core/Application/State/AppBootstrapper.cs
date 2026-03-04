@@ -5,13 +5,19 @@ using System.Text.RegularExpressions;
 
 namespace SalesManagementApp.Core.Application.State;
 
+/// <summary>
+/// AppBootstrapper クラスです。
+/// </summary>
 public class AppBootstrapper
 {
-    private static readonly Regex SalesFileNamePattern =
+    private static readonly Regex FSalesFileNamePattern =
         new(@"^sales_(\d{8})\.csv$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-    private readonly AppDataRepository _repository;
+    private readonly AppDataRepository FRepository;
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public AppBootstrapper()
         : this(new AppDataRepository())
     {
@@ -19,9 +25,12 @@ public class AppBootstrapper
 
     internal AppBootstrapper(AppDataRepository repository)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        FRepository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public AppState LoadFromBaseDirectory(string baseDirectory)
     {
         var rootPath = FindRepositoryRoot(baseDirectory);
@@ -39,10 +48,10 @@ public class AppBootstrapper
         };
         state.SalesPath = ResolveSalesPath(rootPath);
 
-        state.Products.AddRange(_repository.ReadProductsIfExists(state.ProductsPath));
-        state.Inventories.AddRange(_repository.ReadInventoriesIfExists(state.InventoryPath));
-        state.Sales.AddRange(_repository.ReadAndNormalizeSalesIfExists(state.SalesPath, state.Products));
-        state.InventoryHistories.AddRange(_repository.ReadInventoryHistoriesIfExists(state.InventoryHistoryPath));
+        state.Products.AddRange(FRepository.ReadProductsIfExists(state.ProductsPath));
+        state.Inventories.AddRange(FRepository.ReadInventoriesIfExists(state.InventoryPath));
+        state.Sales.AddRange(FRepository.ReadAndNormalizeSalesIfExists(state.SalesPath, state.Products));
+        state.InventoryHistories.AddRange(FRepository.ReadInventoryHistoriesIfExists(state.InventoryHistoryPath));
 
         return state;
     }
@@ -75,7 +84,7 @@ public class AppBootstrapper
         foreach (var filePath in files)
         {
             var fileName = Path.GetFileName(filePath);
-            var match = SalesFileNamePattern.Match(fileName);
+            var match = FSalesFileNamePattern.Match(fileName);
             if (!match.Success)
             {
                 continue;

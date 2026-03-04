@@ -3,6 +3,9 @@ using SalesManagementApp.Core.Application.Exceptions;
 
 namespace SalesManagementApp.Core.Application.Errors;
 
+/// <summary>
+/// 列挙体です。
+/// </summary>
 public enum ErrorCategory
 {
     Validation,
@@ -10,16 +13,37 @@ public enum ErrorCategory
     Unexpected
 }
 
+/// <summary>
+/// ErrorPresentation クラスです。
+/// </summary>
 public class ErrorPresentation
 {
+    /// <summary>
+    /// 公開プロパティです。
+    /// </summary>
     public string Title { get; set; } = string.Empty;
+    /// <summary>
+    /// 公開プロパティです。
+    /// </summary>
     public string UserMessage { get; set; } = string.Empty;
+    /// <summary>
+    /// 公開プロパティです。
+    /// </summary>
     public string LogLevel { get; set; } = string.Empty;
+    /// <summary>
+    /// 公開プロパティです。
+    /// </summary>
     public ErrorCategory Category { get; set; }
 }
 
+/// <summary>
+/// ErrorHandlingPolicy クラスです。
+/// </summary>
 public static class ErrorHandlingPolicy
 {
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public static ErrorPresentation CreatePresentation(Exception ex)
     {
         if (ex is DomainValidationException)

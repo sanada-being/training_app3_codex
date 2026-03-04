@@ -7,15 +7,18 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// SalesController クラスです。
+    /// </summary>
     internal sealed class SalesController {
-        private readonly SalesView _view;
-        private readonly ProductService _productService;
-        private readonly SalesService _salesService;
-        private readonly AppDataRepository _repository;
-        private readonly AppState _appState;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _actionExecutor;
-        private readonly Action _onSalesRegistered;
+        private readonly SalesView FView;
+        private readonly ProductService FProductService;
+        private readonly SalesService FSalesService;
+        private readonly AppDataRepository FRepository;
+        private readonly AppState FAppState;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FActionExecutor;
+        private readonly Action FOnSalesRegistered;
 
         internal SalesController(
             SalesView view,
@@ -26,39 +29,39 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
             UiMessageService messageService,
             UiActionExecutor actionExecutor,
             Action onSalesRegistered) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _productService = productService ?? throw new ArgumentNullException("productService");
-            _salesService = salesService ?? throw new ArgumentNullException("salesService");
-            _repository = repository ?? throw new ArgumentNullException("repository");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
-            _onSalesRegistered = onSalesRegistered ?? delegate { };
+            FView = view ?? throw new ArgumentNullException("view");
+            FProductService = productService ?? throw new ArgumentNullException("productService");
+            FSalesService = salesService ?? throw new ArgumentNullException("salesService");
+            FRepository = repository ?? throw new ArgumentNullException("repository");
+            FAppState = appState ?? throw new ArgumentNullException("appState");
+            FMessageService = messageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FOnSalesRegistered = onSalesRegistered ?? delegate { };
         }
 
         internal void Initialize() {
-            _view.RegisterRequested += OnRegisterRequested;
-            _view.ClearInputRequested += OnClearInputRequested;
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
-            _view.InputChanged += OnInputChanged;
+            FView.RegisterRequested += OnRegisterRequested;
+            FView.ClearInputRequested += OnClearInputRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
+            FView.InputChanged += OnInputChanged;
         }
 
         internal void RefreshProductOptions() {
-            var selectedId = _view.GetSelectedProductOption()?.ProductId ?? string.Empty;
-            var options = _productService.GetAll(_appState.Products).Select(p => new SaleProductOption {
+            var selectedId = FView.GetSelectedProductOption()?.ProductId ?? string.Empty;
+            var options = FProductService.GetAll(FAppState.Products).Select(p => new SaleProductOption {
                 ProductId = p.ProductId,
                 ProductName = p.ProductName,
                 UnitPrice = p.UnitPrice
             }).ToList();
-            _view.SetProductOptions(options, selectedId);
+            FView.SetProductOptions(options, selectedId);
         }
 
         internal void RefreshGrid() {
-            var filter = _view.GetFilter();
-            var productNameMap = _appState.Products.ToDictionary(p => p.ProductId, p => p.ProductName);
-            var filtered = _salesService.GetFiltered(
-                _appState.Sales,
+            var filter = FView.GetFilter();
+            var productNameMap = FAppState.Products.ToDictionary(p => p.ProductId, p => p.ProductName);
+            var filtered = FSalesService.GetFiltered(
+                FAppState.Sales,
                 filter.StartDate,
                 filter.EndDate,
                 filter.StoreId,
@@ -72,62 +75,62 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 Quantity = s.Quantity,
                 SalesAmount = s.SalesAmount
             }).ToList();
-            _view.SetRows(rows);
+            FView.SetRows(rows);
         }
 
         internal void UpdatePricePreview() {
-            var selected = _view.GetSelectedProductOption();
+            var selected = FView.GetSelectedProductOption();
             if (selected == null) {
-                _view.SetUnitPriceLabel("-");
-                _view.SetAmountPreviewLabel("-");
+                FView.SetUnitPriceLabel("-");
+                FView.SetAmountPreviewLabel("-");
                 return;
             }
 
-            _view.SetUnitPriceLabel(string.Format("{0} 円", selected.UnitPrice));
+            FView.SetUnitPriceLabel(string.Format("{0} 円", selected.UnitPrice));
 
-            var input = _view.GetInput();
+            var input = FView.GetInput();
             int quantity;
             if (!int.TryParse(input.QuantityText, out quantity) || quantity <= 0) {
-                _view.SetAmountPreviewLabel("-");
+                FView.SetAmountPreviewLabel("-");
                 return;
             }
 
-            _view.SetAmountPreviewLabel(string.Format("{0} 円", selected.UnitPrice * quantity));
+            FView.SetAmountPreviewLabel(string.Format("{0} 円", selected.UnitPrice * quantity));
         }
 
         private void OnRegisterRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                var input = CreateSaleRecordFromInput(_view.GetInput());
-                var registered = _salesService.RegisterSale(
-                    _appState.Sales,
-                    _appState.Products,
-                    _appState.Inventories,
+            FActionExecutor.Execute(delegate {
+                var input = CreateSaleRecordFromInput(FView.GetInput());
+                var registered = FSalesService.RegisterSale(
+                    FAppState.Sales,
+                    FAppState.Products,
+                    FAppState.Inventories,
                     input,
-                    _appState.InventoryHistories,
+                    FAppState.InventoryHistories,
                     DateTime.Now);
-                _repository.WriteInventoryHistories(_appState.InventoryHistoryPath, _appState.InventoryHistories);
+                FRepository.WriteInventoryHistories(FAppState.InventoryHistoryPath, FAppState.InventoryHistories);
 
                 RefreshGrid();
-                _view.ClearInput();
+                FView.ClearInput();
                 UpdatePricePreview();
-                _onSalesRegistered.Invoke();
-                _messageService.ShowInfo(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount));
+                FOnSalesRegistered.Invoke();
+                FMessageService.ShowInfo(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount));
             });
         }
 
         private void OnClearInputRequested(object sender, EventArgs e) {
-            _view.ClearInput();
+            FView.ClearInput();
             UpdatePricePreview();
         }
 
         private void OnFilterRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
+            FActionExecutor.Execute(delegate {
                 RefreshGrid();
             });
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearFilter();
+            FView.ClearFilter();
             RefreshGrid();
         }
 

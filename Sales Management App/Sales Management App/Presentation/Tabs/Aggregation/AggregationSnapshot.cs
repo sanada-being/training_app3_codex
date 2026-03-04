@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using SalesManagementApp.Core.Application.Models;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
+    /// <summary>
+    /// AggregationSnapshot クラスです。
+    /// </summary>
     internal sealed class AggregationSnapshot {
         /// <summary>
         /// 集計開始日を取得または設定します。

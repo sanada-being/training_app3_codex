@@ -7,12 +7,18 @@ using SalesManagementApp.Core.Application.Exceptions;
 
 namespace SalesManagementApp.Core.Infrastructure.DataProtection;
 
+/// <summary>
+/// DataProtectionService クラスです。
+/// </summary>
 public class DataProtectionService
 {
-    private const string BackupDirectoryName = "_backup";
-    private const string LogDirectoryName = "logs";
-    private const string LogFileName = "operations.log";
+    private const string C_BackupDirectoryName = "_backup";
+    private const string C_LogDirectoryName = "logs";
+    private const string C_LogFileName = "operations.log";
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public string? CreateBackupIfExists(string filePath)
     {
         if (!File.Exists(filePath))
@@ -34,6 +40,9 @@ public class DataProtectionService
         return backupPath;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<string> GetBackupFiles(string filePath)
     {
         var backupDirectory = ResolveBackupDirectory(filePath);
@@ -48,6 +57,9 @@ public class DataProtectionService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RestoreLatestBackup(string filePath)
     {
         var backupFile = GetBackupFiles(filePath).FirstOrDefault();
@@ -65,6 +77,9 @@ public class DataProtectionService
         File.Copy(backupFile, filePath, overwrite: true);
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void WriteLog(string filePath, string level, string message)
     {
         var targetDirectory = Path.GetDirectoryName(filePath);
@@ -73,10 +88,10 @@ public class DataProtectionService
             targetDirectory = Directory.GetCurrentDirectory();
         }
 
-        var logDirectory = Path.Combine(targetDirectory, LogDirectoryName);
+        var logDirectory = Path.Combine(targetDirectory, C_LogDirectoryName);
         Directory.CreateDirectory(logDirectory);
 
-        var logPath = Path.Combine(logDirectory, LogFileName);
+        var logPath = Path.Combine(logDirectory, C_LogFileName);
         var line = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [{1}] {2}", DateTime.Now, level, message);
         File.AppendAllLines(logPath, new[] { line }, Encoding.UTF8);
     }
@@ -89,6 +104,6 @@ public class DataProtectionService
             baseDirectory = Directory.GetCurrentDirectory();
         }
 
-        return Path.Combine(baseDirectory, BackupDirectoryName);
+        return Path.Combine(baseDirectory, C_BackupDirectoryName);
     }
 }

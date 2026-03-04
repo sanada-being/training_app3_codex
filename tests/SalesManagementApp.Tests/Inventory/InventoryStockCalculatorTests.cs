@@ -4,45 +4,63 @@ using SalesManagementApp.Core.Application.Services;
 
 namespace SalesManagementApp.Tests.Inventory;
 
+/// <summary>
+/// InventoryStockCalculatorTests クラスです。
+/// </summary>
 public class InventoryStockCalculatorTests
 {
-    private InventoryStockCalculator _calculator = null!;
+    private InventoryStockCalculator FCalculator = null!;
 
     [SetUp]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void SetUp()
     {
-        _calculator = new InventoryStockCalculator();
+        FCalculator = new InventoryStockCalculator();
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CalculateAfterInbound_WhenInputsAreValid_ReturnsIncreasedStock()
     {
-        var result = _calculator.CalculateAfterInbound(10, 5);
+        var result = FCalculator.CalculateAfterInbound(10, 5);
 
         Assert.That(result, Is.EqualTo(15));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CalculateAfterInbound_WhenResultOverflows_ThrowsValidationException()
     {
         Assert.That(
-            () => _calculator.CalculateAfterInbound(int.MaxValue, 1),
+            () => FCalculator.CalculateAfterInbound(int.MaxValue, 1),
             Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CalculateAfterOutbound_WhenInputsAreValid_ReturnsDecreasedStock()
     {
-        var result = _calculator.CalculateAfterOutbound(10, 4);
+        var result = FCalculator.CalculateAfterOutbound(10, 4);
 
         Assert.That(result, Is.EqualTo(6));
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CalculateAfterOutbound_WhenStockIsInsufficient_ThrowsValidationException()
     {
         Assert.That(
-            () => _calculator.CalculateAfterOutbound(3, 4),
+            () => FCalculator.CalculateAfterOutbound(3, 4),
             Throws.TypeOf<DomainValidationException>());
     }
 }

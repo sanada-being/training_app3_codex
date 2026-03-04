@@ -6,32 +6,35 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
+    /// <summary>
+    /// InventoryHistoryController クラスです。
+    /// </summary>
     internal sealed class InventoryHistoryController {
-        private readonly InventoryHistoryView _view;
-        private readonly InventoryHistoryService _inventoryHistoryService;
-        private readonly AppState _appState;
-        private readonly UiActionExecutor _actionExecutor;
+        private readonly InventoryHistoryView FView;
+        private readonly InventoryHistoryService FInventoryHistoryService;
+        private readonly AppState FAppState;
+        private readonly UiActionExecutor FActionExecutor;
 
         internal InventoryHistoryController(
             InventoryHistoryView view,
             InventoryHistoryService inventoryHistoryService,
             AppState appState,
             UiActionExecutor actionExecutor) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _inventoryHistoryService = inventoryHistoryService ?? throw new ArgumentNullException("inventoryHistoryService");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FView = view ?? throw new ArgumentNullException("view");
+            FInventoryHistoryService = inventoryHistoryService ?? throw new ArgumentNullException("inventoryHistoryService");
+            FAppState = appState ?? throw new ArgumentNullException("appState");
+            FActionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
         }
 
         internal void Initialize() {
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
         }
 
         internal void Refresh() {
-            var filter = _view.GetFilter();
-            var filtered = _inventoryHistoryService.Filter(
-                _appState.InventoryHistories,
+            var filter = FView.GetFilter();
+            var filtered = FInventoryHistoryService.Filter(
+                FAppState.InventoryHistories,
                 filter.StartDateTime,
                 filter.EndDateTime,
                 filter.StoreId,
@@ -47,17 +50,17 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 ResultStock = h.ResultStock,
                 Result = h.Result
             }).ToList();
-            _view.SetRows(rows);
+            FView.SetRows(rows);
         }
 
         private void OnFilterRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
+            FActionExecutor.Execute(delegate {
                 Refresh();
             });
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearFilter();
+            FView.ClearFilter();
             Refresh();
         }
 

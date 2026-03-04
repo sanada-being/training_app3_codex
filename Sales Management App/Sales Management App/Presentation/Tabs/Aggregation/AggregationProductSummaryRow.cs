@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
+    /// <summary>
+    /// AggregationProductSummaryRow クラスです。
+    /// </summary>
     internal sealed class AggregationProductSummaryRow {
         /// <summary>
         /// 商品IDを取得または設定します。

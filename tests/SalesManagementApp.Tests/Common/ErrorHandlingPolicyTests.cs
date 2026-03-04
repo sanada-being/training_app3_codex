@@ -5,9 +5,15 @@ using SalesManagementApp.Core.Application.Exceptions;
 
 namespace SalesManagementApp.Tests.Common;
 
+/// <summary>
+/// ErrorHandlingPolicyTests クラスです。
+/// </summary>
 public class ErrorHandlingPolicyTests
 {
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CreatePresentation_WhenDomainValidationException_ReturnsValidationCategory()
     {
         var ex = new DomainValidationException("入力不備です。");
@@ -21,6 +27,9 @@ public class ErrorHandlingPolicyTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CreatePresentation_WhenApplicationOperationException_ReturnsOperationCategory()
     {
         var ex = new ApplicationOperationException("業務処理に失敗しました。");
@@ -33,6 +42,9 @@ public class ErrorHandlingPolicyTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void CreatePresentation_WhenUnexpectedException_ReturnsGenericMessage()
     {
         var ex = new InvalidOperationException("unexpected");

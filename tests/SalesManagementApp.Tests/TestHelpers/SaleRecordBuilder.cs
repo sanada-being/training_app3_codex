@@ -2,9 +2,12 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Tests.TestHelpers;
 
+/// <summary>
+/// SaleRecordBuilder クラスです。
+/// </summary>
 public class SaleRecordBuilder
 {
-    private readonly SaleRecord _record = new()
+    private readonly SaleRecord FRecord = new()
     {
         SaleDate = new DateTime(2026, 1, 1),
         StoreId = "S001",
@@ -13,35 +16,53 @@ public class SaleRecordBuilder
         SalesAmount = 240
     };
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecordBuilder WithDate(DateTime value)
     {
-        _record.SaleDate = value;
+        FRecord.SaleDate = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecordBuilder WithStoreId(string value)
     {
-        _record.StoreId = value;
+        FRecord.StoreId = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecordBuilder WithProductId(string value)
     {
-        _record.ProductId = value;
+        FRecord.ProductId = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecordBuilder WithQuantity(int value)
     {
-        _record.Quantity = value;
+        FRecord.Quantity = value;
         return this;
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public SaleRecordBuilder WithSalesAmount(int value)
     {
-        _record.SalesAmount = value;
+        FRecord.SalesAmount = value;
         return this;
     }
 
-    public SaleRecord Build() => _record;
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
+    public SaleRecord Build() => FRecord;
 }

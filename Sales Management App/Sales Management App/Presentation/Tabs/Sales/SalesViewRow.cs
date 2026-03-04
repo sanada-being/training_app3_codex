@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// SalesViewRow クラスです。
+    /// </summary>
     internal sealed class SalesViewRow {
         /// <summary>
         /// 売上日を取得または設定します。

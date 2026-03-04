@@ -8,14 +8,17 @@ using SalesManagementApp.Core.Application.State;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
+    /// <summary>
+    /// AggregationController クラスです。
+    /// </summary>
     internal sealed class AggregationController {
-        private readonly AggregationView _view;
-        private readonly SalesAggregationService _salesAggregationService;
-        private readonly AppState _appState;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _actionExecutor;
+        private readonly AggregationView FView;
+        private readonly SalesAggregationService FSalesAggregationService;
+        private readonly AppState FAppState;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FActionExecutor;
 
-        private AggregationSnapshot _currentSnapshot;
+        private AggregationSnapshot FCurrentSnapshot;
 
         internal AggregationController(
             AggregationView view,
@@ -23,38 +26,38 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
             AppState appState,
             UiMessageService messageService,
             UiActionExecutor actionExecutor) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _salesAggregationService = salesAggregationService ?? throw new ArgumentNullException("salesAggregationService");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FView = view ?? throw new ArgumentNullException("view");
+            FSalesAggregationService = salesAggregationService ?? throw new ArgumentNullException("salesAggregationService");
+            FAppState = appState ?? throw new ArgumentNullException("appState");
+            FMessageService = messageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
         }
 
         internal void Initialize() {
-            _view.ExecuteRequested += OnExecuteRequested;
-            _view.CopyRequested += OnCopyRequested;
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
+            FView.ExecuteRequested += OnExecuteRequested;
+            FView.CopyRequested += OnCopyRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
         }
 
         internal void Reset() {
-            _currentSnapshot = null;
-            _view.ResetDisplay();
+            FCurrentSnapshot = null;
+            FView.ResetDisplay();
         }
 
         private void OnExecuteRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
+            FActionExecutor.Execute(delegate {
                 var snapshot = CreateAggregationSnapshot();
                 RenderAggregationSnapshot(snapshot);
             });
         }
 
         private void OnCopyRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
+            FActionExecutor.Execute(delegate {
                 var snapshot = CreateAggregationSnapshot();
                 RenderAggregationSnapshot(snapshot);
                 Clipboard.SetText(CreateAggregationClipboardText(snapshot));
-                _messageService.ShowInfo("集計結果をクリップボードにコピーしました。");
+                FMessageService.ShowInfo("集計結果をクリップボードにコピーしました。");
             });
         }
 
@@ -63,26 +66,26 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearProductIdFilter();
+            FView.ClearProductIdFilter();
             ApplyFilter();
         }
 
         private AggregationSnapshot CreateAggregationSnapshot() {
-            var startDate = _view.GetStartDate();
-            var endDate = _view.GetEndDate();
+            var startDate = FView.GetStartDate();
+            var endDate = FView.GetEndDate();
 
             return new AggregationSnapshot {
                 StartDate = startDate,
                 EndDate = endDate,
-                ProductSummaries = _salesAggregationService.GetProductSummaries(_appState.Sales, startDate, endDate).ToList(),
-                WeeklySummaries = _salesAggregationService.GetWeeklySummaries(_appState.Sales, startDate, endDate).ToList(),
-                TotalSalesAmount = _salesAggregationService.GetTotalSalesAmount(_appState.Sales, startDate, endDate)
+                ProductSummaries = FSalesAggregationService.GetProductSummaries(FAppState.Sales, startDate, endDate).ToList(),
+                WeeklySummaries = FSalesAggregationService.GetWeeklySummaries(FAppState.Sales, startDate, endDate).ToList(),
+                TotalSalesAmount = FSalesAggregationService.GetTotalSalesAmount(FAppState.Sales, startDate, endDate)
             };
         }
 
         private void RenderAggregationSnapshot(AggregationSnapshot snapshot) {
-            _currentSnapshot = snapshot;
-            _view.SetSummaryText(string.Format(
+            FCurrentSnapshot = snapshot;
+            FView.SetSummaryText(string.Format(
                 "期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd} / 合計売上: {2} 円",
                 snapshot.StartDate,
                 snapshot.EndDate,
@@ -91,14 +94,14 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
         }
 
         private void ApplyFilter() {
-            if (_currentSnapshot == null) {
-                _view.SetProductRows(new List<AggregationProductSummaryRow>());
-                _view.SetWeeklyRows(new List<AggregationWeeklySummaryRow>());
+            if (FCurrentSnapshot == null) {
+                FView.SetProductRows(new List<AggregationProductSummaryRow>());
+                FView.SetWeeklyRows(new List<AggregationWeeklySummaryRow>());
                 return;
             }
 
-            var filter = _view.GetProductIdFilter();
-            var filteredProductSummaries = _currentSnapshot.ProductSummaries;
+            var filter = FView.GetProductIdFilter();
+            var filteredProductSummaries = FCurrentSnapshot.ProductSummaries;
             if (!string.IsNullOrWhiteSpace(filter)) {
                 filteredProductSummaries = filteredProductSummaries
                     .Where(s => s.ProductId.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -110,14 +113,14 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
                 TotalQuantity = s.TotalQuantity,
                 TotalSalesAmount = s.TotalSalesAmount
             }).ToList();
-            _view.SetProductRows(productRows);
+            FView.SetProductRows(productRows);
 
-            var weeklyRows = _currentSnapshot.WeeklySummaries.Select(s => new AggregationWeeklySummaryRow {
+            var weeklyRows = FCurrentSnapshot.WeeklySummaries.Select(s => new AggregationWeeklySummaryRow {
                 Week = string.Format("{0:yyyy/MM/dd} - {1:yyyy/MM/dd}", s.WeekStartDate, s.WeekEndDate),
                 TotalQuantity = s.TotalQuantity,
                 TotalSalesAmount = s.TotalSalesAmount
             }).ToList();
-            _view.SetWeeklyRows(weeklyRows);
+            FView.SetWeeklyRows(weeklyRows);
         }
 
         private static string CreateAggregationClipboardText(AggregationSnapshot snapshot) {

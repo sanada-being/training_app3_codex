@@ -7,8 +7,14 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// SalesAggregationService クラスです。
+/// </summary>
 public class SalesAggregationService
 {
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<SaleRecord> FilterByPeriod(
         IReadOnlyCollection<SaleRecord> sales,
         DateTime startDate,
@@ -27,6 +33,9 @@ public class SalesAggregationService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<ProductSalesSummary> GetProductSummaries(
         IReadOnlyCollection<SaleRecord> sales,
         DateTime startDate,
@@ -44,6 +53,9 @@ public class SalesAggregationService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public IReadOnlyList<WeeklySalesSummary> GetWeeklySummaries(
         IReadOnlyCollection<SaleRecord> sales,
         DateTime startDate,
@@ -66,6 +78,9 @@ public class SalesAggregationService
             .ToList();
     }
 
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public int GetTotalSalesAmount(
         IReadOnlyCollection<SaleRecord> sales,
         DateTime startDate,

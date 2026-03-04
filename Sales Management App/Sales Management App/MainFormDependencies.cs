@@ -3,6 +3,9 @@ using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
 
 namespace Sales_Management_App {
+    /// <summary>
+    /// MainFormDependencies クラスです。
+    /// </summary>
     internal sealed class MainFormDependencies {
         internal ProductService ProductService { get; private set; }
 

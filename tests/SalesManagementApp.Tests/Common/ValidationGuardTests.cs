@@ -5,9 +5,15 @@ using SalesManagementApp.Core.Application.Validation;
 
 namespace SalesManagementApp.Tests.Common;
 
+/// <summary>
+/// ValidationGuardTests クラスです。
+/// </summary>
 public class ValidationGuardTests
 {
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RequireNotEmpty_WhenValueIsBlank_ThrowsDomainValidationException()
     {
         Assert.That(
@@ -16,6 +22,9 @@ public class ValidationGuardTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RequirePositive_WhenValueIsZero_ThrowsDomainValidationException()
     {
         Assert.That(
@@ -24,6 +33,9 @@ public class ValidationGuardTests
     }
 
     [Test]
+    /// <summary>
+    /// 公開メソッドです。
+    /// </summary>
     public void RequireDateRange_WhenStartDateAfterEndDate_ThrowsDomainValidationException()
     {
         Assert.That(

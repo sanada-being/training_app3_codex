@@ -5,27 +5,30 @@ using System.Windows.Forms;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
+    /// <summary>
+    /// AggregationView クラスです。
+    /// </summary>
     internal sealed class AggregationView : UserControl {
-        private static readonly IReadOnlyDictionary<string, string> ProductSummaryHeaderMap =
+        private static readonly IReadOnlyDictionary<string, string> FProductSummaryHeaderMap =
             new Dictionary<string, string> {
                 { "ProductId", "商品ID" },
                 { "TotalQuantity", "販売数量" },
                 { "TotalSalesAmount", "売上金額" }
             };
 
-        private static readonly IReadOnlyDictionary<string, string> WeeklySummaryHeaderMap =
+        private static readonly IReadOnlyDictionary<string, string> FWeeklySummaryHeaderMap =
             new Dictionary<string, string> {
                 { "Week", "週" },
                 { "TotalQuantity", "販売数量" },
                 { "TotalSalesAmount", "売上金額" }
             };
 
-        private readonly DateTimePicker _startDatePicker;
-        private readonly DateTimePicker _endDatePicker;
-        private readonly Label _summaryTotalLabel;
-        private readonly TextBox _productIdFilterText;
-        private readonly DataGridView _productSummaryGrid;
-        private readonly DataGridView _weeklySummaryGrid;
+        private readonly DateTimePicker FStartDatePicker;
+        private readonly DateTimePicker FEndDatePicker;
+        private readonly Label FSummaryTotalLabel;
+        private readonly TextBox FProductIdFilterText;
+        private readonly DataGridView FProductSummaryGrid;
+        private readonly DataGridView FWeeklySummaryGrid;
 
         internal event EventHandler ExecuteRequested;
         internal event EventHandler CopyRequested;
@@ -60,26 +63,26 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _startDatePicker = new DateTimePicker {
+            FStartDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Short,
                 Value = DateTime.Today.AddDays(-6)
             };
             inputPanel.Controls.Add(startLabel, 0, 0);
-            inputPanel.Controls.Add(_startDatePicker, 1, 0);
+            inputPanel.Controls.Add(FStartDatePicker, 1, 0);
 
             var endLabel = new Label {
                 Text = "終了日",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
-            _endDatePicker = new DateTimePicker {
+            FEndDatePicker = new DateTimePicker {
                 Dock = DockStyle.Fill,
                 Format = DateTimePickerFormat.Short,
                 Value = DateTime.Today
             };
             inputPanel.Controls.Add(endLabel, 2, 0);
-            inputPanel.Controls.Add(_endDatePicker, 3, 0);
+            inputPanel.Controls.Add(FEndDatePicker, 3, 0);
 
             var buttonFlow = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -91,7 +94,7 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
             inputPanel.Controls.Add(buttonFlow, 0, 1);
             inputPanel.SetColumnSpan(buttonFlow, 4);
 
-            _productIdFilterText = AddLabeledTextBox(inputPanel, "絞込 商品ID", 0, 2);
+            FProductIdFilterText = AddLabeledTextBox(inputPanel, "絞込 商品ID", 0, 2);
             var filterButtons = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
                 FlowDirection = FlowDirection.LeftToRight,
@@ -102,7 +105,7 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
             inputPanel.Controls.Add(filterButtons, 2, 2);
             inputPanel.SetColumnSpan(filterButtons, 2);
 
-            _summaryTotalLabel = new Label {
+            FSummaryTotalLabel = new Label {
                 Dock = DockStyle.Fill,
                 Padding = new Padding(12, 0, 0, 0),
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -128,14 +131,14 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             }, 0, 0);
 
-            _productSummaryGrid = new DataGridView {
+            FProductSummaryGrid = new DataGridView {
                 Dock = DockStyle.Fill,
                 ReadOnly = true,
                 AutoGenerateColumns = true,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 MultiSelect = false
             };
-            productPanel.Controls.Add(_productSummaryGrid, 0, 1);
+            productPanel.Controls.Add(FProductSummaryGrid, 0, 1);
 
             var weeklyPanel = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
@@ -151,54 +154,54 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             }, 0, 0);
 
-            _weeklySummaryGrid = new DataGridView {
+            FWeeklySummaryGrid = new DataGridView {
                 Dock = DockStyle.Fill,
                 ReadOnly = true,
                 AutoGenerateColumns = true,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 MultiSelect = false
             };
-            weeklyPanel.Controls.Add(_weeklySummaryGrid, 0, 1);
+            weeklyPanel.Controls.Add(FWeeklySummaryGrid, 0, 1);
 
             split.Panel1.Controls.Add(productPanel);
             split.Panel2.Controls.Add(weeklyPanel);
 
             root.Controls.Add(inputPanel, 0, 0);
-            root.Controls.Add(_summaryTotalLabel, 0, 1);
+            root.Controls.Add(FSummaryTotalLabel, 0, 1);
             root.Controls.Add(split, 0, 2);
             Controls.Add(root);
         }
 
         internal DateTime GetStartDate() {
-            return _startDatePicker.Value.Date;
+            return FStartDatePicker.Value.Date;
         }
 
         internal DateTime GetEndDate() {
-            return _endDatePicker.Value.Date;
+            return FEndDatePicker.Value.Date;
         }
 
         internal string GetProductIdFilter() {
-            return _productIdFilterText.Text.Trim();
+            return FProductIdFilterText.Text.Trim();
         }
 
         internal void ClearProductIdFilter() {
-            _productIdFilterText.Text = string.Empty;
+            FProductIdFilterText.Text = string.Empty;
         }
 
         internal void SetSummaryText(string text) {
-            _summaryTotalLabel.Text = text;
+            FSummaryTotalLabel.Text = text;
         }
 
         internal void SetProductRows(IReadOnlyCollection<AggregationProductSummaryRow> rows) {
-            _productSummaryGrid.DataSource = null;
-            _productSummaryGrid.DataSource = rows.ToList();
-            DataGridHeaderMapper.Apply(_productSummaryGrid, ProductSummaryHeaderMap);
+            FProductSummaryGrid.DataSource = null;
+            FProductSummaryGrid.DataSource = rows.ToList();
+            DataGridHeaderMapper.Apply(FProductSummaryGrid, FProductSummaryHeaderMap);
         }
 
         internal void SetWeeklyRows(IReadOnlyCollection<AggregationWeeklySummaryRow> rows) {
-            _weeklySummaryGrid.DataSource = null;
-            _weeklySummaryGrid.DataSource = rows.ToList();
-            DataGridHeaderMapper.Apply(_weeklySummaryGrid, WeeklySummaryHeaderMap);
+            FWeeklySummaryGrid.DataSource = null;
+            FWeeklySummaryGrid.DataSource = rows.ToList();
+            DataGridHeaderMapper.Apply(FWeeklySummaryGrid, FWeeklySummaryHeaderMap);
         }
 
         internal void ResetDisplay() {

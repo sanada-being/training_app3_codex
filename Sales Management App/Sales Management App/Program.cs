@@ -1,10 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sales_Management_App {
+    /// <summary>
+    /// Program クラスです。
+    /// </summary>
     internal static class Program {
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
