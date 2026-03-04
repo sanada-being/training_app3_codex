@@ -134,21 +134,25 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
             }
 
             var row = _grid.SelectedRows[0];
-            var stockText = row.Cells["Stock"].Value == null ? "0" : row.Cells["Stock"].Value.ToString();
-            int stock;
-            int.TryParse(stockText, out stock);
 
             return new InventoryViewRow {
                 StoreId = ToText(row.Cells["StoreId"].Value),
                 ProductId = ToText(row.Cells["ProductId"].Value),
-                Stock = stock
+                Stock = ToInt32(row.Cells["Stock"].Value)
             };
         }
 
         internal void SetInput(InventoryInputModel input) {
-            _storeIdText.Text = input == null ? string.Empty : input.StoreId;
-            _productIdText.Text = input == null ? string.Empty : input.ProductId;
-            _quantityText.Text = input == null ? string.Empty : input.QuantityText;
+            if (input == null) {
+                _storeIdText.Text = string.Empty;
+                _productIdText.Text = string.Empty;
+                _quantityText.Text = string.Empty;
+                return;
+            }
+
+            _storeIdText.Text = input.StoreId;
+            _productIdText.Text = input.ProductId;
+            _quantityText.Text = input.QuantityText;
         }
 
         internal void ClearInput() {
@@ -173,7 +177,12 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
         }
 
         private static string ToText(object value) {
-            return value == null ? string.Empty : value.ToString();
+            return value?.ToString() ?? string.Empty;
+        }
+
+        private static int ToInt32(object value) {
+            int parsed;
+            return int.TryParse(ToText(value), out parsed) ? parsed : 0;
         }
 
         private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {

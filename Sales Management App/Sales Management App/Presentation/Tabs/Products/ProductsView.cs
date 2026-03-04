@@ -138,23 +138,28 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
             }
 
             var row = _grid.SelectedRows[0];
-            var unitPriceText = row.Cells["UnitPrice"].Value == null ? "0" : row.Cells["UnitPrice"].Value.ToString();
-            int unitPrice;
-            int.TryParse(unitPriceText, out unitPrice);
 
             return new ProductViewRow {
                 ProductId = ToText(row.Cells["ProductId"].Value),
                 ProductName = ToText(row.Cells["ProductName"].Value),
-                UnitPrice = unitPrice,
+                UnitPrice = ToInt32(row.Cells["UnitPrice"].Value),
                 Category = ToText(row.Cells["Category"].Value)
             };
         }
 
         internal void SetInput(ProductInputModel input) {
-            _productIdText.Text = input == null ? string.Empty : input.ProductId;
-            _productNameText.Text = input == null ? string.Empty : input.ProductName;
-            _unitPriceText.Text = input == null ? string.Empty : input.UnitPriceText;
-            _categoryText.Text = input == null ? string.Empty : input.Category;
+            if (input == null) {
+                _productIdText.Text = string.Empty;
+                _productNameText.Text = string.Empty;
+                _unitPriceText.Text = string.Empty;
+                _categoryText.Text = string.Empty;
+                return;
+            }
+
+            _productIdText.Text = input.ProductId;
+            _productNameText.Text = input.ProductName;
+            _unitPriceText.Text = input.UnitPriceText;
+            _categoryText.Text = input.Category;
         }
 
         internal void ClearInput() {
@@ -177,7 +182,12 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
         }
 
         private static string ToText(object value) {
-            return value == null ? string.Empty : value.ToString();
+            return value?.ToString() ?? string.Empty;
+        }
+
+        private static int ToInt32(object value) {
+            int parsed;
+            return int.TryParse(ToText(value), out parsed) ? parsed : 0;
         }
 
         private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {
