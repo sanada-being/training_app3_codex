@@ -45,8 +45,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
         }
 
         internal void RefreshProductOptions() {
-            var selected = _view.GetSelectedProductOption();
-            var selectedId = selected == null ? string.Empty : selected.ProductId;
+            var selectedId = _view.GetSelectedProductOption()?.ProductId ?? string.Empty;
             var options = _productService.GetAll(_appState.Products).Select(p => new SaleProductOption {
                 ProductId = p.ProductId,
                 ProductName = p.ProductName,
@@ -69,7 +68,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 SaleDate = s.SaleDate.ToString("yyyy/MM/dd"),
                 StoreId = s.StoreId,
                 ProductId = s.ProductId,
-                ProductName = productNameMap.ContainsKey(s.ProductId) ? productNameMap[s.ProductId] : "(未登録商品)",
+                ProductName = ResolveProductName(productNameMap, s.ProductId),
                 Quantity = s.Quantity,
                 SalesAmount = s.SalesAmount
             }).ToList();
@@ -152,6 +151,17 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
                 ProductId = input.ProductId,
                 Quantity = quantity
             };
+        }
+
+        private static string ResolveProductName(
+            System.Collections.Generic.IReadOnlyDictionary<string, string> productNameMap,
+            string productId) {
+            string productName;
+            if (productNameMap.TryGetValue(productId, out productName)) {
+                return productName;
+            }
+
+            return "(未登録商品)";
         }
     }
 }
