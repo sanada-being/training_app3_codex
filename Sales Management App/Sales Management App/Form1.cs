@@ -140,9 +140,9 @@ namespace Sales_Management_App {
         }
 
         private void InitializeShell() {
-            Text = "Sales Management App";
-            Width = 1100;
-            Height = 700;
+            this.Text = "Sales Management App";
+            this.Width = 1100;
+            this.Height = 700;
 
             var wTabs = new TabControl { Dock = DockStyle.Fill };
             wTabs.TabPages.Add(CreateProductTab());
@@ -150,7 +150,7 @@ namespace Sales_Management_App {
             wTabs.TabPages.Add(CreateInventoryHistoryTab());
             wTabs.TabPages.Add(CreateSalesTab());
             wTabs.TabPages.Add(CreateAggregationTab());
-            Controls.Add(wTabs);
+            this.Controls.Add(wTabs);
         }
 
         private TabPage CreateProductTab() {
