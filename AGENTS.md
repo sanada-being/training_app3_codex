@@ -166,3 +166,7 @@
   - `Sales/` : `SalesView` + `SalesController`
   - `Aggregation/` : `AggregationView` + `AggregationController`
 - タブ専用の表示モデル/入力モデル/補助型（例: `SaleProductOption`, `AggregationSnapshot`）は、必ず各タブ配下に配置する。
+
+## 20. コーディング規約の遵守
+- コード実装・修正を行う前に、必ず `CODING_CONVENTIONS.md` を確認し、記載された規約に従って実装する。
+- 規約に反する変更を入れる場合は、PRまたはレビューコメントで理由を明記し、差分と根拠を提示する。
