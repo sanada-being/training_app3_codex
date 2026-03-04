@@ -11,6 +11,9 @@ using Sales_Management_App.Presentation.Tabs.Products;
 using Sales_Management_App.Presentation.Tabs.Sales;
 
 namespace Sales_Management_App {
+    /// <summary>
+    /// 販売管理アプリケーションのメインフォームです。
+    /// </summary>
     public partial class Form1 : Form {
         private readonly ProductService _productService;
         private readonly InventoryService _inventoryService;
@@ -35,6 +38,9 @@ namespace Sales_Management_App {
         private AggregationView _aggregationView;
         private AggregationController _aggregationController;
 
+        /// <summary>
+        /// 依存関係を既定設定で初期化してフォームを生成します。
+        /// </summary>
         public Form1()
             : this(MainFormDependencies.CreateDefault()) {
         }
