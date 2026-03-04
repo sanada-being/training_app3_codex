@@ -8,7 +8,7 @@ namespace SalesManagementApp.Core.Application.Errors;
 public class ApplicationOperationException : Exception
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 業務操作エラー例外を初期化します。
     /// </summary>
     public ApplicationOperationException(string message)
         : base(message)
@@ -16,7 +16,7 @@ public class ApplicationOperationException : Exception
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 業務操作エラー例外を初期化します。
     /// </summary>
     public ApplicationOperationException(string message, Exception innerException)
         : base(message, innerException)

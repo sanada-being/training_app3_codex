@@ -16,7 +16,7 @@ public class DataProtectionServiceTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -27,7 +27,7 @@ public class DataProtectionServiceTests
 
     [TearDown]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行後に作業ディレクトリやリソースをクリーンアップします。
     /// </summary>
     public void TearDown()
     {
@@ -39,7 +39,7 @@ public class DataProtectionServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 対象ファイルが存在しない場合はバックアップを作成せず null を返すことを検証します。
     /// </summary>
     public void CreateBackupIfExists_WhenFileDoesNotExist_ReturnsNull()
     {
@@ -52,7 +52,7 @@ public class DataProtectionServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 復元対象のバックアップが存在しない場合に検証例外が発生することを確認します。
     /// </summary>
     public void RestoreLatestBackup_WhenNoBackupExists_ThrowsValidationException()
     {

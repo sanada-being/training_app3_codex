@@ -18,7 +18,7 @@ public class SalesAggregationServiceTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -35,7 +35,7 @@ public class SalesAggregationServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 指定した期間の境界日を含めて売上データを抽出できることを検証します。
     /// </summary>
     public void FilterByPeriod_IncludesBoundaryDates()
     {
@@ -48,7 +48,7 @@ public class SalesAggregationServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品別集計で数量と売上金額が正しく算出されることを検証します。
     /// </summary>
     public void GetProductSummaries_ReturnsAmountAndQuantityByProduct()
     {
@@ -64,7 +64,7 @@ public class SalesAggregationServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 週別集計で週ごとの売上金額が正しく算出されることを検証します。
     /// </summary>
     public void GetWeeklySummaries_ReturnsWeeklyTotals()
     {
@@ -77,7 +77,7 @@ public class SalesAggregationServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 期間内売上の総額を正しく算出できることを検証します。
     /// </summary>
     public void GetTotalSalesAmount_ReturnsPeriodAmount()
     {
@@ -88,7 +88,7 @@ public class SalesAggregationServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 開始日が終了日より後の期間を指定した場合に検証例外が発生することを確認します。
     /// </summary>
     public void FilterByPeriod_WhenStartDateIsAfterEndDate_ThrowsValidationException()
     {

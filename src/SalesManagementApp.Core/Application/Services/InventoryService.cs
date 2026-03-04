@@ -17,7 +17,7 @@ public class InventoryService
     private readonly InventoryHistoryService FHistoryService;
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫計算と履歴記録の依存関係を初期化します。
     /// </summary>
     public InventoryService()
         : this(new InventoryStockCalculator(), new InventoryHistoryService())
@@ -33,7 +33,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫一覧を店舗IDと商品IDで並べて返します。
     /// </summary>
     public IReadOnlyList<InventoryRecord> GetAll(IReadOnlyCollection<InventoryRecord> records)
     {
@@ -41,7 +41,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// しきい値以下の在庫を要発注対象として返します。
     /// </summary>
     public IReadOnlyList<InventoryRecord> GetReorderTargets(IReadOnlyCollection<InventoryRecord> records, int threshold = 5)
     {
@@ -49,7 +49,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 店舗IDと商品ID条件で在庫一覧を絞り込みます。
     /// </summary>
     public IReadOnlyList<InventoryRecord> GetFiltered(
         IReadOnlyCollection<InventoryRecord> records,
@@ -75,7 +75,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫を入庫数量分だけ加算します。
     /// </summary>
     public void AddStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
@@ -83,7 +83,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫を入庫数量分だけ加算します。
     /// </summary>
     public void AddStock(
         ICollection<InventoryRecord> records,
@@ -106,7 +106,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫を出庫数量分だけ減算します。
     /// </summary>
     public void RemoveStock(ICollection<InventoryRecord> records, string storeId, string productId, int quantity)
     {
@@ -114,7 +114,7 @@ public class InventoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫を出庫数量分だけ減算します。
     /// </summary>
     public void RemoveStock(
         ICollection<InventoryRecord> records,

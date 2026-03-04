@@ -9,7 +9,7 @@ public class SanityTests
 {
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// テストケース「Test Infrastructure Should Pass」の期待結果を検証します。
     /// </summary>
     public void TestInfrastructure_ShouldPass()
     {
@@ -18,7 +18,7 @@ public class SanityTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// テストケース「Core Project Reference Should Be Available」の期待結果を検証します。
     /// </summary>
     public void CoreProjectReference_ShouldBeAvailable()
     {

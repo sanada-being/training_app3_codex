@@ -13,7 +13,7 @@ namespace SalesManagementApp.Core.Application.Services;
 public class SalesAggregationService
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 指定期間内の売上データを抽出します。
     /// </summary>
     public IReadOnlyList<SaleRecord> FilterByPeriod(
         IReadOnlyCollection<SaleRecord> sales,
@@ -34,7 +34,7 @@ public class SalesAggregationService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品別の売上数量・売上金額サマリーを集計します。
     /// </summary>
     public IReadOnlyList<ProductSalesSummary> GetProductSummaries(
         IReadOnlyCollection<SaleRecord> sales,
@@ -54,7 +54,7 @@ public class SalesAggregationService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 週別の売上数量・売上金額サマリーを集計します。
     /// </summary>
     public IReadOnlyList<WeeklySalesSummary> GetWeeklySummaries(
         IReadOnlyCollection<SaleRecord> sales,
@@ -79,7 +79,7 @@ public class SalesAggregationService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 対象期間の総売上金額を算出します。
     /// </summary>
     public int GetTotalSalesAmount(
         IReadOnlyCollection<SaleRecord> sales,

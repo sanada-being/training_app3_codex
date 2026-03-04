@@ -12,7 +12,7 @@ namespace SalesManagementApp.Core.Application.Services;
 public class InventoryHistoryService
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴を発生日時の降順で返します。
     /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> GetAll(IReadOnlyCollection<InventoryHistoryRecord> histories)
     {
@@ -24,7 +24,7 @@ public class InventoryHistoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 条件に一致する在庫履歴のみを抽出して返します。
     /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> Filter(
         IReadOnlyCollection<InventoryHistoryRecord> histories,
@@ -81,7 +81,7 @@ public class InventoryHistoryService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫操作履歴を1件追加します。
     /// </summary>
     public void Record(
         ICollection<InventoryHistoryRecord> histories,

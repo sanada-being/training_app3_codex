@@ -14,7 +14,7 @@ public class ProductBuilder
     };
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Id を設定し、ビルダー自身を返します。
     /// </summary>
     public ProductBuilder WithId(string value)
     {
@@ -23,7 +23,7 @@ public class ProductBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Name を設定し、ビルダー自身を返します。
     /// </summary>
     public ProductBuilder WithName(string value)
     {
@@ -32,7 +32,7 @@ public class ProductBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Price を設定し、ビルダー自身を返します。
     /// </summary>
     public ProductBuilder WithPrice(int value)
     {
@@ -41,7 +41,7 @@ public class ProductBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Category を設定し、ビルダー自身を返します。
     /// </summary>
     public ProductBuilder WithCategory(string value)
     {
@@ -50,7 +50,7 @@ public class ProductBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 設定済みの値からテスト用データを生成して返します。
     /// </summary>
     public SalesManagementApp.Core.Domain.Entities.Product Build() => FProduct;
 }

@@ -15,7 +15,7 @@ public class AppBootstrapperTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -26,7 +26,7 @@ public class AppBootstrapperTests
 
     [TearDown]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行後に作業ディレクトリやリソースをクリーンアップします。
     /// </summary>
     public void TearDown()
     {
@@ -38,7 +38,7 @@ public class AppBootstrapperTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// リポジトリルートが存在する場合に各CSVを読み込み、最新の売上CSVパスを解決できることを検証します。
     /// </summary>
     public void LoadFromBaseDirectory_WhenRepositoryRootExists_LoadsStateAndResolvesLatestSalesFile()
     {
@@ -87,7 +87,7 @@ public class AppBootstrapperTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// リポジトリルートが見つからない場合に空のアプリケーション状態を返すことを検証します。
     /// </summary>
     public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_ReturnsEmptyState()
     {

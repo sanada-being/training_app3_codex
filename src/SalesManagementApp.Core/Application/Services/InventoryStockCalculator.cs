@@ -10,7 +10,7 @@ namespace SalesManagementApp.Core.Application.Services;
 public class InventoryStockCalculator
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 入庫後在庫を計算し、オーバーフローを検証します。
     /// </summary>
     public int CalculateAfterInbound(int currentStock, int inboundQuantity)
     {
@@ -28,7 +28,7 @@ public class InventoryStockCalculator
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 出庫後在庫を計算し、在庫不足を検証します。
     /// </summary>
     public int CalculateAfterOutbound(int currentStock, int outboundQuantity)
     {

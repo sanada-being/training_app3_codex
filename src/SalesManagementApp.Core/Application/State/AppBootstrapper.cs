@@ -16,7 +16,7 @@ public class AppBootstrapper
     private readonly AppDataRepository FRepository;
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 起動時データ復元に必要な依存オブジェクトを初期化します。
     /// </summary>
     public AppBootstrapper()
         : this(new AppDataRepository())
@@ -29,7 +29,7 @@ public class AppBootstrapper
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 基準ディレクトリからCSVを探索しアプリ状態を復元します。
     /// </summary>
     public AppState LoadFromBaseDirectory(string baseDirectory)
     {

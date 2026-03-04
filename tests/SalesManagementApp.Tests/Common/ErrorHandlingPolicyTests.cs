@@ -12,7 +12,7 @@ public class ErrorHandlingPolicyTests
 {
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 入力検証例外を渡した場合に、入力エラー向けの表示情報へ変換されることを検証します。
     /// </summary>
     public void CreatePresentation_WhenDomainValidationException_ReturnsValidationCategory()
     {
@@ -28,7 +28,7 @@ public class ErrorHandlingPolicyTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 業務処理例外を渡した場合に、業務エラー向けの表示情報へ変換されることを検証します。
     /// </summary>
     public void CreatePresentation_WhenApplicationOperationException_ReturnsOperationCategory()
     {
@@ -43,7 +43,7 @@ public class ErrorHandlingPolicyTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 想定外の例外を渡した場合に、汎用的なシステムエラー表示へ変換されることを検証します。
     /// </summary>
     public void CreatePresentation_WhenUnexpectedException_ReturnsGenericMessage()
     {

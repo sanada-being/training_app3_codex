@@ -16,7 +16,7 @@ public class InventoryHistoryServiceTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -58,7 +58,7 @@ public class InventoryHistoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 妥当な入力で在庫履歴を記録した場合に末尾へ追加されることを検証します。
     /// </summary>
     public void Record_WhenInputIsValid_AppendsHistory()
     {
@@ -79,7 +79,7 @@ public class InventoryHistoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 日付・店舗・商品・操作種別の条件で履歴を絞り込めることを検証します。
     /// </summary>
     public void Filter_WhenConditionsProvided_ReturnsMatchedRecords()
     {

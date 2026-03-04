@@ -6,15 +6,15 @@ namespace SalesManagementApp.Core.Domain.Entities;
 public class InventoryRecord
 {
     /// <summary>
-    /// 公開プロパティです。
+    /// 在庫を保有する店舗を識別するIDです。
     /// </summary>
     public string StoreId { get; set; } = string.Empty;
     /// <summary>
-    /// 公開プロパティです。
+    /// 在庫対象の商品を識別するIDです。
     /// </summary>
     public string ProductId { get; set; } = string.Empty;
     /// <summary>
-    /// 公開プロパティです。
+    /// 店舗と商品の組み合わせに対する現在在庫数です。
     /// </summary>
     public int Stock { get; set; }
 }

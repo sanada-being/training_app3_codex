@@ -19,7 +19,7 @@ public class InventoryServiceTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -29,7 +29,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫レコードが存在しない場合に新規作成して在庫を加算できることを検証します。
     /// </summary>
     public void AddStock_WhenRecordNotExists_CreatesAndAddsStock()
     {
@@ -41,7 +41,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 出庫数量が現在在庫を超える場合に検証例外が発生することを確認します。
     /// </summary>
     public void RemoveStock_WhenStockIsInsufficient_ThrowsValidationException()
     {
@@ -52,7 +52,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫数が閾値以下の商品だけを発注対象として取得できることを検証します。
     /// </summary>
     public void GetReorderTargets_WhenStockIsLessThanOrEqualToThreshold_ReturnsTargets()
     {
@@ -67,7 +67,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫加算が同時実行された場合でもデータ欠損なく在庫を更新できることを検証します。
     /// </summary>
     public void AddStock_WhenConcurrentRequestsOccur_UpdatesWithoutDataLoss()
     {
@@ -83,7 +83,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫加算結果がオーバーフローする場合に検証例外が発生することを確認します。
     /// </summary>
     public void AddStock_WhenStockCalculationOverflows_ThrowsValidationException()
     {
@@ -96,7 +96,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 履歴コレクションを指定した在庫加算で入庫履歴が記録されることを検証します。
     /// </summary>
     public void AddStock_WhenHistoryCollectionIsProvided_RecordsInboundHistory()
     {
@@ -117,7 +117,7 @@ public class InventoryServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 店舗IDと商品IDの条件で在庫レコードを絞り込めることを検証します。
     /// </summary>
     public void GetFiltered_WhenStoreAndProductFiltersSpecified_ReturnsMatchedRecords()
     {

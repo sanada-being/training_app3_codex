@@ -20,7 +20,7 @@ public class CsvDataStoreTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -31,7 +31,7 @@ public class CsvDataStoreTests
 
     [TearDown]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行後に作業ディレクトリやリソースをクリーンアップします。
     /// </summary>
     public void TearDown()
     {
@@ -43,7 +43,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 正常な商品CSVを読み込んだ場合に商品一覧を取得できることを検証します。
     /// </summary>
     public void ReadProducts_WhenCsvIsValid_ReturnsProducts()
     {
@@ -63,7 +63,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVの単価が不正な場合に検証例外が発生することを確認します。
     /// </summary>
     public void ReadProducts_WhenPriceIsInvalid_ThrowsValidationException()
     {
@@ -79,7 +79,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVの日付形式が不正な場合に検証例外が発生することを確認します。
     /// </summary>
     public void ReadSales_WhenDateFormatIsInvalid_ThrowsValidationException()
     {
@@ -95,7 +95,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上金額列がない売上CSVを読み込んだ場合に売上金額が0で取り込まれることを検証します。
     /// </summary>
     public void ReadSales_WhenHeaderWithoutSalesAmount_LoadsSalesWithZeroAmount()
     {
@@ -116,7 +116,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上金額列がない売上CSVを正規化し、計算した金額でCSVを書き換えることを検証します。
     /// </summary>
     public void ReadAndNormalizeSales_WhenHeaderWithoutSalesAmount_ComputesAmountAndRewritesCsv()
     {
@@ -143,7 +143,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVに商品マスタ未登録の商品IDが含まれる場合に検証例外が発生することを確認します。
     /// </summary>
     public void ReadAndNormalizeSales_WhenProductMasterIsMissing_ThrowsValidationException()
     {
@@ -165,7 +165,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上金額が単価×数量と一致しない場合に検証例外が発生することを確認します。
     /// </summary>
     public void ReadAndNormalizeSales_WhenSalesAmountDoesNotMatchUnitPrice_ThrowsValidationException()
     {
@@ -187,7 +187,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫データを書き込み後に再読込して同じ内容を取得できることを検証します。
     /// </summary>
     public void WriteAndReadInventories_WhenDataIsValid_RoundTrips()
     {
@@ -207,7 +207,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴データを書き込み後に再読込して同じ内容を取得できることを検証します。
     /// </summary>
     public void WriteAndReadInventoryHistories_WhenDataIsValid_RoundTrips()
     {
@@ -241,7 +241,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 既存ファイルに商品データを書き込む際にバックアップが作成されることを検証します。
     /// </summary>
     public void WriteProducts_WhenTargetExists_CreatesBackup()
     {
@@ -264,7 +264,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// バックアップが存在する場合に最新バックアップから元の内容へ復元できることを検証します。
     /// </summary>
     public void RestoreLatestBackup_WhenBackupsExist_RestoresPreviousContent()
     {
@@ -287,7 +287,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品データを書き込んだ際に操作ログが出力されることを検証します。
     /// </summary>
     public void WriteProducts_WritesOperationLog()
     {
@@ -306,7 +306,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVを非同期読み込みした場合に商品一覧を取得できることを検証します。
     /// </summary>
     public async Task ReadProductsAsync_WhenCsvIsValid_ReturnsProducts()
     {
@@ -325,7 +325,7 @@ public class CsvDataStoreTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVの非同期書き込みをキャンセルした場合にキャンセル例外が発生することを確認します。
     /// </summary>
     public void WriteProductsAsync_WhenCanceled_ThrowsOperationCanceledException()
     {

@@ -15,7 +15,7 @@ public class SalesService
     private readonly InventoryHistoryService FHistoryService;
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上登録時に使用する依存サービスを初期化します。
     /// </summary>
     public SalesService()
         : this(new InventoryHistoryService())
@@ -28,7 +28,7 @@ public class SalesService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上一覧を日付降順で返します。
     /// </summary>
     public IReadOnlyList<SaleRecord> GetAll(IReadOnlyCollection<SaleRecord> sales)
     {
@@ -40,7 +40,7 @@ public class SalesService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 期間・店舗・商品条件で売上一覧を絞り込みます。
     /// </summary>
     public IReadOnlyList<SaleRecord> GetFiltered(
         IReadOnlyCollection<SaleRecord> sales,
@@ -88,7 +88,7 @@ public class SalesService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上を登録し、在庫を減算します。
     /// </summary>
     public SaleRecord RegisterSale(
         ICollection<SaleRecord> sales,
@@ -100,7 +100,7 @@ public class SalesService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上を登録し、在庫を減算します。
     /// </summary>
     public SaleRecord RegisterSale(
         ICollection<SaleRecord> sales,

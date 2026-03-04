@@ -26,7 +26,7 @@ public class CsvDataStore
     private readonly DataProtectionService FDataProtectionService;
 
     /// <summary>
-    /// 公開メソッドです。
+    /// CSV読み書きとバックアップ処理を行うデータストアを初期化します。
     /// </summary>
     public CsvDataStore()
         : this(new DataProtectionService())
@@ -39,7 +39,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVを読み込み、商品一覧を返します。
     /// </summary>
     public IReadOnlyList<Product> ReadProducts(string filePath)
     {
@@ -69,7 +69,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVを非同期で読み込みます。
     /// </summary>
     public Task<IReadOnlyList<Product>> ReadProductsAsync(string filePath, CancellationToken cancellationToken = default)
     {
@@ -81,7 +81,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫CSVを読み込み、在庫一覧を返します。
     /// </summary>
     public IReadOnlyList<InventoryRecord> ReadInventories(string filePath)
     {
@@ -105,7 +105,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫CSVを非同期で読み込みます。
     /// </summary>
     public Task<IReadOnlyList<InventoryRecord>> ReadInventoriesAsync(string filePath, CancellationToken cancellationToken = default)
     {
@@ -117,7 +117,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴CSVを読み込み、履歴一覧を返します。
     /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistories(string filePath)
     {
@@ -145,7 +145,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴CSVを非同期で読み込みます。
     /// </summary>
     public Task<IReadOnlyList<InventoryHistoryRecord>> ReadInventoryHistoriesAsync(
         string filePath,
@@ -159,7 +159,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVを読み込み、売上一覧を返します。
     /// </summary>
     public IReadOnlyList<SaleRecord> ReadSales(string filePath)
     {
@@ -188,7 +188,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVを検証・正規化して売上一覧を返します。
     /// </summary>
     public IReadOnlyList<SaleRecord> ReadAndNormalizeSales(string filePath, IReadOnlyCollection<Product> products)
     {
@@ -240,7 +240,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVを非同期で読み込みます。
     /// </summary>
     public Task<IReadOnlyList<SaleRecord>> ReadSalesAsync(string filePath, CancellationToken cancellationToken = default)
     {
@@ -252,7 +252,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品一覧を商品CSVへ書き込みます。
     /// </summary>
     public void WriteProducts(string filePath, IEnumerable<Product> products)
     {
@@ -262,7 +262,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品一覧を商品CSVへ非同期で書き込みます。
     /// </summary>
     public Task WriteProductsAsync(string filePath, IEnumerable<Product> products, CancellationToken cancellationToken = default)
     {
@@ -274,7 +274,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫一覧を在庫CSVへ書き込みます。
     /// </summary>
     public void WriteInventories(string filePath, IEnumerable<InventoryRecord> records)
     {
@@ -284,7 +284,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫一覧を在庫CSVへ非同期で書き込みます。
     /// </summary>
     public Task WriteInventoriesAsync(string filePath, IEnumerable<InventoryRecord> records, CancellationToken cancellationToken = default)
     {
@@ -296,7 +296,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴一覧を在庫履歴CSVへ書き込みます。
     /// </summary>
     public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
     {
@@ -307,7 +307,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴一覧を在庫履歴CSVへ非同期で書き込みます。
     /// </summary>
     public Task WriteInventoryHistoriesAsync(
         string filePath,
@@ -322,7 +322,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上一覧を売上CSVへ書き込みます。
     /// </summary>
     public void WriteSales(string filePath, IEnumerable<SaleRecord> records)
     {
@@ -333,7 +333,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上一覧を売上CSVへ非同期で書き込みます。
     /// </summary>
     public Task WriteSalesAsync(string filePath, IEnumerable<SaleRecord> records, CancellationToken cancellationToken = default)
     {
@@ -345,7 +345,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 対象ファイルに対応するバックアップ一覧を取得します。
     /// </summary>
     public IReadOnlyList<string> GetBackups(string filePath)
     {
@@ -353,7 +353,7 @@ public class CsvDataStore
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 対象ファイルを最新バックアップで復元します。
     /// </summary>
     public void RestoreLatestBackup(string filePath)
     {

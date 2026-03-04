@@ -14,7 +14,7 @@ namespace SalesManagementApp.Core.Application.Services;
 public class ProductService
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品一覧を商品ID順に並べて返します。
     /// </summary>
     public IReadOnlyList<Product> GetAll(IReadOnlyCollection<Product> products)
     {
@@ -22,7 +22,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品ID・商品名・カテゴリ条件で商品一覧を絞り込みます。
     /// </summary>
     public IReadOnlyList<Product> GetFiltered(
         IReadOnlyCollection<Product> products,
@@ -55,7 +55,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 入力内容を検証し、商品を登録します。
     /// </summary>
     public void Register(ICollection<Product> products, Product input)
     {
@@ -77,7 +77,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 指定した商品IDの商品情報を更新します。
     /// </summary>
     public void Update(ICollection<Product> products, Product input)
     {
@@ -103,7 +103,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 指定した商品IDの商品を削除します。
     /// </summary>
     public void Delete(ICollection<Product> products, string productId)
     {
@@ -119,7 +119,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品情報の必須項目と値域を検証します。
     /// </summary>
     public void Validate(Product product)
     {

@@ -4,7 +4,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Domain.Interfaces;
 
 /// <summary>
-/// インターフェイスです。
+/// 商品データ永続化の契約を定義します。
 /// </summary>
 public interface IProductRepository
 {

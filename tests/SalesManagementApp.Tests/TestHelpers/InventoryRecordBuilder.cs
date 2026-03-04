@@ -15,7 +15,7 @@ public class InventoryRecordBuilder
     };
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの StoreId を設定し、ビルダー自身を返します。
     /// </summary>
     public InventoryRecordBuilder WithStoreId(string value)
     {
@@ -24,7 +24,7 @@ public class InventoryRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの ProductId を設定し、ビルダー自身を返します。
     /// </summary>
     public InventoryRecordBuilder WithProductId(string value)
     {
@@ -33,7 +33,7 @@ public class InventoryRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Stock を設定し、ビルダー自身を返します。
     /// </summary>
     public InventoryRecordBuilder WithStock(int value)
     {
@@ -42,7 +42,7 @@ public class InventoryRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 設定済みの値からテスト用データを生成して返します。
     /// </summary>
     public InventoryRecord Build() => FRecord;
 }

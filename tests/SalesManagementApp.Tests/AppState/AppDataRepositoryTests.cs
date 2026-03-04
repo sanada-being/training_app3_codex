@@ -18,7 +18,7 @@ public class AppDataRepositoryTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -29,7 +29,7 @@ public class AppDataRepositoryTests
 
     [TearDown]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行後に作業ディレクトリやリソースをクリーンアップします。
     /// </summary>
     public void TearDown()
     {
@@ -41,7 +41,7 @@ public class AppDataRepositoryTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVが存在しない場合に空の一覧を返すことを検証します。
     /// </summary>
     public void ReadProductsIfExists_WhenFileDoesNotExist_ReturnsEmpty()
     {
@@ -54,7 +54,7 @@ public class AppDataRepositoryTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVが旧ヘッダー形式の場合に売上金額を補完し、CSVを正規化できることを検証します。
     /// </summary>
     public void ReadAndNormalizeSalesIfExists_WhenLegacyHeader_ReturnsSalesAndNormalizesCsv()
     {
@@ -79,7 +79,7 @@ public class AppDataRepositoryTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴を書き込んだ後に再読込して、値が保持されることを検証します。
     /// </summary>
     public void WriteInventoryHistories_WhenPathIsProvided_WritesCsv()
     {

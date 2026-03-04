@@ -9,7 +9,7 @@ namespace SalesManagementApp.Core.Application.Validation;
 public static class ValidationGuard
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 文字列が必須入力条件を満たすことを検証します。
     /// </summary>
     public static string RequireNotEmpty(string? value, string fieldName)
     {
@@ -22,7 +22,7 @@ public static class ValidationGuard
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 数値が正数であることを検証します。
     /// </summary>
     public static int RequirePositive(int value, string fieldName)
     {
@@ -35,7 +35,7 @@ public static class ValidationGuard
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 数値が0以上であることを検証します。
     /// </summary>
     public static int RequireNonNegative(int value, string fieldName)
     {
@@ -48,7 +48,7 @@ public static class ValidationGuard
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 開始日が終了日以前であることを検証します。
     /// </summary>
     public static void RequireDateRange(DateTime startDate, DateTime endDate)
     {

@@ -21,7 +21,7 @@ public class SalesServiceTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -39,7 +39,7 @@ public class SalesServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 正常な売上を登録した場合に売上追加と在庫減算が同時に行われることを検証します。
     /// </summary>
     public void RegisterSale_WhenInputIsValid_AddsSaleAndReducesInventory()
     {
@@ -54,7 +54,7 @@ public class SalesServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上数量が在庫数を超える場合に検証例外が発生しデータが変更されないことを確認します。
     /// </summary>
     public void RegisterSale_WhenStockIsInsufficient_ThrowsValidationException()
     {
@@ -67,7 +67,7 @@ public class SalesServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品マスタに存在しない商品IDで売上登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void RegisterSale_WhenProductNotFound_ThrowsValidationException()
     {
@@ -78,7 +78,7 @@ public class SalesServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上数量が正数でない場合に検証例外が発生することを確認します。
     /// </summary>
     public void RegisterSale_WhenQuantityIsNotPositive_ThrowsValidationException()
     {
@@ -89,7 +89,7 @@ public class SalesServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 履歴コレクションを指定した売上登録で売上操作履歴が記録されることを検証します。
     /// </summary>
     public void RegisterSale_WhenHistoryCollectionIsProvided_RecordsSaleHistory()
     {
@@ -111,7 +111,7 @@ public class SalesServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 日付範囲と店舗条件に一致する売上だけを絞り込めることを検証します。
     /// </summary>
     public void GetFiltered_WhenDateAndStoreFilterSpecified_ReturnsMatchedSales()
     {

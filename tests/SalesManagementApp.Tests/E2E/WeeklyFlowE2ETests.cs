@@ -24,7 +24,7 @@ public class WeeklyFlowE2ETests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -41,7 +41,7 @@ public class WeeklyFlowE2ETests
 
     [TearDown]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行後に作業ディレクトリやリソースをクリーンアップします。
     /// </summary>
     public void TearDown()
     {
@@ -53,7 +53,7 @@ public class WeeklyFlowE2ETests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// テストケース「Weekly Flow Csv Import To Aggregation Completes Successfully」の期待結果を検証します。
     /// </summary>
     public void WeeklyFlow_CsvImportToAggregation_CompletesSuccessfully()
     {

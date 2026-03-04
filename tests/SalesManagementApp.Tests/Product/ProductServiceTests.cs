@@ -16,7 +16,7 @@ public class ProductServiceTests
 
     [SetUp]
     /// <summary>
-    /// 公開メソッドです。
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
     /// </summary>
     public void SetUp()
     {
@@ -26,7 +26,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 正常な商品情報を登録した場合に商品一覧へ追加されることを検証します。
     /// </summary>
     public void Register_WhenInputIsValid_AddsProduct()
     {
@@ -40,7 +40,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 既存と同じ商品IDを登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void Register_WhenProductIdIsDuplicate_ThrowsValidationException()
     {
@@ -52,7 +52,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 末尾空白を含む重複商品IDを登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void Register_WhenProductIdHasTrailingSpaceAndDuplicateExists_ThrowsValidationException()
     {
@@ -64,7 +64,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 前後空白を除去すると重複する商品名を登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void Register_WhenProductNameIsDuplicateAfterTrim_ThrowsValidationException()
     {
@@ -76,7 +76,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 大文字小文字だけが異なる商品名を登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void Register_WhenProductNameDiffersOnlyByCase_ThrowsValidationException()
     {
@@ -88,7 +88,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 全角半角だけが異なる商品名を登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void Register_WhenProductNameDiffersOnlyByFullHalfWidth_ThrowsValidationException()
     {
@@ -100,7 +100,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 単価が負数の商品を登録した場合に検証例外が発生することを確認します。
     /// </summary>
     public void Register_WhenPriceIsNegative_ThrowsValidationException()
     {
@@ -111,7 +111,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 既存商品の更新を行った場合に名称・単価・カテゴリが反映されることを検証します。
     /// </summary>
     public void Update_WhenProductExists_UpdatesFields()
     {
@@ -127,7 +127,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品IDに末尾空白があっても対象商品を特定して更新できることを検証します。
     /// </summary>
     public void Update_WhenProductIdHasTrailingSpace_FindsAndUpdatesTarget()
     {
@@ -144,7 +144,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 更新後の商品名が他商品と重複する場合に検証例外が発生することを確認します。
     /// </summary>
     public void Update_WhenProductNameDuplicatesAnotherProduct_ThrowsValidationException()
     {
@@ -157,7 +157,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 既存商品を削除した場合に商品一覧から対象が除外されることを検証します。
     /// </summary>
     public void Delete_WhenProductExists_RemovesProduct()
     {
@@ -170,7 +170,7 @@ public class ProductServiceTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// ID・名称・カテゴリ条件に一致する商品だけを絞り込めることを検証します。
     /// </summary>
     public void GetFiltered_WhenConditionsMatch_ReturnsFilteredProducts()
     {

@@ -12,7 +12,7 @@ public class ValidationGuardTests
 {
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 必須項目に空白文字列を指定した場合に検証例外が発生することを確認します。
     /// </summary>
     public void RequireNotEmpty_WhenValueIsBlank_ThrowsDomainValidationException()
     {
@@ -23,7 +23,7 @@ public class ValidationGuardTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 正数必須の値に0を指定した場合に検証例外が発生することを確認します。
     /// </summary>
     public void RequirePositive_WhenValueIsZero_ThrowsDomainValidationException()
     {
@@ -34,7 +34,7 @@ public class ValidationGuardTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// 開始日が終了日より後の期間を指定した場合に検証例外が発生することを確認します。
     /// </summary>
     public void RequireDateRange_WhenStartDateAfterEndDate_ThrowsDomainValidationException()
     {

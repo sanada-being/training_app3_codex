@@ -17,7 +17,7 @@ public class SaleRecordBuilder
     };
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Date を設定し、ビルダー自身を返します。
     /// </summary>
     public SaleRecordBuilder WithDate(DateTime value)
     {
@@ -26,7 +26,7 @@ public class SaleRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの StoreId を設定し、ビルダー自身を返します。
     /// </summary>
     public SaleRecordBuilder WithStoreId(string value)
     {
@@ -35,7 +35,7 @@ public class SaleRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの ProductId を設定し、ビルダー自身を返します。
     /// </summary>
     public SaleRecordBuilder WithProductId(string value)
     {
@@ -44,7 +44,7 @@ public class SaleRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの Quantity を設定し、ビルダー自身を返します。
     /// </summary>
     public SaleRecordBuilder WithQuantity(int value)
     {
@@ -53,7 +53,7 @@ public class SaleRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// テストデータの SalesAmount を設定し、ビルダー自身を返します。
     /// </summary>
     public SaleRecordBuilder WithSalesAmount(int value)
     {
@@ -62,7 +62,7 @@ public class SaleRecordBuilder
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 設定済みの値からテスト用データを生成して返します。
     /// </summary>
     public SaleRecord Build() => FRecord;
 }

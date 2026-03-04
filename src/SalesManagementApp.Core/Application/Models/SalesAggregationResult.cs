@@ -8,15 +8,15 @@ namespace SalesManagementApp.Core.Application.Models;
 public class ProductSalesSummary
 {
     /// <summary>
-    /// 公開プロパティです。
+    /// 集計対象の商品を識別するIDです。
     /// </summary>
     public string ProductId { get; set; } = string.Empty;
     /// <summary>
-    /// 公開プロパティです。
+    /// 対象期間に販売した合計数量です。
     /// </summary>
     public int TotalQuantity { get; set; }
     /// <summary>
-    /// 公開プロパティです。
+    /// 対象期間の合計売上金額です。
     /// </summary>
     public int TotalSalesAmount { get; set; }
 }
@@ -27,19 +27,19 @@ public class ProductSalesSummary
 public class WeeklySalesSummary
 {
     /// <summary>
-    /// 公開プロパティです。
+    /// 集計対象週の開始日です。
     /// </summary>
     public DateTime WeekStartDate { get; set; }
     /// <summary>
-    /// 公開プロパティです。
+    /// 集計対象週の終了日です。
     /// </summary>
     public DateTime WeekEndDate { get; set; }
     /// <summary>
-    /// 公開プロパティです。
+    /// 当該週に販売した合計数量です。
     /// </summary>
     public int TotalQuantity { get; set; }
     /// <summary>
-    /// 公開プロパティです。
+    /// 当該週の合計売上金額です。
     /// </summary>
     public int TotalSalesAmount { get; set; }
 }

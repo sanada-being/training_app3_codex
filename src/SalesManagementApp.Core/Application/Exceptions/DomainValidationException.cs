@@ -8,7 +8,7 @@ namespace SalesManagementApp.Core.Application.Exceptions;
 public class DomainValidationException : Exception
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// ドメイン検証エラー例外を初期化します。
     /// </summary>
     public DomainValidationException(string message) : base(message)
     {

@@ -4,12 +4,21 @@ using SalesManagementApp.Core.Application.Exceptions;
 namespace SalesManagementApp.Core.Application.Errors;
 
 /// <summary>
-/// 列挙体です。
+/// 例外を画面表示用途で分類する種別を定義します。
 /// </summary>
 public enum ErrorCategory
 {
+    /// <summary>
+    /// 入力値や業務ルール違反によるエラーです。
+    /// </summary>
     Validation,
+    /// <summary>
+    /// 業務処理の実行失敗を示すエラーです。
+    /// </summary>
     Operation,
+    /// <summary>
+    /// 想定外の例外に分類されるエラーです。
+    /// </summary>
     Unexpected
 }
 
@@ -19,19 +28,19 @@ public enum ErrorCategory
 public class ErrorPresentation
 {
     /// <summary>
-    /// 公開プロパティです。
+    /// ダイアログや通知に表示するエラータイトルです。
     /// </summary>
     public string Title { get; set; } = string.Empty;
     /// <summary>
-    /// 公開プロパティです。
+    /// ユーザーに提示する説明メッセージです。
     /// </summary>
     public string UserMessage { get; set; } = string.Empty;
     /// <summary>
-    /// 公開プロパティです。
+    /// ログ出力時に使用する優先度レベルです。
     /// </summary>
     public string LogLevel { get; set; } = string.Empty;
     /// <summary>
-    /// 公開プロパティです。
+    /// エラーの取り扱い区分を示すカテゴリです。
     /// </summary>
     public ErrorCategory Category { get; set; }
 }
@@ -42,7 +51,7 @@ public class ErrorPresentation
 public static class ErrorHandlingPolicy
 {
     /// <summary>
-    /// 公開メソッドです。
+    /// 例外種別に応じた画面表示用エラー情報を生成します。
     /// </summary>
     public static ErrorPresentation CreatePresentation(Exception ex)
     {

@@ -10,7 +10,7 @@ public class BuilderTests
 {
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// テストケース「Product Builder With Price Reflects Specified Value」の期待結果を検証します。
     /// </summary>
     public void ProductBuilder_WithPrice_ReflectsSpecifiedValue()
     {
@@ -20,7 +20,7 @@ public class BuilderTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// テストケース「Inventory Record Builder With Stock Reflects Specified Value」の期待結果を検証します。
     /// </summary>
     public void InventoryRecordBuilder_WithStock_ReflectsSpecifiedValue()
     {
@@ -30,7 +30,7 @@ public class BuilderTests
 
     [Test]
     /// <summary>
-    /// 公開メソッドです。
+    /// テストケース「Sale Record Builder With Quantity Reflects Specified Value」の期待結果を検証します。
     /// </summary>
     public void SaleRecordBuilder_WithQuantity_ReflectsSpecifiedValue()
     {

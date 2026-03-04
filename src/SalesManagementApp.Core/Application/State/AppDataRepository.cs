@@ -14,7 +14,7 @@ public class AppDataRepository
     private readonly CsvDataStore FCsvDataStore;
 
     /// <summary>
-    /// 公開メソッドです。
+    /// CSVデータ操作に使用するデータストアを初期化します。
     /// </summary>
     public AppDataRepository()
         : this(new CsvDataStore())
@@ -27,7 +27,7 @@ public class AppDataRepository
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 商品CSVが存在する場合に商品一覧を読み込みます。
     /// </summary>
     public IReadOnlyList<Product> ReadProductsIfExists(string filePath)
     {
@@ -35,7 +35,7 @@ public class AppDataRepository
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫CSVが存在する場合に在庫一覧を読み込みます。
     /// </summary>
     public IReadOnlyList<InventoryRecord> ReadInventoriesIfExists(string filePath)
     {
@@ -43,7 +43,7 @@ public class AppDataRepository
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 売上CSVが存在する場合に正規化を行って読み込みます。
     /// </summary>
     public IReadOnlyList<SaleRecord> ReadAndNormalizeSalesIfExists(string filePath, IReadOnlyCollection<Product> products)
     {
@@ -51,7 +51,7 @@ public class AppDataRepository
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴CSVが存在する場合に履歴一覧を読み込みます。
     /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistoriesIfExists(string filePath)
     {
@@ -59,7 +59,7 @@ public class AppDataRepository
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 在庫履歴一覧をCSVへ書き込みます。
     /// </summary>
     public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
     {

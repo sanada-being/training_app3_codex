@@ -17,7 +17,7 @@ public class DataProtectionService
     private const string C_LogFileName = "operations.log";
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 既存ファイルがある場合にバックアップを作成します。
     /// </summary>
     public string? CreateBackupIfExists(string filePath)
     {
@@ -41,7 +41,7 @@ public class DataProtectionService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 対象ファイルのバックアップ一覧を取得します。
     /// </summary>
     public IReadOnlyList<string> GetBackupFiles(string filePath)
     {
@@ -58,7 +58,7 @@ public class DataProtectionService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 対象ファイルを最新バックアップで復元します。
     /// </summary>
     public void RestoreLatestBackup(string filePath)
     {
@@ -78,7 +78,7 @@ public class DataProtectionService
     }
 
     /// <summary>
-    /// 公開メソッドです。
+    /// 操作ログをログファイルに追記します。
     /// </summary>
     public void WriteLog(string filePath, string level, string message)
     {
