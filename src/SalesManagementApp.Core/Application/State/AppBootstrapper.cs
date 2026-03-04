@@ -5,101 +5,110 @@ using System.Text.RegularExpressions;
 
 namespace SalesManagementApp.Core.Application.State;
 
+/// <summary>
+/// 起動時にCSVからアプリケーション状態を復元します。
+/// </summary>
 public class AppBootstrapper
 {
-    private static readonly Regex SalesFileNamePattern =
+    private static readonly Regex FSalesFileNamePattern =
         new(@"^sales_(\d{8})\.csv$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-    private readonly AppDataRepository _repository;
+    private readonly AppDataRepository FRepository;
 
+    /// <summary>
+    /// 起動時データ復元に必要な依存オブジェクトを初期化します。
+    /// </summary>
     public AppBootstrapper()
         : this(new AppDataRepository())
     {
     }
 
-    internal AppBootstrapper(AppDataRepository repository)
+    internal AppBootstrapper(AppDataRepository vRepository)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        FRepository = vRepository ?? throw new ArgumentNullException(nameof(vRepository));
     }
 
-    public AppState LoadFromBaseDirectory(string baseDirectory)
+    /// <summary>
+    /// 基準ディレクトリからCSVを探索しアプリ状態を復元します。
+    /// </summary>
+    public AppState LoadFromBaseDirectory(string vBaseDirectory)
     {
-        var rootPath = FindRepositoryRoot(baseDirectory);
-        if (string.IsNullOrWhiteSpace(rootPath))
+        var wRootPath = FindRepositoryRoot(vBaseDirectory);
+        if (string.IsNullOrWhiteSpace(wRootPath))
         {
             return new AppState();
         }
 
-        var state = new AppState
+        var wState = new AppState
         {
-            RepositoryRootPath = rootPath,
-            ProductsPath = Path.Combine(rootPath, "products.csv"),
-            InventoryPath = Path.Combine(rootPath, "inventory.csv"),
-            InventoryHistoryPath = Path.Combine(rootPath, "inventory_history.csv")
+            RepositoryRootPath = wRootPath,
+            ProductsPath = Path.Combine(wRootPath, "products.csv"),
+            InventoryPath = Path.Combine(wRootPath, "inventory.csv"),
+            InventoryHistoryPath = Path.Combine(wRootPath, "inventory_history.csv")
         };
-        state.SalesPath = ResolveSalesPath(rootPath);
+        wState.SalesPath = ResolveSalesPath(wRootPath);
 
-        state.Products.AddRange(_repository.ReadProductsIfExists(state.ProductsPath));
-        state.Inventories.AddRange(_repository.ReadInventoriesIfExists(state.InventoryPath));
-        state.Sales.AddRange(_repository.ReadAndNormalizeSalesIfExists(state.SalesPath, state.Products));
-        state.InventoryHistories.AddRange(_repository.ReadInventoryHistoriesIfExists(state.InventoryHistoryPath));
+        wState.Products.AddRange(FRepository.ReadProductsIfExists(wState.ProductsPath));
+        wState.Inventories.AddRange(FRepository.ReadInventoriesIfExists(wState.InventoryPath));
+        wState.Sales.AddRange(FRepository.ReadAndNormalizeSalesIfExists(wState.SalesPath, wState.Products));
+        wState.InventoryHistories.AddRange(FRepository.ReadInventoryHistoriesIfExists(wState.InventoryHistoryPath));
 
-        return state;
+        return wState;
     }
 
-    private static string FindRepositoryRoot(string baseDirectory)
+    private static string FindRepositoryRoot(string vBaseDirectory)
     {
-        var current = new DirectoryInfo(baseDirectory);
-        var depth = 0;
+        var wCurrent = new DirectoryInfo(vBaseDirectory);
+        var wDepth = 0;
 
-        while (current is not null && depth < 10)
+        while (wCurrent is not null && wDepth < 10)
         {
-            if (File.Exists(Path.Combine(current.FullName, "AGENTS.md")))
+            if (File.Exists(Path.Combine(wCurrent.FullName, "AGENTS.md")))
             {
-                return current.FullName;
+                return wCurrent.FullName;
             }
 
-            current = current.Parent;
-            depth++;
+            wCurrent = wCurrent.Parent;
+            wDepth++;
         }
 
         return string.Empty;
     }
 
-    private static string ResolveSalesPath(string rootPath)
+    private static string ResolveSalesPath(string vRootPath)
     {
-        var selectedPath = string.Empty;
-        var selectedDate = DateTime.MinValue;
-        var files = Directory.GetFiles(rootPath, "sales_*.csv");
+        var wSelectedPath = string.Empty;
+        var wSelectedDate = DateTime.MinValue;
+        var wFiles = Directory.GetFiles(vRootPath, "sales_*.csv");
 
-        foreach (var filePath in files)
+        foreach (var wFilePath in wFiles)
         {
-            var fileName = Path.GetFileName(filePath);
-            var match = SalesFileNamePattern.Match(fileName);
-            if (!match.Success)
+            var wFileName = Path.GetFileName(wFilePath);
+            var wMatch = FSalesFileNamePattern.Match(wFileName);
+            if (!wMatch.Success)
             {
                 continue;
             }
 
             if (!DateTime.TryParseExact(
-                    match.Groups[1].Value,
+                    wMatch.Groups[1].Value,
                     "yyyyMMdd",
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.None,
-                    out var parsedDate))
+                    out var wParsedDate))
             {
                 continue;
             }
 
-            if (parsedDate <= selectedDate)
+            if (wParsedDate <= wSelectedDate)
             {
                 continue;
             }
 
-            selectedDate = parsedDate;
-            selectedPath = filePath;
+            wSelectedDate = wParsedDate;
+            wSelectedPath = wFilePath;
         }
 
-        return selectedPath;
+        return wSelectedPath;
     }
 }

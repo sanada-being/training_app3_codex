@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
+    /// <summary>
+    /// 売上集計の週別サマリー行を表すモデルです。
+    /// </summary>
     internal sealed class AggregationWeeklySummaryRow {
         /// <summary>
         /// 週の表示文字列を取得または設定します。

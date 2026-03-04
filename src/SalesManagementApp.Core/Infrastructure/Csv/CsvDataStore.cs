@@ -12,448 +12,512 @@ using SalesManagementApp.Core.Infrastructure.DataProtection;
 
 namespace SalesManagementApp.Core.Infrastructure.Csv;
 
+/// <summary>
+/// CSVファイルの読み書きを担当するデータストアです。
+/// </summary>
 public class CsvDataStore
 {
-    private const string ProductsHeader = "ProductId,ProductName,UnitPrice,Category";
-    private const string InventoryHeader = "StoreId,ProductId,Stock";
-    private const string SalesHeaderLegacy = "SaleDate,StoreId,ProductId,Quantity";
-    private const string SalesHeaderStandard = "SaleDate,StoreId,ProductId,Quantity,SalesAmount";
-    private const string InventoryHistoryHeader = "OccurredAt,OperationType,StoreId,ProductId,Quantity,ResultStock,Result";
+    private const string C_ProductsHeader = "ProductId,ProductName,UnitPrice,Category";
+    private const string C_InventoryHeader = "StoreId,ProductId,Stock";
+    private const string C_SalesHeaderLegacy = "SaleDate,StoreId,ProductId,Quantity";
+    private const string C_SalesHeaderStandard = "SaleDate,StoreId,ProductId,Quantity,SalesAmount";
+    private const string C_InventoryHistoryHeader = "OccurredAt,OperationType,StoreId,ProductId,Quantity,ResultStock,Result";
 
-    private readonly DataProtectionService _dataProtectionService;
+    private readonly DataProtectionService FDataProtectionService;
 
+    /// <summary>
+    /// CSV読み書きとバックアップ処理を行うデータストアを初期化します。
+    /// </summary>
     public CsvDataStore()
         : this(new DataProtectionService())
     {
     }
 
-    internal CsvDataStore(DataProtectionService dataProtectionService)
+    internal CsvDataStore(DataProtectionService vDataProtectionService)
     {
-        _dataProtectionService = dataProtectionService;
+        FDataProtectionService = vDataProtectionService;
     }
 
-    public IReadOnlyList<Product> ReadProducts(string filePath)
+    /// <summary>
+    /// 商品CSVを読み込み、商品一覧を返します。
+    /// </summary>
+    public IReadOnlyList<Product> ReadProducts(string vFilePath)
     {
-        var rows = ReadDataRows(filePath, out _, ProductsHeader);
-        var result = new List<Product>();
+        var wRows = ReadDataRows(vFilePath, out _, C_ProductsHeader);
+        var wResult = new List<Product>();
 
-        for (var i = 0; i < rows.Count; i++)
+        for (var i = 0; i < wRows.Count; i++)
         {
-            var lineNo = i + 2;
-            var cells = SplitAndValidateColumns(rows[i], 4, lineNo);
+            var wLineNo = i + 2;
+            var wCells = SplitAndValidateColumns(wRows[i], 4, wLineNo);
 
-            var productId = Require(cells[0], nameof(Product.ProductId), lineNo);
-            var name = Require(cells[1], nameof(Product.ProductName), lineNo);
-            var unitPrice = ParseInt(cells[2], nameof(Product.UnitPrice), lineNo, min: 0);
-            var category = Require(cells[3], nameof(Product.Category), lineNo);
+            var wProductId = Require(wCells[0], nameof(Product.ProductId), wLineNo);
+            var wName = Require(wCells[1], nameof(Product.ProductName), wLineNo);
+            var wUnitPrice = ParseInt(wCells[2], nameof(Product.UnitPrice), wLineNo, vMin: 0);
+            var wCategory = Require(wCells[3], nameof(Product.Category), wLineNo);
 
-            result.Add(new Product
+            wResult.Add(new Product
             {
-                ProductId = productId,
-                ProductName = name,
-                UnitPrice = unitPrice,
-                Category = category
+                ProductId = wProductId,
+                ProductName = wName,
+                UnitPrice = wUnitPrice,
+                Category = wCategory
             });
         }
 
-        return result;
+        return wResult;
     }
 
-    public Task<IReadOnlyList<Product>> ReadProductsAsync(string filePath, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 商品CSVを非同期で読み込みます。
+    /// </summary>
+    public Task<IReadOnlyList<Product>> ReadProductsAsync(string vFilePath, CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return ReadProducts(filePath);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            return ReadProducts(vFilePath);
+        }, vCancellationToken);
     }
 
-    public IReadOnlyList<InventoryRecord> ReadInventories(string filePath)
+    /// <summary>
+    /// 在庫CSVを読み込み、在庫一覧を返します。
+    /// </summary>
+    public IReadOnlyList<InventoryRecord> ReadInventories(string vFilePath)
     {
-        var rows = ReadDataRows(filePath, out _, InventoryHeader);
-        var result = new List<InventoryRecord>();
+        var wRows = ReadDataRows(vFilePath, out _, C_InventoryHeader);
+        var wResult = new List<InventoryRecord>();
 
-        for (var i = 0; i < rows.Count; i++)
+        for (var i = 0; i < wRows.Count; i++)
         {
-            var lineNo = i + 2;
-            var cells = SplitAndValidateColumns(rows[i], 3, lineNo);
+            var wLineNo = i + 2;
+            var wCells = SplitAndValidateColumns(wRows[i], 3, wLineNo);
 
-            result.Add(new InventoryRecord
+            wResult.Add(new InventoryRecord
             {
-                StoreId = Require(cells[0], nameof(InventoryRecord.StoreId), lineNo),
-                ProductId = Require(cells[1], nameof(InventoryRecord.ProductId), lineNo),
-                Stock = ParseInt(cells[2], nameof(InventoryRecord.Stock), lineNo, min: 0)
+                StoreId = Require(wCells[0], nameof(InventoryRecord.StoreId), wLineNo),
+                ProductId = Require(wCells[1], nameof(InventoryRecord.ProductId), wLineNo),
+                Stock = ParseInt(wCells[2], nameof(InventoryRecord.Stock), wLineNo, vMin: 0)
             });
         }
 
-        return result;
+        return wResult;
     }
 
-    public Task<IReadOnlyList<InventoryRecord>> ReadInventoriesAsync(string filePath, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 在庫CSVを非同期で読み込みます。
+    /// </summary>
+    public Task<IReadOnlyList<InventoryRecord>> ReadInventoriesAsync(string vFilePath, CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return ReadInventories(filePath);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            return ReadInventories(vFilePath);
+        }, vCancellationToken);
     }
 
-    public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistories(string filePath)
+    /// <summary>
+    /// 在庫履歴CSVを読み込み、履歴一覧を返します。
+    /// </summary>
+    public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistories(string vFilePath)
     {
-        var rows = ReadDataRows(filePath, out _, InventoryHistoryHeader);
-        var result = new List<InventoryHistoryRecord>();
+        var wRows = ReadDataRows(vFilePath, out _, C_InventoryHistoryHeader);
+        var wResult = new List<InventoryHistoryRecord>();
 
-        for (var i = 0; i < rows.Count; i++)
+        for (var i = 0; i < wRows.Count; i++)
         {
-            var lineNo = i + 2;
-            var cells = SplitAndValidateColumns(rows[i], 7, lineNo);
+            var wLineNo = i + 2;
+            var wCells = SplitAndValidateColumns(wRows[i], 7, wLineNo);
 
-            result.Add(new InventoryHistoryRecord
+            wResult.Add(new InventoryHistoryRecord
             {
-                OccurredAt = ParseDateTime(cells[0], nameof(InventoryHistoryRecord.OccurredAt), lineNo),
-                OperationType = ParseOperationType(cells[1], lineNo),
-                StoreId = Require(cells[2], nameof(InventoryHistoryRecord.StoreId), lineNo),
-                ProductId = Require(cells[3], nameof(InventoryHistoryRecord.ProductId), lineNo),
-                Quantity = ParseInt(cells[4], nameof(InventoryHistoryRecord.Quantity), lineNo, min: 1),
-                ResultStock = ParseInt(cells[5], nameof(InventoryHistoryRecord.ResultStock), lineNo, min: 0),
-                Result = Require(cells[6], nameof(InventoryHistoryRecord.Result), lineNo)
+                OccurredAt = ParseDateTime(wCells[0], nameof(InventoryHistoryRecord.OccurredAt), wLineNo),
+                OperationType = ParseOperationType(wCells[1], wLineNo),
+                StoreId = Require(wCells[2], nameof(InventoryHistoryRecord.StoreId), wLineNo),
+                ProductId = Require(wCells[3], nameof(InventoryHistoryRecord.ProductId), wLineNo),
+                Quantity = ParseInt(wCells[4], nameof(InventoryHistoryRecord.Quantity), wLineNo, vMin: 1),
+                ResultStock = ParseInt(wCells[5], nameof(InventoryHistoryRecord.ResultStock), wLineNo, vMin: 0),
+                Result = Require(wCells[6], nameof(InventoryHistoryRecord.Result), wLineNo)
             });
         }
 
-        return result;
+        return wResult;
     }
 
+    /// <summary>
+    /// 在庫履歴CSVを非同期で読み込みます。
+    /// </summary>
     public Task<IReadOnlyList<InventoryHistoryRecord>> ReadInventoryHistoriesAsync(
-        string filePath,
-        CancellationToken cancellationToken = default)
+        string vFilePath,
+        CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return ReadInventoryHistories(filePath);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            return ReadInventoryHistories(vFilePath);
+        }, vCancellationToken);
     }
 
-    public IReadOnlyList<SaleRecord> ReadSales(string filePath)
+    /// <summary>
+    /// 売上CSVを読み込み、売上一覧を返します。
+    /// </summary>
+    public IReadOnlyList<SaleRecord> ReadSales(string vFilePath)
     {
-        var rows = ReadDataRows(filePath, out var header, SalesHeaderLegacy, SalesHeaderStandard);
-        var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
-        var result = new List<SaleRecord>();
+        var wRows = ReadDataRows(vFilePath, out var wHeader, C_SalesHeaderLegacy, C_SalesHeaderStandard);
+        var wHasSalesAmount = string.Equals(wHeader, C_SalesHeaderStandard, StringComparison.Ordinal);
+        var wResult = new List<SaleRecord>();
 
-        for (var i = 0; i < rows.Count; i++)
+        for (var i = 0; i < wRows.Count; i++)
         {
-            var lineNo = i + 2;
-            var cells = SplitAndValidateColumns(rows[i], hasSalesAmount ? 5 : 4, lineNo);
+            var wLineNo = i + 2;
+            var wCells = SplitAndValidateColumns(wRows[i], wHasSalesAmount ? 5 : 4, wLineNo);
 
-            result.Add(new SaleRecord
+            wResult.Add(new SaleRecord
             {
-                SaleDate = ParseDate(cells[0], nameof(SaleRecord.SaleDate), lineNo),
-                StoreId = Require(cells[1], nameof(SaleRecord.StoreId), lineNo),
-                ProductId = Require(cells[2], nameof(SaleRecord.ProductId), lineNo),
-                Quantity = ParseInt(cells[3], nameof(SaleRecord.Quantity), lineNo, min: 1),
-                SalesAmount = hasSalesAmount
-                    ? ParseInt(cells[4], nameof(SaleRecord.SalesAmount), lineNo, min: 0)
+                SaleDate = ParseDate(wCells[0], nameof(SaleRecord.SaleDate), wLineNo),
+                StoreId = Require(wCells[1], nameof(SaleRecord.StoreId), wLineNo),
+                ProductId = Require(wCells[2], nameof(SaleRecord.ProductId), wLineNo),
+                Quantity = ParseInt(wCells[3], nameof(SaleRecord.Quantity), wLineNo, vMin: 1),
+                SalesAmount = wHasSalesAmount
+                    ? ParseInt(wCells[4], nameof(SaleRecord.SalesAmount), wLineNo, vMin: 0)
                     : 0
             });
         }
 
-        return result;
+        return wResult;
     }
 
-    public IReadOnlyList<SaleRecord> ReadAndNormalizeSales(string filePath, IReadOnlyCollection<Product> products)
+    /// <summary>
+    /// 売上CSVを検証・正規化して売上一覧を返します。
+    /// </summary>
+    public IReadOnlyList<SaleRecord> ReadAndNormalizeSales(string vFilePath, IReadOnlyCollection<Product> vProducts)
     {
-        if (products is null)
+        if (vProducts is null)
         {
-            throw new ArgumentNullException(nameof(products));
+            throw new ArgumentNullException(nameof(vProducts));
         }
 
-        var rows = ReadDataRows(filePath, out var header, SalesHeaderLegacy, SalesHeaderStandard);
-        var hasSalesAmount = string.Equals(header, SalesHeaderStandard, StringComparison.Ordinal);
-        var unitPriceMap = BuildUnitPriceMap(products);
-        var result = new List<SaleRecord>();
+        var wRows = ReadDataRows(vFilePath, out var wHeader, C_SalesHeaderLegacy, C_SalesHeaderStandard);
+        var wHasSalesAmount = string.Equals(wHeader, C_SalesHeaderStandard, StringComparison.Ordinal);
+        var wUnitPriceMap = BuildUnitPriceMap(vProducts);
+        var wResult = new List<SaleRecord>();
 
-        for (var i = 0; i < rows.Count; i++)
+        for (var i = 0; i < wRows.Count; i++)
         {
-            var lineNo = i + 2;
-            var cells = SplitAndValidateColumns(rows[i], hasSalesAmount ? 5 : 4, lineNo);
-            var saleDate = ParseDate(cells[0], nameof(SaleRecord.SaleDate), lineNo);
-            var storeId = Require(cells[1], nameof(SaleRecord.StoreId), lineNo);
-            var productId = Require(cells[2], nameof(SaleRecord.ProductId), lineNo);
-            var quantity = ParseInt(cells[3], nameof(SaleRecord.Quantity), lineNo, min: 1);
-            var expectedAmount = CalculateSalesAmount(unitPriceMap, productId, quantity, lineNo);
-            var salesAmount = hasSalesAmount
-                ? ParseInt(cells[4], nameof(SaleRecord.SalesAmount), lineNo, min: 0)
-                : expectedAmount;
+            var wLineNo = i + 2;
+            var wCells = SplitAndValidateColumns(wRows[i], wHasSalesAmount ? 5 : 4, wLineNo);
+            var wSaleDate = ParseDate(wCells[0], nameof(SaleRecord.SaleDate), wLineNo);
+            var wStoreId = Require(wCells[1], nameof(SaleRecord.StoreId), wLineNo);
+            var wProductId = Require(wCells[2], nameof(SaleRecord.ProductId), wLineNo);
+            var wQuantity = ParseInt(wCells[3], nameof(SaleRecord.Quantity), wLineNo, vMin: 1);
+            var wExpectedAmount = CalculateSalesAmount(wUnitPriceMap, wProductId, wQuantity, wLineNo);
+            var wSalesAmount = wHasSalesAmount
+                ? ParseInt(wCells[4], nameof(SaleRecord.SalesAmount), wLineNo, vMin: 0)
+                : wExpectedAmount;
 
-            if (hasSalesAmount && salesAmount != expectedAmount)
+            if (wHasSalesAmount && wSalesAmount != wExpectedAmount)
             {
                 throw new DomainValidationException(
-                    $"Line {lineNo}: SalesAmount mismatch. expected={expectedAmount}, actual={salesAmount}");
+                    $"Line {wLineNo}: SalesAmount mismatch. expected={wExpectedAmount}, actual={wSalesAmount}");
             }
 
-            result.Add(new SaleRecord
+            wResult.Add(new SaleRecord
             {
-                SaleDate = saleDate,
-                StoreId = storeId,
-                ProductId = productId,
-                Quantity = quantity,
-                SalesAmount = salesAmount
+                SaleDate = wSaleDate,
+                StoreId = wStoreId,
+                ProductId = wProductId,
+                Quantity = wQuantity,
+                SalesAmount = wSalesAmount
             });
         }
 
-        if (!hasSalesAmount)
+        if (!wHasSalesAmount)
         {
-            WriteSales(filePath, result);
+            WriteSales(vFilePath, wResult);
         }
 
-        return result;
+        return wResult;
     }
 
-    public Task<IReadOnlyList<SaleRecord>> ReadSalesAsync(string filePath, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 売上CSVを非同期で読み込みます。
+    /// </summary>
+    public Task<IReadOnlyList<SaleRecord>> ReadSalesAsync(string vFilePath, CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            return ReadSales(filePath);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            return ReadSales(vFilePath);
+        }, vCancellationToken);
     }
 
-    public void WriteProducts(string filePath, IEnumerable<Product> products)
+    /// <summary>
+    /// 商品一覧を商品CSVへ書き込みます。
+    /// </summary>
+    public void WriteProducts(string vFilePath, IEnumerable<Product> vProducts)
     {
-        var lines = new List<string> { ProductsHeader };
-        lines.AddRange(products.Select(p => $"{p.ProductId},{p.ProductName},{p.UnitPrice},{p.Category}"));
-        WriteAllLines(filePath, lines);
+        var wLines = new List<string> { C_ProductsHeader };
+        wLines.AddRange(vProducts.Select(vP => $"{vP.ProductId},{vP.ProductName},{vP.UnitPrice},{vP.Category}"));
+        WriteAllLines(vFilePath, wLines);
     }
 
-    public Task WriteProductsAsync(string filePath, IEnumerable<Product> products, CancellationToken cancellationToken = default)
-    {
-        return Task.Run(() =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            WriteProducts(filePath, products);
-        }, cancellationToken);
-    }
-
-    public void WriteInventories(string filePath, IEnumerable<InventoryRecord> records)
-    {
-        var lines = new List<string> { InventoryHeader };
-        lines.AddRange(records.Select(r => $"{r.StoreId},{r.ProductId},{r.Stock}"));
-        WriteAllLines(filePath, lines);
-    }
-
-    public Task WriteInventoriesAsync(string filePath, IEnumerable<InventoryRecord> records, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 商品一覧を商品CSVへ非同期で書き込みます。
+    /// </summary>
+    public Task WriteProductsAsync(string vFilePath, IEnumerable<Product> vProducts, CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            WriteInventories(filePath, records);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            WriteProducts(vFilePath, vProducts);
+        }, vCancellationToken);
     }
 
-    public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
+    /// <summary>
+    /// 在庫一覧を在庫CSVへ書き込みます。
+    /// </summary>
+    public void WriteInventories(string vFilePath, IEnumerable<InventoryRecord> vRecords)
     {
-        var lines = new List<string> { InventoryHistoryHeader };
-        lines.AddRange(records.Select(r =>
-            $"{r.OccurredAt:yyyy-MM-dd HH:mm:ss},{r.OperationType},{r.StoreId},{r.ProductId},{r.Quantity},{r.ResultStock},{r.Result}"));
-        WriteAllLines(filePath, lines);
+        var wLines = new List<string> { C_InventoryHeader };
+        wLines.AddRange(vRecords.Select(vR => $"{vR.StoreId},{vR.ProductId},{vR.Stock}"));
+        WriteAllLines(vFilePath, wLines);
     }
 
+    /// <summary>
+    /// 在庫一覧を在庫CSVへ非同期で書き込みます。
+    /// </summary>
+    public Task WriteInventoriesAsync(string vFilePath, IEnumerable<InventoryRecord> vRecords, CancellationToken vCancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            vCancellationToken.ThrowIfCancellationRequested();
+            WriteInventories(vFilePath, vRecords);
+        }, vCancellationToken);
+    }
+
+    /// <summary>
+    /// 在庫履歴一覧を在庫履歴CSVへ書き込みます。
+    /// </summary>
+    public void WriteInventoryHistories(string vFilePath, IEnumerable<InventoryHistoryRecord> vRecords)
+    {
+        var wLines = new List<string> { C_InventoryHistoryHeader };
+        wLines.AddRange(vRecords.Select(vR =>
+            $"{vR.OccurredAt:yyyy-MM-dd HH:mm:ss},{vR.OperationType},{vR.StoreId},{vR.ProductId},{vR.Quantity},{vR.ResultStock},{vR.Result}"));
+        WriteAllLines(vFilePath, wLines);
+    }
+
+    /// <summary>
+    /// 在庫履歴一覧を在庫履歴CSVへ非同期で書き込みます。
+    /// </summary>
     public Task WriteInventoryHistoriesAsync(
-        string filePath,
-        IEnumerable<InventoryHistoryRecord> records,
-        CancellationToken cancellationToken = default)
+        string vFilePath,
+        IEnumerable<InventoryHistoryRecord> vRecords,
+        CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            WriteInventoryHistories(filePath, records);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            WriteInventoryHistories(vFilePath, vRecords);
+        }, vCancellationToken);
     }
 
-    public void WriteSales(string filePath, IEnumerable<SaleRecord> records)
+    /// <summary>
+    /// 売上一覧を売上CSVへ書き込みます。
+    /// </summary>
+    public void WriteSales(string vFilePath, IEnumerable<SaleRecord> vRecords)
     {
-        var lines = new List<string> { SalesHeaderStandard };
-        lines.AddRange(records.Select(r =>
-            $"{r.SaleDate:yyyy-MM-dd},{r.StoreId},{r.ProductId},{r.Quantity},{r.SalesAmount}"));
-        WriteAllLines(filePath, lines);
+        var wLines = new List<string> { C_SalesHeaderStandard };
+        wLines.AddRange(vRecords.Select(vR =>
+            $"{vR.SaleDate:yyyy-MM-dd},{vR.StoreId},{vR.ProductId},{vR.Quantity},{vR.SalesAmount}"));
+        WriteAllLines(vFilePath, wLines);
     }
 
-    public Task WriteSalesAsync(string filePath, IEnumerable<SaleRecord> records, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 売上一覧を売上CSVへ非同期で書き込みます。
+    /// </summary>
+    public Task WriteSalesAsync(string vFilePath, IEnumerable<SaleRecord> vRecords, CancellationToken vCancellationToken = default)
     {
         return Task.Run(() =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            WriteSales(filePath, records);
-        }, cancellationToken);
+            vCancellationToken.ThrowIfCancellationRequested();
+            WriteSales(vFilePath, vRecords);
+        }, vCancellationToken);
     }
 
-    public IReadOnlyList<string> GetBackups(string filePath)
+    /// <summary>
+    /// 対象ファイルに対応するバックアップ一覧を取得します。
+    /// </summary>
+    public IReadOnlyList<string> GetBackups(string vFilePath)
     {
-        return _dataProtectionService.GetBackupFiles(filePath);
+        return FDataProtectionService.GetBackupFiles(vFilePath);
     }
 
-    public void RestoreLatestBackup(string filePath)
+    /// <summary>
+    /// 対象ファイルを最新バックアップで復元します。
+    /// </summary>
+    public void RestoreLatestBackup(string vFilePath)
     {
-        _dataProtectionService.RestoreLatestBackup(filePath);
-        _dataProtectionService.WriteLog(filePath, "WARN", $"Restored from backup: {filePath}");
+        FDataProtectionService.RestoreLatestBackup(vFilePath);
+        FDataProtectionService.WriteLog(vFilePath, "WARN", $"Restored from backup: {vFilePath}");
     }
 
-    private static Dictionary<string, int> BuildUnitPriceMap(IReadOnlyCollection<Product> products)
+    private static Dictionary<string, int> BuildUnitPriceMap(IReadOnlyCollection<Product> vProducts)
     {
-        var duplicate = products
-            .GroupBy(p => p.ProductId)
-            .FirstOrDefault(g => g.Count() > 1);
+        var wDuplicate = vProducts
+            .GroupBy(vP => vP.ProductId)
+            .FirstOrDefault(vG => vG.Count() > 1);
 
-        if (duplicate is not null)
+        if (wDuplicate is not null)
         {
             throw new DomainValidationException(
-                $"Duplicate ProductId in product master: {duplicate.Key}");
+                $"Duplicate ProductId in product master: {wDuplicate.Key}");
         }
 
-        return products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
+        return vProducts.ToDictionary(vP => vP.ProductId, vP => vP.UnitPrice);
     }
 
     private static int CalculateSalesAmount(
-        IReadOnlyDictionary<string, int> unitPriceMap,
-        string productId,
-        int quantity,
-        int lineNo)
+        IReadOnlyDictionary<string, int> vUnitPriceMap,
+        string vProductId,
+        int vQuantity,
+        int vLineNo)
     {
-        if (!unitPriceMap.TryGetValue(productId, out var unitPrice))
+        if (!vUnitPriceMap.TryGetValue(vProductId, out var wUnitPrice))
         {
             throw new DomainValidationException(
-                $"Line {lineNo}: ProductId={productId} is not found in product master.");
+                $"Line {vLineNo}: ProductId={vProductId} is not found in product master.");
         }
 
         try
         {
-            return checked(unitPrice * quantity);
+            return checked(wUnitPrice * vQuantity);
         }
         catch (OverflowException)
         {
             throw new DomainValidationException(
-                $"Line {lineNo}: SalesAmount overflow.");
+                $"Line {vLineNo}: SalesAmount overflow.");
         }
     }
 
-    private static List<string> ReadDataRows(string filePath, out string header, params string[] expectedHeaders)
+    private static List<string> ReadDataRows(string vFilePath, out string vHeader, params string[] vExpectedHeaders)
     {
-        header = string.Empty;
+        vHeader = string.Empty;
 
-        if (!File.Exists(filePath))
+        if (!File.Exists(vFilePath))
         {
-            throw new DomainValidationException($"File not found: {filePath}");
+            throw new DomainValidationException($"File not found: {vFilePath}");
         }
 
-        var lines = File.ReadAllLines(filePath, Encoding.UTF8).ToList();
-        if (lines.Count == 0)
+        var wLines = File.ReadAllLines(vFilePath, Encoding.UTF8).ToList();
+        if (wLines.Count == 0)
         {
-            throw new DomainValidationException($"File is empty: {filePath}");
+            throw new DomainValidationException($"File is empty: {vFilePath}");
         }
 
-        var normalizedHeader = lines[0].Trim();
-        header = normalizedHeader;
-        if (!expectedHeaders.Contains(normalizedHeader, StringComparer.Ordinal))
+        var wNormalizedHeader = wLines[0].Trim();
+        vHeader = wNormalizedHeader;
+        if (!vExpectedHeaders.Contains(wNormalizedHeader, StringComparer.Ordinal))
         {
-            throw new DomainValidationException($"Header is invalid: {filePath}");
+            throw new DomainValidationException($"Header is invalid: {vFilePath}");
         }
 
-        return lines.Skip(1).Where(static l => !string.IsNullOrWhiteSpace(l)).ToList();
+        return wLines.Skip(1).Where(static vL => !string.IsNullOrWhiteSpace(vL)).ToList();
     }
 
-    private static string[] SplitAndValidateColumns(string line, int expectedCount, int lineNo)
+    private static string[] SplitAndValidateColumns(string vLine, int vExpectedCount, int vLineNo)
     {
-        var cells = line.Split(',');
-        if (cells.Length != expectedCount)
+        var wCells = vLine.Split(',');
+        if (wCells.Length != vExpectedCount)
         {
             throw new DomainValidationException(
-                $"Line {lineNo}: invalid column count. expected={expectedCount}, actual={cells.Length}");
+                $"Line {vLineNo}: invalid column count. expected={vExpectedCount}, actual={wCells.Length}");
         }
 
-        return cells;
+        return wCells;
     }
 
-    private static string Require(string value, string fieldName, int lineNo)
+    private static string Require(string vValue, string vFieldName, int vLineNo)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(vValue))
         {
-            throw new DomainValidationException($"Line {lineNo}: {fieldName} is required.");
+            throw new DomainValidationException($"Line {vLineNo}: {vFieldName} is required.");
         }
 
-        return value.Trim();
+        return vValue.Trim();
     }
 
-    private static int ParseInt(string value, string fieldName, int lineNo, int min)
+    private static int ParseInt(string vValue, string vFieldName, int vLineNo, int vMin)
     {
-        if (!int.TryParse(value, out var parsed))
+        if (!int.TryParse(vValue, out var wParsed))
         {
-            throw new DomainValidationException($"Line {lineNo}: {fieldName} must be integer.");
+            throw new DomainValidationException($"Line {vLineNo}: {vFieldName} must be integer.");
         }
 
-        if (parsed < min)
+        if (wParsed < vMin)
         {
-            throw new DomainValidationException($"Line {lineNo}: {fieldName} must be >= {min}.");
+            throw new DomainValidationException($"Line {vLineNo}: {vFieldName} must be >= {vMin}.");
         }
 
-        return parsed;
+        return wParsed;
     }
 
-    private static DateTime ParseDate(string value, string fieldName, int lineNo)
+    private static DateTime ParseDate(string vValue, string vFieldName, int vLineNo)
     {
-        if (!DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        if (!DateTime.TryParseExact(vValue, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var wParsed))
         {
             throw new DomainValidationException(
-                $"Line {lineNo}: {fieldName} must follow yyyy-MM-dd.");
+                $"Line {vLineNo}: {vFieldName} must follow yyyy-MM-dd.");
         }
 
-        return parsed;
+        return wParsed;
     }
 
-    private static DateTime ParseDateTime(string value, string fieldName, int lineNo)
+    private static DateTime ParseDateTime(string vValue, string vFieldName, int vLineNo)
     {
-        if (!DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        if (!DateTime.TryParseExact(vValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var wParsed))
         {
             throw new DomainValidationException(
-                $"Line {lineNo}: {fieldName} must follow yyyy-MM-dd HH:mm:ss.");
+                $"Line {vLineNo}: {vFieldName} must follow yyyy-MM-dd HH:mm:ss.");
         }
 
-        return parsed;
+        return wParsed;
     }
 
-    private static InventoryOperationType ParseOperationType(string value, int lineNo)
+    private static InventoryOperationTypeEnum ParseOperationType(string vValue, int vLineNo)
     {
-        if (!Enum.TryParse(value, ignoreCase: true, out InventoryOperationType parsed)
-            || !Enum.IsDefined(typeof(InventoryOperationType), parsed))
+        if (!Enum.TryParse(vValue, ignoreCase: true, out InventoryOperationTypeEnum wParsed)
+            || !Enum.IsDefined(typeof(InventoryOperationTypeEnum), wParsed))
         {
-            throw new DomainValidationException($"Line {lineNo}: OperationType is invalid.");
+            throw new DomainValidationException($"Line {vLineNo}: OperationType is invalid.");
         }
 
-        return parsed;
+        return wParsed;
     }
 
-    private void WriteAllLines(string filePath, IEnumerable<string> lines)
+    private void WriteAllLines(string vFilePath, IEnumerable<string> vLines)
     {
-        var directory = Path.GetDirectoryName(filePath);
-        if (!string.IsNullOrWhiteSpace(directory))
+        var wDirectory = Path.GetDirectoryName(vFilePath);
+        if (!string.IsNullOrWhiteSpace(wDirectory))
         {
-            Directory.CreateDirectory(directory);
+            Directory.CreateDirectory(wDirectory);
         }
 
-        var backupPath = _dataProtectionService.CreateBackupIfExists(filePath);
-        if (!string.IsNullOrWhiteSpace(backupPath))
+        var wBackupPath = FDataProtectionService.CreateBackupIfExists(vFilePath);
+        if (!string.IsNullOrWhiteSpace(wBackupPath))
         {
-            _dataProtectionService.WriteLog(filePath, "INFO", $"Backup created: {backupPath}");
+            FDataProtectionService.WriteLog(vFilePath, "INFO", $"Backup created: {wBackupPath}");
         }
 
         try
         {
-            File.WriteAllLines(filePath, lines, Encoding.UTF8);
-            _dataProtectionService.WriteLog(filePath, "INFO", $"Write succeeded: {filePath}");
+            File.WriteAllLines(vFilePath, vLines, Encoding.UTF8);
+            FDataProtectionService.WriteLog(vFilePath, "INFO", $"Write succeeded: {vFilePath}");
         }
-        catch (Exception ex)
+        catch (Exception wEx)
         {
-            _dataProtectionService.WriteLog(filePath, "ERROR", $"Write failed: {filePath} / {ex.Message}");
+            FDataProtectionService.WriteLog(vFilePath, "ERROR", $"Write failed: {vFilePath} / {wEx.Message}");
             throw;
         }
     }
 }
+

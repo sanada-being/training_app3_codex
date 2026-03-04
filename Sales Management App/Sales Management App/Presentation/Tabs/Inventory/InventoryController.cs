@@ -7,93 +7,96 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Inventory {
+    /// <summary>
+    /// 在庫管理 タブのイベント処理を担当し、画面とサービスを接続します。
+    /// </summary>
     internal sealed class InventoryController {
-        private readonly InventoryView _view;
-        private readonly InventoryService _inventoryService;
-        private readonly AppDataRepository _repository;
-        private readonly AppState _appState;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _actionExecutor;
-        private readonly Action _onInventoryUpdated;
+        private readonly InventoryView FView;
+        private readonly InventoryService FInventoryService;
+        private readonly AppDataRepository FRepository;
+        private readonly AppState FAppState;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FActionExecutor;
+        private readonly Action FOnInventoryUpdated;
 
         internal InventoryController(
-            InventoryView view,
-            InventoryService inventoryService,
-            AppDataRepository repository,
-            AppState appState,
-            UiMessageService messageService,
-            UiActionExecutor actionExecutor,
-            Action onInventoryUpdated) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _inventoryService = inventoryService ?? throw new ArgumentNullException("inventoryService");
-            _repository = repository ?? throw new ArgumentNullException("repository");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
-            _onInventoryUpdated = onInventoryUpdated ?? delegate { };
+            InventoryView vView,
+            InventoryService vInventoryService,
+            AppDataRepository vRepository,
+            AppState vAppState,
+            UiMessageService vMessageService,
+            UiActionExecutor vActionExecutor,
+            Action vOnInventoryUpdated) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FInventoryService = vInventoryService ?? throw new ArgumentNullException("inventoryService");
+            FRepository = vRepository ?? throw new ArgumentNullException("repository");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FOnInventoryUpdated = vOnInventoryUpdated ?? delegate { };
         }
 
         internal void Initialize() {
-            _view.AddRequested += OnAddRequested;
-            _view.RemoveRequested += OnRemoveRequested;
-            _view.ClearInputRequested += OnClearInputRequested;
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
-            _view.SelectedInventoryChanged += OnSelectedInventoryChanged;
+            FView.AddRequested += OnAddRequested;
+            FView.RemoveRequested += OnRemoveRequested;
+            FView.ClearInputRequested += OnClearInputRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
+            FView.SelectedInventoryChanged += OnSelectedInventoryChanged;
         }
 
         internal void Refresh() {
-            var filter = _view.GetFilter();
-            var filtered = _inventoryService.GetFiltered(_appState.Inventories, filter.StoreId, filter.ProductId);
-            var rows = filtered.Select(i => new InventoryViewRow {
-                StoreId = i.StoreId,
-                ProductId = i.ProductId,
-                Stock = i.Stock
+            var wFilter = FView.GetFilter();
+            var wFiltered = FInventoryService.GetFiltered(FAppState.Inventories, wFilter.StoreId, wFilter.ProductId);
+            var wRows = wFiltered.Select(vI => new InventoryViewRow {
+                StoreId = vI.StoreId,
+                ProductId = vI.ProductId,
+                Stock = vI.Stock
             }).ToList();
-            _view.SetRows(rows);
-            _view.SetReorderCount(_inventoryService.GetReorderTargets(_appState.Inventories, 5).Count);
+            FView.SetRows(wRows);
+            FView.SetReorderCount(FInventoryService.GetReorderTargets(FAppState.Inventories, 5).Count);
         }
 
         private void OnAddRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                var input = CreateInventoryRecordFromInput(_view.GetInput());
-                _inventoryService.AddStock(
-                    _appState.Inventories,
-                    input.StoreId,
-                    input.ProductId,
-                    input.Stock,
-                    _appState.InventoryHistories,
+            FActionExecutor.Execute(delegate {
+                var wInput = CreateInventoryRecordFromInput(FView.GetInput());
+                FInventoryService.AddStock(
+                    FAppState.Inventories,
+                    wInput.StoreId,
+                    wInput.ProductId,
+                    wInput.Stock,
+                    FAppState.InventoryHistories,
                     DateTime.Now);
-                _repository.WriteInventoryHistories(_appState.InventoryHistoryPath, _appState.InventoryHistories);
+                FRepository.WriteInventoryHistories(FAppState.InventoryHistoryPath, FAppState.InventoryHistories);
 
                 Refresh();
-                _view.ClearInput();
-                _onInventoryUpdated.Invoke();
-                _messageService.ShowInfo("入荷を反映しました。");
+                FView.ClearInput();
+                FOnInventoryUpdated.Invoke();
+                FMessageService.ShowInfo("入荷を反映しました。");
             });
         }
 
         private void OnRemoveRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                var input = CreateInventoryRecordFromInput(_view.GetInput());
-                _inventoryService.RemoveStock(
-                    _appState.Inventories,
-                    input.StoreId,
-                    input.ProductId,
-                    input.Stock,
-                    _appState.InventoryHistories,
+            FActionExecutor.Execute(delegate {
+                var wInput = CreateInventoryRecordFromInput(FView.GetInput());
+                FInventoryService.RemoveStock(
+                    FAppState.Inventories,
+                    wInput.StoreId,
+                    wInput.ProductId,
+                    wInput.Stock,
+                    FAppState.InventoryHistories,
                     DateTime.Now);
-                _repository.WriteInventoryHistories(_appState.InventoryHistoryPath, _appState.InventoryHistories);
+                FRepository.WriteInventoryHistories(FAppState.InventoryHistoryPath, FAppState.InventoryHistories);
 
                 Refresh();
-                _view.ClearInput();
-                _onInventoryUpdated.Invoke();
-                _messageService.ShowInfo("出庫を反映しました。");
+                FView.ClearInput();
+                FOnInventoryUpdated.Invoke();
+                FMessageService.ShowInfo("出庫を反映しました。");
             });
         }
 
         private void OnClearInputRequested(object sender, EventArgs e) {
-            _view.ClearInput();
+            FView.ClearInput();
         }
 
         private void OnFilterRequested(object sender, EventArgs e) {
@@ -101,33 +104,33 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearFilter();
+            FView.ClearFilter();
             Refresh();
         }
 
         private void OnSelectedInventoryChanged(object sender, EventArgs e) {
-            var selected = _view.GetSelectedRow();
-            if (selected == null) {
+            var wSelected = FView.GetSelectedRow();
+            if (wSelected == null) {
                 return;
             }
 
-            _view.SetInput(new InventoryInputModel {
-                StoreId = selected.StoreId,
-                ProductId = selected.ProductId,
+            FView.SetInput(new InventoryInputModel {
+                StoreId = wSelected.StoreId,
+                ProductId = wSelected.ProductId,
                 QuantityText = string.Empty
             });
         }
 
-        private static InventoryRecord CreateInventoryRecordFromInput(InventoryInputModel input) {
-            int quantity;
-            if (!int.TryParse(input.QuantityText, out quantity)) {
+        private static InventoryRecord CreateInventoryRecordFromInput(InventoryInputModel vInput) {
+            int wQuantity;
+            if (!int.TryParse(vInput.QuantityText, out wQuantity)) {
                 throw new DomainValidationException("数量は整数で入力してください。");
             }
 
             return new InventoryRecord {
-                StoreId = input.StoreId,
-                ProductId = input.ProductId,
-                Stock = quantity
+                StoreId = vInput.StoreId,
+                ProductId = vInput.ProductId,
+                Stock = wQuantity
             };
         }
     }

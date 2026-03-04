@@ -2,32 +2,47 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Tests.TestHelpers;
 
+/// <summary>
+/// テストデータを組み立てるためのビルダークラスです。
+/// </summary>
 public class InventoryRecordBuilder
 {
-    private readonly InventoryRecord _record = new()
+    private readonly InventoryRecord FRecord = new()
     {
         StoreId = "S001",
         ProductId = "P001",
         Stock = 10
     };
 
-    public InventoryRecordBuilder WithStoreId(string value)
+    /// <summary>
+    /// テストデータの StoreId を設定し、ビルダー自身を返します。
+    /// </summary>
+    public InventoryRecordBuilder WithStoreId(string vValue)
     {
-        _record.StoreId = value;
+        FRecord.StoreId = vValue;
         return this;
     }
 
-    public InventoryRecordBuilder WithProductId(string value)
+    /// <summary>
+    /// テストデータの ProductId を設定し、ビルダー自身を返します。
+    /// </summary>
+    public InventoryRecordBuilder WithProductId(string vValue)
     {
-        _record.ProductId = value;
+        FRecord.ProductId = vValue;
         return this;
     }
 
-    public InventoryRecordBuilder WithStock(int value)
+    /// <summary>
+    /// テストデータの Stock を設定し、ビルダー自身を返します。
+    /// </summary>
+    public InventoryRecordBuilder WithStock(int vValue)
     {
-        _record.Stock = value;
+        FRecord.Stock = vValue;
         return this;
     }
 
-    public InventoryRecord Build() => _record;
+    /// <summary>
+    /// 設定済みの値からテスト用データを生成して返します。
+    /// </summary>
+    public InventoryRecord Build() => FRecord;
 }

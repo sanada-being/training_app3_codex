@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// 売上登録 タブの一覧表示にバインドする行データモデルです。
+    /// </summary>
     internal sealed class SalesViewRow {
         /// <summary>
         /// 売上日を取得または設定します。

@@ -2,9 +2,12 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Tests.TestHelpers;
 
+/// <summary>
+/// テストデータを組み立てるためのビルダークラスです。
+/// </summary>
 public class SaleRecordBuilder
 {
-    private readonly SaleRecord _record = new()
+    private readonly SaleRecord FRecord = new()
     {
         SaleDate = new DateTime(2026, 1, 1),
         StoreId = "S001",
@@ -13,35 +16,53 @@ public class SaleRecordBuilder
         SalesAmount = 240
     };
 
-    public SaleRecordBuilder WithDate(DateTime value)
+    /// <summary>
+    /// テストデータの Date を設定し、ビルダー自身を返します。
+    /// </summary>
+    public SaleRecordBuilder WithDate(DateTime vValue)
     {
-        _record.SaleDate = value;
+        FRecord.SaleDate = vValue;
         return this;
     }
 
-    public SaleRecordBuilder WithStoreId(string value)
+    /// <summary>
+    /// テストデータの StoreId を設定し、ビルダー自身を返します。
+    /// </summary>
+    public SaleRecordBuilder WithStoreId(string vValue)
     {
-        _record.StoreId = value;
+        FRecord.StoreId = vValue;
         return this;
     }
 
-    public SaleRecordBuilder WithProductId(string value)
+    /// <summary>
+    /// テストデータの ProductId を設定し、ビルダー自身を返します。
+    /// </summary>
+    public SaleRecordBuilder WithProductId(string vValue)
     {
-        _record.ProductId = value;
+        FRecord.ProductId = vValue;
         return this;
     }
 
-    public SaleRecordBuilder WithQuantity(int value)
+    /// <summary>
+    /// テストデータの Quantity を設定し、ビルダー自身を返します。
+    /// </summary>
+    public SaleRecordBuilder WithQuantity(int vValue)
     {
-        _record.Quantity = value;
+        FRecord.Quantity = vValue;
         return this;
     }
 
-    public SaleRecordBuilder WithSalesAmount(int value)
+    /// <summary>
+    /// テストデータの SalesAmount を設定し、ビルダー自身を返します。
+    /// </summary>
+    public SaleRecordBuilder WithSalesAmount(int vValue)
     {
-        _record.SalesAmount = value;
+        FRecord.SalesAmount = vValue;
         return this;
     }
 
-    public SaleRecord Build() => _record;
+    /// <summary>
+    /// 設定済みの値からテスト用データを生成して返します。
+    /// </summary>
+    public SaleRecord Build() => FRecord;
 }

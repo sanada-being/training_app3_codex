@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// 売上登録時の商品選択候補を表すモデルです。
+    /// </summary>
     internal sealed class SaleProductOption {
         /// <summary>
         /// 商品IDを取得または設定します。
@@ -19,7 +22,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
         /// コンボボックス表示用の文字列を取得します。
         /// </summary>
         public string DisplayText {
-            get { return string.Format("{0} - {1}", ProductId, ProductName); }
+            get { return string.Format("{0} - {1}", this.ProductId, this.ProductName); }
         }
     }
 }

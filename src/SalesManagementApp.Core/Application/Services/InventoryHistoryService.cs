@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Validation;
@@ -6,111 +6,124 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace SalesManagementApp.Core.Application.Services;
 
+/// <summary>
+/// 在庫履歴の記録と条件検索を扱うアプリケーションサービスです。
+/// </summary>
 public class InventoryHistoryService
 {
-    public IReadOnlyList<InventoryHistoryRecord> GetAll(IReadOnlyCollection<InventoryHistoryRecord> histories)
+    /// <summary>
+    /// 在庫履歴を発生日時の降順で返します。
+    /// </summary>
+    public IReadOnlyList<InventoryHistoryRecord> GetAll(IReadOnlyCollection<InventoryHistoryRecord> vHistories)
     {
-        return histories
-            .OrderByDescending(h => h.OccurredAt)
-            .ThenBy(h => h.StoreId)
-            .ThenBy(h => h.ProductId)
+        return vHistories
+            .OrderByDescending(vH => vH.OccurredAt)
+            .ThenBy(vH => vH.StoreId)
+            .ThenBy(vH => vH.ProductId)
             .ToList();
     }
 
+    /// <summary>
+    /// 条件に一致する在庫履歴のみを抽出して返します。
+    /// </summary>
     public IReadOnlyList<InventoryHistoryRecord> Filter(
-        IReadOnlyCollection<InventoryHistoryRecord> histories,
-        DateTime? startDateTime,
-        DateTime? endDateTime,
-        string? storeId,
-        string? productId,
-        InventoryOperationType? operationType)
+        IReadOnlyCollection<InventoryHistoryRecord> vHistories,
+        DateTime? vStartDateTime,
+        DateTime? vEndDateTime,
+        string? vStoreId,
+        string? vProductId,
+        InventoryOperationTypeEnum? vOperationType)
     {
-        if (startDateTime.HasValue && endDateTime.HasValue)
+        if (vStartDateTime.HasValue && vEndDateTime.HasValue)
         {
-            if (startDateTime.Value > endDateTime.Value)
+            if (vStartDateTime.Value > vEndDateTime.Value)
             {
                 throw new SalesManagementApp.Core.Application.Exceptions.DomainValidationException(
                     "Start date-time must be less than or equal to end date-time.");
             }
         }
 
-        var normalizedStoreId = NormalizeOptionalFilter(storeId);
-        var normalizedProductId = NormalizeOptionalFilter(productId);
+        var wNormalizedStoreId = NormalizeOptionalFilter(vStoreId);
+        var wNormalizedProductId = NormalizeOptionalFilter(vProductId);
 
-        var query = histories.AsEnumerable();
+        var wQuery = vHistories.AsEnumerable();
 
-        if (startDateTime.HasValue)
+        if (vStartDateTime.HasValue)
         {
-            query = query.Where(h => h.OccurredAt >= startDateTime.Value);
+            wQuery = wQuery.Where(vH => vH.OccurredAt >= vStartDateTime.Value);
         }
 
-        if (endDateTime.HasValue)
+        if (vEndDateTime.HasValue)
         {
-            query = query.Where(h => h.OccurredAt <= endDateTime.Value);
+            wQuery = wQuery.Where(vH => vH.OccurredAt <= vEndDateTime.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(normalizedStoreId))
+        if (!string.IsNullOrWhiteSpace(wNormalizedStoreId))
         {
-            query = query.Where(h => h.StoreId == normalizedStoreId);
+            wQuery = wQuery.Where(vH => vH.StoreId == wNormalizedStoreId);
         }
 
-        if (!string.IsNullOrWhiteSpace(normalizedProductId))
+        if (!string.IsNullOrWhiteSpace(wNormalizedProductId))
         {
-            query = query.Where(h => h.ProductId == normalizedProductId);
+            wQuery = wQuery.Where(vH => vH.ProductId == wNormalizedProductId);
         }
 
-        if (operationType.HasValue)
+        if (vOperationType.HasValue)
         {
-            query = query.Where(h => h.OperationType == operationType.Value);
+            wQuery = wQuery.Where(vH => vH.OperationType == vOperationType.Value);
         }
 
-        return query
-            .OrderByDescending(h => h.OccurredAt)
-            .ThenBy(h => h.StoreId)
-            .ThenBy(h => h.ProductId)
+        return wQuery
+            .OrderByDescending(vH => vH.OccurredAt)
+            .ThenBy(vH => vH.StoreId)
+            .ThenBy(vH => vH.ProductId)
             .ToList();
     }
 
+    /// <summary>
+    /// 在庫操作履歴を1件追加します。
+    /// </summary>
     public void Record(
-        ICollection<InventoryHistoryRecord> histories,
-        DateTime occurredAt,
-        InventoryOperationType operationType,
-        string storeId,
-        string productId,
-        int quantity,
-        int resultStock,
-        string result)
+        ICollection<InventoryHistoryRecord> vHistories,
+        DateTime vOccurredAt,
+        InventoryOperationTypeEnum vOperationType,
+        string vStoreId,
+        string vProductId,
+        int vQuantity,
+        int vResultStock,
+        string vResult)
     {
-        if (histories is null)
+        if (vHistories is null)
         {
-            throw new ArgumentNullException(nameof(histories));
+            throw new ArgumentNullException(nameof(vHistories));
         }
 
-        var normalizedStoreId = ValidationGuard.RequireNotEmpty(storeId, "StoreId");
-        var normalizedProductId = ValidationGuard.RequireNotEmpty(productId, "ProductId");
-        var normalizedResult = ValidationGuard.RequireNotEmpty(result, "Result");
-        ValidationGuard.RequirePositive(quantity, "Quantity");
-        ValidationGuard.RequireNonNegative(resultStock, "ResultStock");
+        var wNormalizedStoreId = ValidationGuard.RequireNotEmpty(vStoreId, "StoreId");
+        var wNormalizedProductId = ValidationGuard.RequireNotEmpty(vProductId, "ProductId");
+        var wNormalizedResult = ValidationGuard.RequireNotEmpty(vResult, "Result");
+        ValidationGuard.RequirePositive(vQuantity, "Quantity");
+        ValidationGuard.RequireNonNegative(vResultStock, "ResultStock");
 
-        histories.Add(new InventoryHistoryRecord
+        vHistories.Add(new InventoryHistoryRecord
         {
-            OccurredAt = occurredAt,
-            OperationType = operationType,
-            StoreId = normalizedStoreId,
-            ProductId = normalizedProductId,
-            Quantity = quantity,
-            ResultStock = resultStock,
-            Result = normalizedResult
+            OccurredAt = vOccurredAt,
+            OperationType = vOperationType,
+            StoreId = wNormalizedStoreId,
+            ProductId = wNormalizedProductId,
+            Quantity = vQuantity,
+            ResultStock = vResultStock,
+            Result = wNormalizedResult
         });
     }
 
-    private static string NormalizeOptionalFilter(string? value)
+    private static string NormalizeOptionalFilter(string? vValue)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(vValue))
         {
             return string.Empty;
         }
 
-        return value!.Trim();
+        return vValue!.Trim();
     }
 }
+

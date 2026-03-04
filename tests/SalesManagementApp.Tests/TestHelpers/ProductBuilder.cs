@@ -1,8 +1,11 @@
 namespace SalesManagementApp.Tests.TestHelpers;
 
+/// <summary>
+/// テストデータを組み立てるためのビルダークラスです。
+/// </summary>
 public class ProductBuilder
 {
-    private readonly SalesManagementApp.Core.Domain.Entities.Product _product = new()
+    private readonly SalesManagementApp.Core.Domain.Entities.Product FProduct = new()
     {
         ProductId = "P001",
         ProductName = "Cola",
@@ -10,29 +13,44 @@ public class ProductBuilder
         Category = "Drink"
     };
 
-    public ProductBuilder WithId(string value)
+    /// <summary>
+    /// テストデータの Id を設定し、ビルダー自身を返します。
+    /// </summary>
+    public ProductBuilder WithId(string vValue)
     {
-        _product.ProductId = value;
+        FProduct.ProductId = vValue;
         return this;
     }
 
-    public ProductBuilder WithName(string value)
+    /// <summary>
+    /// テストデータの Name を設定し、ビルダー自身を返します。
+    /// </summary>
+    public ProductBuilder WithName(string vValue)
     {
-        _product.ProductName = value;
+        FProduct.ProductName = vValue;
         return this;
     }
 
-    public ProductBuilder WithPrice(int value)
+    /// <summary>
+    /// テストデータの Price を設定し、ビルダー自身を返します。
+    /// </summary>
+    public ProductBuilder WithPrice(int vValue)
     {
-        _product.UnitPrice = value;
+        FProduct.UnitPrice = vValue;
         return this;
     }
 
-    public ProductBuilder WithCategory(string value)
+    /// <summary>
+    /// テストデータの Category を設定し、ビルダー自身を返します。
+    /// </summary>
+    public ProductBuilder WithCategory(string vValue)
     {
-        _product.Category = value;
+        FProduct.Category = vValue;
         return this;
     }
 
-    public SalesManagementApp.Core.Domain.Entities.Product Build() => _product;
+    /// <summary>
+    /// 設定済みの値からテスト用データを生成して返します。
+    /// </summary>
+    public SalesManagementApp.Core.Domain.Entities.Product Build() => FProduct;
 }

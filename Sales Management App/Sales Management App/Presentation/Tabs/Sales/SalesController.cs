@@ -7,127 +7,130 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Sales {
+    /// <summary>
+    /// 売上登録 タブのイベント処理を担当し、画面とサービスを接続します。
+    /// </summary>
     internal sealed class SalesController {
-        private readonly SalesView _view;
-        private readonly ProductService _productService;
-        private readonly SalesService _salesService;
-        private readonly AppDataRepository _repository;
-        private readonly AppState _appState;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _actionExecutor;
-        private readonly Action _onSalesRegistered;
+        private readonly SalesView FView;
+        private readonly ProductService FProductService;
+        private readonly SalesService FSalesService;
+        private readonly AppDataRepository FRepository;
+        private readonly AppState FAppState;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FActionExecutor;
+        private readonly Action FOnSalesRegistered;
 
         internal SalesController(
-            SalesView view,
-            ProductService productService,
-            SalesService salesService,
-            AppDataRepository repository,
-            AppState appState,
-            UiMessageService messageService,
-            UiActionExecutor actionExecutor,
-            Action onSalesRegistered) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _productService = productService ?? throw new ArgumentNullException("productService");
-            _salesService = salesService ?? throw new ArgumentNullException("salesService");
-            _repository = repository ?? throw new ArgumentNullException("repository");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
-            _onSalesRegistered = onSalesRegistered ?? delegate { };
+            SalesView vView,
+            ProductService vProductService,
+            SalesService vSalesService,
+            AppDataRepository vRepository,
+            AppState vAppState,
+            UiMessageService vMessageService,
+            UiActionExecutor vActionExecutor,
+            Action vOnSalesRegistered) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FProductService = vProductService ?? throw new ArgumentNullException("productService");
+            FSalesService = vSalesService ?? throw new ArgumentNullException("salesService");
+            FRepository = vRepository ?? throw new ArgumentNullException("repository");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FOnSalesRegistered = vOnSalesRegistered ?? delegate { };
         }
 
         internal void Initialize() {
-            _view.RegisterRequested += OnRegisterRequested;
-            _view.ClearInputRequested += OnClearInputRequested;
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
-            _view.InputChanged += OnInputChanged;
+            FView.RegisterRequested += OnRegisterRequested;
+            FView.ClearInputRequested += OnClearInputRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
+            FView.InputChanged += OnInputChanged;
         }
 
         internal void RefreshProductOptions() {
-            var selectedId = _view.GetSelectedProductOption()?.ProductId ?? string.Empty;
-            var options = _productService.GetAll(_appState.Products).Select(p => new SaleProductOption {
-                ProductId = p.ProductId,
-                ProductName = p.ProductName,
-                UnitPrice = p.UnitPrice
+            var wSelectedId = FView.GetSelectedProductOption()?.ProductId ?? string.Empty;
+            var wOptions = FProductService.GetAll(FAppState.Products).Select(vP => new SaleProductOption {
+                ProductId = vP.ProductId,
+                ProductName = vP.ProductName,
+                UnitPrice = vP.UnitPrice
             }).ToList();
-            _view.SetProductOptions(options, selectedId);
+            FView.SetProductOptions(wOptions, wSelectedId);
         }
 
         internal void RefreshGrid() {
-            var filter = _view.GetFilter();
-            var productNameMap = _appState.Products.ToDictionary(p => p.ProductId, p => p.ProductName);
-            var filtered = _salesService.GetFiltered(
-                _appState.Sales,
-                filter.StartDate,
-                filter.EndDate,
-                filter.StoreId,
-                filter.ProductId);
+            var wFilter = FView.GetFilter();
+            var wProductNameMap = FAppState.Products.ToDictionary(vP => vP.ProductId, vP => vP.ProductName);
+            var wFiltered = FSalesService.GetFiltered(
+                FAppState.Sales,
+                wFilter.StartDate,
+                wFilter.EndDate,
+                wFilter.StoreId,
+                wFilter.ProductId);
 
-            var rows = filtered.Select(s => new SalesViewRow {
-                SaleDate = s.SaleDate.ToString("yyyy/MM/dd"),
-                StoreId = s.StoreId,
-                ProductId = s.ProductId,
-                ProductName = ResolveProductName(productNameMap, s.ProductId),
-                Quantity = s.Quantity,
-                SalesAmount = s.SalesAmount
+            var wRows = wFiltered.Select(vS => new SalesViewRow {
+                SaleDate = vS.SaleDate.ToString("yyyy/MM/dd"),
+                StoreId = vS.StoreId,
+                ProductId = vS.ProductId,
+                ProductName = ResolveProductName(wProductNameMap, vS.ProductId),
+                Quantity = vS.Quantity,
+                SalesAmount = vS.SalesAmount
             }).ToList();
-            _view.SetRows(rows);
+            FView.SetRows(wRows);
         }
 
         internal void UpdatePricePreview() {
-            var selected = _view.GetSelectedProductOption();
-            if (selected == null) {
-                _view.SetUnitPriceLabel("-");
-                _view.SetAmountPreviewLabel("-");
+            var wSelected = FView.GetSelectedProductOption();
+            if (wSelected == null) {
+                FView.SetUnitPriceLabel("-");
+                FView.SetAmountPreviewLabel("-");
                 return;
             }
 
-            _view.SetUnitPriceLabel(string.Format("{0} 円", selected.UnitPrice));
+            FView.SetUnitPriceLabel(string.Format("{0} 円", wSelected.UnitPrice));
 
-            var input = _view.GetInput();
-            int quantity;
-            if (!int.TryParse(input.QuantityText, out quantity) || quantity <= 0) {
-                _view.SetAmountPreviewLabel("-");
+            var wInput = FView.GetInput();
+            int wQuantity;
+            if (!int.TryParse(wInput.QuantityText, out wQuantity) || wQuantity <= 0) {
+                FView.SetAmountPreviewLabel("-");
                 return;
             }
 
-            _view.SetAmountPreviewLabel(string.Format("{0} 円", selected.UnitPrice * quantity));
+            FView.SetAmountPreviewLabel(string.Format("{0} 円", wSelected.UnitPrice * wQuantity));
         }
 
         private void OnRegisterRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                var input = CreateSaleRecordFromInput(_view.GetInput());
-                var registered = _salesService.RegisterSale(
-                    _appState.Sales,
-                    _appState.Products,
-                    _appState.Inventories,
-                    input,
-                    _appState.InventoryHistories,
+            FActionExecutor.Execute(delegate {
+                var wInput = CreateSaleRecordFromInput(FView.GetInput());
+                var wRegistered = FSalesService.RegisterSale(
+                    FAppState.Sales,
+                    FAppState.Products,
+                    FAppState.Inventories,
+                    wInput,
+                    FAppState.InventoryHistories,
                     DateTime.Now);
-                _repository.WriteInventoryHistories(_appState.InventoryHistoryPath, _appState.InventoryHistories);
+                FRepository.WriteInventoryHistories(FAppState.InventoryHistoryPath, FAppState.InventoryHistories);
 
                 RefreshGrid();
-                _view.ClearInput();
+                FView.ClearInput();
                 UpdatePricePreview();
-                _onSalesRegistered.Invoke();
-                _messageService.ShowInfo(string.Format("売上を登録しました。金額: {0} 円", registered.SalesAmount));
+                FOnSalesRegistered.Invoke();
+                FMessageService.ShowInfo(string.Format("売上を登録しました。金額: {0} 円", wRegistered.SalesAmount));
             });
         }
 
         private void OnClearInputRequested(object sender, EventArgs e) {
-            _view.ClearInput();
+            FView.ClearInput();
             UpdatePricePreview();
         }
 
         private void OnFilterRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
+            FActionExecutor.Execute(delegate {
                 RefreshGrid();
             });
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearFilter();
+            FView.ClearFilter();
             RefreshGrid();
         }
 
@@ -135,30 +138,30 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
             UpdatePricePreview();
         }
 
-        private static SaleRecord CreateSaleRecordFromInput(SalesInputModel input) {
-            if (string.IsNullOrWhiteSpace(input.ProductId)) {
+        private static SaleRecord CreateSaleRecordFromInput(SalesInputModel vInput) {
+            if (string.IsNullOrWhiteSpace(vInput.ProductId)) {
                 throw new DomainValidationException("商品を選択してください。");
             }
 
-            int quantity;
-            if (!int.TryParse(input.QuantityText, out quantity)) {
+            int wQuantity;
+            if (!int.TryParse(vInput.QuantityText, out wQuantity)) {
                 throw new DomainValidationException("数量は整数で入力してください。");
             }
 
             return new SaleRecord {
-                SaleDate = input.SaleDate,
-                StoreId = input.StoreId,
-                ProductId = input.ProductId,
-                Quantity = quantity
+                SaleDate = vInput.SaleDate,
+                StoreId = vInput.StoreId,
+                ProductId = vInput.ProductId,
+                Quantity = wQuantity
             };
         }
 
         private static string ResolveProductName(
-            System.Collections.Generic.IReadOnlyDictionary<string, string> productNameMap,
-            string productId) {
-            string productName;
-            if (productNameMap.TryGetValue(productId, out productName)) {
-                return productName;
+            System.Collections.Generic.IReadOnlyDictionary<string, string> vProductNameMap,
+            string vProductId) {
+            string wProductName;
+            if (vProductNameMap.TryGetValue(vProductId, out wProductName)) {
+                return wProductName;
             }
 
             return "(未登録商品)";

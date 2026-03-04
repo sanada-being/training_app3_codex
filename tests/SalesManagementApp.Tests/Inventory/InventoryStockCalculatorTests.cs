@@ -4,45 +4,63 @@ using SalesManagementApp.Core.Application.Services;
 
 namespace SalesManagementApp.Tests.Inventory;
 
+/// <summary>
+/// InventoryStockCalculator の仕様を検証するNUnitテストクラスです。
+/// </summary>
 public class InventoryStockCalculatorTests
 {
-    private InventoryStockCalculator _calculator = null!;
+    private InventoryStockCalculator FCalculator = null!;
 
     [SetUp]
+    /// <summary>
+    /// 各テストの実行前にテストデータと依存オブジェクトを初期化します。
+    /// </summary>
     public void SetUp()
     {
-        _calculator = new InventoryStockCalculator();
+        FCalculator = new InventoryStockCalculator();
     }
 
     [Test]
+    /// <summary>
+    /// 現在在庫と入庫数量が妥当な場合に入庫後在庫を正しく計算できることを検証します。
+    /// </summary>
     public void CalculateAfterInbound_WhenInputsAreValid_ReturnsIncreasedStock()
     {
-        var result = _calculator.CalculateAfterInbound(10, 5);
+        var wResult = FCalculator.CalculateAfterInbound(10, 5);
 
-        Assert.That(result, Is.EqualTo(15));
+        Assert.That(wResult, Is.EqualTo(15));
     }
 
     [Test]
+    /// <summary>
+    /// 入庫後在庫がオーバーフローする場合に検証例外が発生することを確認します。
+    /// </summary>
     public void CalculateAfterInbound_WhenResultOverflows_ThrowsValidationException()
     {
         Assert.That(
-            () => _calculator.CalculateAfterInbound(int.MaxValue, 1),
+            () => FCalculator.CalculateAfterInbound(int.MaxValue, 1),
             Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
+    /// <summary>
+    /// 現在在庫と出庫数量が妥当な場合に出庫後在庫を正しく計算できることを検証します。
+    /// </summary>
     public void CalculateAfterOutbound_WhenInputsAreValid_ReturnsDecreasedStock()
     {
-        var result = _calculator.CalculateAfterOutbound(10, 4);
+        var wResult = FCalculator.CalculateAfterOutbound(10, 4);
 
-        Assert.That(result, Is.EqualTo(6));
+        Assert.That(wResult, Is.EqualTo(6));
     }
 
     [Test]
+    /// <summary>
+    /// 出庫数量が在庫数を上回る場合に検証例外が発生することを確認します。
+    /// </summary>
     public void CalculateAfterOutbound_WhenStockIsInsufficient_ThrowsValidationException()
     {
         Assert.That(
-            () => _calculator.CalculateAfterOutbound(3, 4),
+            () => FCalculator.CalculateAfterOutbound(3, 4),
             Throws.TypeOf<DomainValidationException>());
     }
 }
