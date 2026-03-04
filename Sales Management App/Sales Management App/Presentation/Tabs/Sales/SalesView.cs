@@ -6,7 +6,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Sales {
     /// <summary>
-    /// SalesView クラスです。
+    /// 売上登録 タブのUI構成と表示更新を担当するビューです。
     /// </summary>
     internal sealed class SalesView : UserControl {
         private static readonly IReadOnlyDictionary<string, string> FHeaderMap =

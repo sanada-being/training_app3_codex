@@ -5,7 +5,7 @@ using SalesManagementApp.Core.Application.Validation;
 namespace SalesManagementApp.Core.Application.Services;
 
 /// <summary>
-/// InventoryStockCalculator クラスです。
+/// 在庫増減後の在庫数を計算し入力妥当性を検証します。
 /// </summary>
 public class InventoryStockCalculator
 {

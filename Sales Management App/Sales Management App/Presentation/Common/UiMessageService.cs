@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Sales_Management_App.Presentation.Common {
     /// <summary>
-    /// UiMessageService クラスです。
+    /// 画面向けメッセージ表示を共通化するサービスです。
     /// </summary>
     internal sealed class UiMessageService {
         internal void ShowInfo(string message, string title = "完了") {

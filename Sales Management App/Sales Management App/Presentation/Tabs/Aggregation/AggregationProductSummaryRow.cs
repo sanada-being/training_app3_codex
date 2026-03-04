@@ -1,6 +1,6 @@
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
     /// <summary>
-    /// AggregationProductSummaryRow クラスです。
+    /// 売上集計の商品別サマリー行を表すモデルです。
     /// </summary>
     internal sealed class AggregationProductSummaryRow {
         /// <summary>

@@ -6,7 +6,7 @@ using SalesManagementApp.Core.Application.Validation;
 namespace SalesManagementApp.Tests.Common;
 
 /// <summary>
-/// ValidationGuardTests クラスです。
+/// ValidationGuard の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class ValidationGuardTests
 {

@@ -3,7 +3,7 @@ using System;
 namespace SalesManagementApp.Core.Application.Models;
 
 /// <summary>
-/// ProductSalesSummary クラスです。
+/// 商品別売上の集計結果を表すモデルです。
 /// </summary>
 public class ProductSalesSummary
 {
@@ -22,7 +22,7 @@ public class ProductSalesSummary
 }
 
 /// <summary>
-/// WeeklySalesSummary クラスです。
+/// 週別売上の集計結果を表すモデルです。
 /// </summary>
 public class WeeklySalesSummary
 {

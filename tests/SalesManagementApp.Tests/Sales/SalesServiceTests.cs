@@ -10,7 +10,7 @@ using CoreProduct = SalesManagementApp.Core.Domain.Entities.Product;
 namespace SalesManagementApp.Tests.Sales;
 
 /// <summary>
-/// SalesServiceTests クラスです。
+/// SalesService の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class SalesServiceTests
 {

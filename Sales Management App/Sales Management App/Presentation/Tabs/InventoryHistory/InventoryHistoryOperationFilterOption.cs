@@ -1,6 +1,6 @@
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
     /// <summary>
-    /// InventoryHistoryOperationFilterOption クラスです。
+    /// 在庫履歴の操作種別フィルター項目を表すモデルです。
     /// </summary>
     internal sealed class InventoryHistoryOperationFilterOption {
         /// <summary>

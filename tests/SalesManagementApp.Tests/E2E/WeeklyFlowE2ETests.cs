@@ -11,7 +11,7 @@ using ProductEntity = SalesManagementApp.Core.Domain.Entities.Product;
 namespace SalesManagementApp.Tests.E2E;
 
 /// <summary>
-/// WeeklyFlowE2ETests クラスです。
+/// WeeklyFlowE2E の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class WeeklyFlowE2ETests
 {

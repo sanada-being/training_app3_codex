@@ -3,7 +3,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Tests.TestHelpers;
 
 /// <summary>
-/// InventoryRecordBuilder クラスです。
+/// テストデータを組み立てるためのビルダークラスです。
 /// </summary>
 public class InventoryRecordBuilder
 {

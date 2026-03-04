@@ -7,7 +7,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
     /// <summary>
-    /// InventoryHistoryController クラスです。
+    /// 在庫履歴 タブのイベント処理を担当し、画面とサービスを接続します。
     /// </summary>
     internal sealed class InventoryHistoryController {
         private readonly InventoryHistoryView FView;

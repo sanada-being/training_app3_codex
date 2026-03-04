@@ -4,7 +4,7 @@ using SalesManagementApp.Tests.TestHelpers;
 namespace SalesManagementApp.Tests.TestHelpersTests;
 
 /// <summary>
-/// BuilderTests クラスです。
+/// テストデータビルダーの振る舞いを検証するNUnitテストです。
 /// </summary>
 public class BuilderTests
 {

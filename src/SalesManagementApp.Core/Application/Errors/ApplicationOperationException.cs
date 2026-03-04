@@ -3,7 +3,7 @@ using System;
 namespace SalesManagementApp.Core.Application.Errors;
 
 /// <summary>
-/// ApplicationOperationException クラスです。
+/// アプリケーション操作中の業務例外を表します。
 /// </summary>
 public class ApplicationOperationException : Exception
 {

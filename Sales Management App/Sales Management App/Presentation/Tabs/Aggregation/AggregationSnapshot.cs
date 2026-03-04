@@ -4,7 +4,7 @@ using SalesManagementApp.Core.Application.Models;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
     /// <summary>
-    /// AggregationSnapshot クラスです。
+    /// 売上集計タブで表示する集計結果一式を保持します。
     /// </summary>
     internal sealed class AggregationSnapshot {
         /// <summary>

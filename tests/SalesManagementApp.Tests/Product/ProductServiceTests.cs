@@ -7,7 +7,7 @@ using SalesManagementApp.Tests.TestHelpers;
 namespace SalesManagementApp.Tests.Product;
 
 /// <summary>
-/// ProductServiceTests クラスです。
+/// ProductService の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class ProductServiceTests
 {

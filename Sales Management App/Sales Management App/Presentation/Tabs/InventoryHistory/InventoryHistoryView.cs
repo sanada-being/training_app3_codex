@@ -7,7 +7,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
     /// <summary>
-    /// InventoryHistoryView クラスです。
+    /// 在庫履歴 タブのUI構成と表示更新を担当するビューです。
     /// </summary>
     internal sealed class InventoryHistoryView : UserControl {
         private static readonly IReadOnlyDictionary<string, string> FHeaderMap =

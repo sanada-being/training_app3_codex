@@ -1,6 +1,6 @@
 namespace Sales_Management_App.Presentation.Tabs.Sales {
     /// <summary>
-    /// SalesViewRow クラスです。
+    /// 売上登録 タブの一覧表示にバインドする行データモデルです。
     /// </summary>
     internal sealed class SalesViewRow {
         /// <summary>

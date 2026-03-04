@@ -5,7 +5,7 @@ using SalesManagementApp.Core.Application.Services;
 namespace SalesManagementApp.Tests.Inventory;
 
 /// <summary>
-/// InventoryStockCalculatorTests クラスです。
+/// InventoryStockCalculator の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class InventoryStockCalculatorTests
 {

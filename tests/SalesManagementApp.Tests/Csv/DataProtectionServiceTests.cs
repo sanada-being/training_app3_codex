@@ -7,7 +7,7 @@ using SalesManagementApp.Core.Infrastructure.DataProtection;
 namespace SalesManagementApp.Tests.Csv;
 
 /// <summary>
-/// DataProtectionServiceTests クラスです。
+/// DataProtectionService の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class DataProtectionServiceTests
 {

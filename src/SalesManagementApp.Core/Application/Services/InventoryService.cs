@@ -8,7 +8,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Application.Services;
 
 /// <summary>
-/// InventoryService クラスです。
+/// 在庫の検索と入出庫処理を扱うアプリケーションサービスです。
 /// </summary>
 public class InventoryService
 {

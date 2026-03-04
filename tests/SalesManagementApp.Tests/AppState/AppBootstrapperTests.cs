@@ -6,7 +6,7 @@ using SalesManagementApp.Core.Application.State;
 namespace SalesManagementApp.Tests.AppState;
 
 /// <summary>
-/// AppBootstrapperTests クラスです。
+/// AppBootstrapper の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class AppBootstrapperTests
 {

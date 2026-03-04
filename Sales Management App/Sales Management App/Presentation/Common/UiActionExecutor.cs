@@ -3,7 +3,7 @@ using SalesManagementApp.Core.Application.Exceptions;
 
 namespace Sales_Management_App.Presentation.Common {
     /// <summary>
-    /// UiActionExecutor クラスです。
+    /// UIイベント処理の例外ハンドリングを統一します。
     /// </summary>
     internal sealed class UiActionExecutor {
         private readonly UiMessageService FMessageService;

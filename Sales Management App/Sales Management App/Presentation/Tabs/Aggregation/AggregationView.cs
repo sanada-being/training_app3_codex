@@ -6,7 +6,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
     /// <summary>
-    /// AggregationView クラスです。
+    /// 売上集計 タブのUI構成と表示更新を担当するビューです。
     /// </summary>
     internal sealed class AggregationView : UserControl {
         private static readonly IReadOnlyDictionary<string, string> FProductSummaryHeaderMap =

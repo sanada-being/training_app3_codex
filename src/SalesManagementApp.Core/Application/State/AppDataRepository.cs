@@ -7,7 +7,7 @@ using SalesManagementApp.Core.Infrastructure.Csv;
 namespace SalesManagementApp.Core.Application.State;
 
 /// <summary>
-/// AppDataRepository クラスです。
+/// CSVデータの読み書きを通じてアプリ状態を永続化します。
 /// </summary>
 public class AppDataRepository
 {

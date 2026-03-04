@@ -14,7 +14,7 @@ public enum ErrorCategory
 }
 
 /// <summary>
-/// ErrorPresentation クラスです。
+/// 画面表示向けのエラー情報を保持します。
 /// </summary>
 public class ErrorPresentation
 {
@@ -37,7 +37,7 @@ public class ErrorPresentation
 }
 
 /// <summary>
-/// ErrorHandlingPolicy クラスです。
+/// 例外をユーザー向けエラー情報へ変換する方針を提供します。
 /// </summary>
 public static class ErrorHandlingPolicy
 {

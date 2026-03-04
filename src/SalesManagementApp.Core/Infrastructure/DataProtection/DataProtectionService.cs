@@ -8,7 +8,7 @@ using SalesManagementApp.Core.Application.Exceptions;
 namespace SalesManagementApp.Core.Infrastructure.DataProtection;
 
 /// <summary>
-/// DataProtectionService クラスです。
+/// バックアップ復元と操作ログ出力を提供します。
 /// </summary>
 public class DataProtectionService
 {

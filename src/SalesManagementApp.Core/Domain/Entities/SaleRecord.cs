@@ -3,7 +3,7 @@ using System;
 namespace SalesManagementApp.Core.Domain.Entities;
 
 /// <summary>
-/// SaleRecord クラスです。
+/// 売上記録の1件を表すドメインエンティティです。
 /// </summary>
 public class SaleRecord
 {

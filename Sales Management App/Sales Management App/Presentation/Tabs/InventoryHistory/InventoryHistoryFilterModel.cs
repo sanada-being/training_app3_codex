@@ -3,7 +3,7 @@ using SalesManagementApp.Core.Domain.Entities;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
     /// <summary>
-    /// InventoryHistoryFilterModel クラスです。
+    /// 在庫履歴 タブで使用する検索条件を保持するモデルです。
     /// </summary>
     internal sealed class InventoryHistoryFilterModel {
         internal DateTime? StartDateTime { get; set; }

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Sales_Management_App.Presentation.Common {
     /// <summary>
-    /// DataGridHeaderMapper クラスです。
+    /// DataGridView列ヘッダーの表示名マッピングを適用します。
     /// </summary>
     internal static class DataGridHeaderMapper {
         internal static void Apply(DataGridView grid, IReadOnlyDictionary<string, string> headers) {

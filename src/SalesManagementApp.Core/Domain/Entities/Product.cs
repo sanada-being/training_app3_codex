@@ -1,7 +1,7 @@
 namespace SalesManagementApp.Core.Domain.Entities;
 
 /// <summary>
-/// Product クラスです。
+/// 商品マスタを表すドメインエンティティです。
 /// </summary>
 public class Product
 {

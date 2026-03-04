@@ -1,7 +1,7 @@
 namespace SalesManagementApp.Core.Infrastructure;
 
 /// <summary>
-/// Placeholder クラスです。
+/// インフラ層プロジェクト参照を維持するためのプレースホルダーです。
 /// </summary>
 public static class Placeholder
 {

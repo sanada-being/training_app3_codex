@@ -8,7 +8,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Application.Services;
 
 /// <summary>
-/// SalesService クラスです。
+/// 売上登録と在庫引当を扱うアプリケーションサービスです。
 /// </summary>
 public class SalesService
 {

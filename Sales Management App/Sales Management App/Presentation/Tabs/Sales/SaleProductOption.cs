@@ -1,6 +1,6 @@
 namespace Sales_Management_App.Presentation.Tabs.Sales {
     /// <summary>
-    /// SaleProductOption クラスです。
+    /// 売上登録時の商品選択候補を表すモデルです。
     /// </summary>
     internal sealed class SaleProductOption {
         /// <summary>

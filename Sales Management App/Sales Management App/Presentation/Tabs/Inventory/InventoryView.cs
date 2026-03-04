@@ -6,7 +6,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Inventory {
     /// <summary>
-    /// InventoryView クラスです。
+    /// 在庫管理 タブのUI構成と表示更新を担当するビューです。
     /// </summary>
     internal sealed class InventoryView : UserControl {
         private static readonly IReadOnlyDictionary<string, string> FHeaderMap =

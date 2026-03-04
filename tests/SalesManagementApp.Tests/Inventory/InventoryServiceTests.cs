@@ -10,7 +10,7 @@ using SalesManagementApp.Tests.TestHelpers;
 namespace SalesManagementApp.Tests.Inventory;
 
 /// <summary>
-/// InventoryServiceTests クラスです。
+/// InventoryService の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class InventoryServiceTests
 {

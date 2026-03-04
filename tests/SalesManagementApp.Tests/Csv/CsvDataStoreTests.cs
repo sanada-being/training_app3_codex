@@ -11,7 +11,7 @@ using ProductEntity = SalesManagementApp.Core.Domain.Entities.Product;
 namespace SalesManagementApp.Tests.Csv;
 
 /// <summary>
-/// CsvDataStoreTests クラスです。
+/// CsvDataStore の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class CsvDataStoreTests
 {

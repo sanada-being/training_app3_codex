@@ -1,6 +1,6 @@
 namespace Sales_Management_App.Presentation.Tabs.Products {
     /// <summary>
-    /// ProductViewRow クラスです。
+    /// 商品管理 タブの一覧表示にバインドする行データモデルです。
     /// </summary>
     internal sealed class ProductViewRow {
         /// <summary>

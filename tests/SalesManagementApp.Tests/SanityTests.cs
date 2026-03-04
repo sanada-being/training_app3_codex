@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace SalesManagementApp.Tests;
 
 /// <summary>
-/// SanityTests クラスです。
+/// Sanity の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class SanityTests
 {

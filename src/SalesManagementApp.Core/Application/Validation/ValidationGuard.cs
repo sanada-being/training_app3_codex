@@ -4,7 +4,7 @@ using SalesManagementApp.Core.Application.Exceptions;
 namespace SalesManagementApp.Core.Application.Validation;
 
 /// <summary>
-/// ValidationGuard クラスです。
+/// 入力値検証の共通ガードメソッドを提供します。
 /// </summary>
 public static class ValidationGuard
 {

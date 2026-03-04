@@ -7,7 +7,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Application.Services;
 
 /// <summary>
-/// InventoryHistoryService クラスです。
+/// 在庫履歴の記録と条件検索を扱うアプリケーションサービスです。
 /// </summary>
 public class InventoryHistoryService
 {

@@ -9,7 +9,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Products {
     /// <summary>
-    /// ProductsController クラスです。
+    /// 商品管理 タブのイベント処理を担当し、画面とサービスを接続します。
     /// </summary>
     internal sealed class ProductsController {
         private readonly ProductsView FView;

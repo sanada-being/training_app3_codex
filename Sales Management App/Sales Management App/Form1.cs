@@ -12,7 +12,7 @@ using Sales_Management_App.Presentation.Tabs.Sales;
 
 namespace Sales_Management_App {
     /// <summary>
-    /// 販売管理アプリケーションのメインフォームです。
+    /// メイン画面として各タブを初期化し画面間連携を構成します。
     /// </summary>
     public partial class Form1 : Form {
         private readonly ProductService FProductService;

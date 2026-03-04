@@ -3,7 +3,7 @@ using System;
 namespace SalesManagementApp.Core.Application.Exceptions;
 
 /// <summary>
-/// DomainValidationException クラスです。
+/// ドメイン検証エラーを表す例外です。
 /// </summary>
 public class DomainValidationException : Exception
 {

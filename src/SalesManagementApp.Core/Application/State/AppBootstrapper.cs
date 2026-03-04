@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace SalesManagementApp.Core.Application.State;
 
 /// <summary>
-/// AppBootstrapper クラスです。
+/// 起動時にCSVからアプリケーション状態を復元します。
 /// </summary>
 public class AppBootstrapper
 {

@@ -1,7 +1,7 @@
 namespace SalesManagementApp.Core.Domain.Entities;
 
 /// <summary>
-/// InventoryRecord クラスです。
+/// 店舗別の商品在庫を表すドメインエンティティです。
 /// </summary>
 public class InventoryRecord
 {

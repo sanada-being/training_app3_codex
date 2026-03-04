@@ -13,7 +13,7 @@ using SalesManagementApp.Core.Infrastructure.DataProtection;
 namespace SalesManagementApp.Core.Infrastructure.Csv;
 
 /// <summary>
-/// CsvDataStore クラスです。
+/// CSVファイルの読み書きを担当するデータストアです。
 /// </summary>
 public class CsvDataStore
 {

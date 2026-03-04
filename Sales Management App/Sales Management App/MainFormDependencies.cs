@@ -4,7 +4,7 @@ using SalesManagementApp.Core.Application.State;
 
 namespace Sales_Management_App {
     /// <summary>
-    /// MainFormDependencies クラスです。
+    /// メインフォームで使用する依存オブジェクトを集約します。
     /// </summary>
     internal sealed class MainFormDependencies {
         internal ProductService ProductService { get; private set; }

@@ -9,7 +9,7 @@ using SalesManagementApp.Tests.TestHelpers;
 namespace SalesManagementApp.Tests.Sales;
 
 /// <summary>
-/// SalesAggregationServiceTests クラスです。
+/// SalesAggregationService の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class SalesAggregationServiceTests
 {

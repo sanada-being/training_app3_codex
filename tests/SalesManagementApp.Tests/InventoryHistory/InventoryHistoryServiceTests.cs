@@ -7,7 +7,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Tests.InventoryHistory;
 
 /// <summary>
-/// InventoryHistoryServiceTests クラスです。
+/// InventoryHistoryService の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class InventoryHistoryServiceTests
 {

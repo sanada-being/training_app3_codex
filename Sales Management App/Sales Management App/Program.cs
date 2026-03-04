@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Sales_Management_App {
     /// <summary>
-    /// Program クラスです。
+    /// WinFormsアプリケーションの起動エントリーポイントを提供します。
     /// </summary>
     internal static class Program {
         /// <summary>

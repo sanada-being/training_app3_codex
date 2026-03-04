@@ -9,7 +9,7 @@ using ProductEntity = SalesManagementApp.Core.Domain.Entities.Product;
 namespace SalesManagementApp.Tests.AppState;
 
 /// <summary>
-/// AppDataRepositoryTests クラスです。
+/// AppDataRepository の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class AppDataRepositoryTests
 {

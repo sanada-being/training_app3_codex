@@ -9,7 +9,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Application.Services;
 
 /// <summary>
-/// ProductService クラスです。
+/// 商品マスタの検索・登録・更新・削除を扱うアプリケーションサービスです。
 /// </summary>
 public class ProductService
 {

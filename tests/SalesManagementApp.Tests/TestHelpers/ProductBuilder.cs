@@ -1,7 +1,7 @@
 namespace SalesManagementApp.Tests.TestHelpers;
 
 /// <summary>
-/// ProductBuilder クラスです。
+/// テストデータを組み立てるためのビルダークラスです。
 /// </summary>
 public class ProductBuilder
 {

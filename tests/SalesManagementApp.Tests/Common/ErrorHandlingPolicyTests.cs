@@ -6,7 +6,7 @@ using SalesManagementApp.Core.Application.Exceptions;
 namespace SalesManagementApp.Tests.Common;
 
 /// <summary>
-/// ErrorHandlingPolicyTests クラスです。
+/// ErrorHandlingPolicy の仕様を検証するNUnitテストクラスです。
 /// </summary>
 public class ErrorHandlingPolicyTests
 {

@@ -1,6 +1,6 @@
 namespace Sales_Management_App.Presentation.Tabs.Inventory {
     /// <summary>
-    /// InventoryViewRow クラスです。
+    /// 在庫管理 タブの一覧表示にバインドする行データモデルです。
     /// </summary>
     internal sealed class InventoryViewRow {
         /// <summary>

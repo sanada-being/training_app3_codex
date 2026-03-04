@@ -3,7 +3,7 @@ using System;
 namespace SalesManagementApp.Core.Domain.Entities;
 
 /// <summary>
-/// InventoryHistoryRecord クラスです。
+/// 在庫操作履歴の1件を表すドメインエンティティです。
 /// </summary>
 public class InventoryHistoryRecord
 {

@@ -8,7 +8,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Application.Services;
 
 /// <summary>
-/// SalesAggregationService クラスです。
+/// 売上データの期間集計を提供するアプリケーションサービスです。
 /// </summary>
 public class SalesAggregationService
 {

@@ -8,7 +8,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Sales {
     /// <summary>
-    /// SalesController クラスです。
+    /// 売上登録 タブのイベント処理を担当し、画面とサービスを接続します。
     /// </summary>
     internal sealed class SalesController {
         private readonly SalesView FView;

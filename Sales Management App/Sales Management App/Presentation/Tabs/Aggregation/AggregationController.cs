@@ -9,7 +9,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
     /// <summary>
-    /// AggregationController クラスです。
+    /// 売上集計 タブのイベント処理を担当し、画面とサービスを接続します。
     /// </summary>
     internal sealed class AggregationController {
         private readonly AggregationView FView;

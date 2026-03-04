@@ -4,7 +4,7 @@ using SalesManagementApp.Core.Domain.Entities;
 namespace SalesManagementApp.Core.Application.State;
 
 /// <summary>
-/// AppState クラスです。
+/// 画面間で共有するアプリケーション状態を保持します。
 /// </summary>
 public sealed class AppState
 {

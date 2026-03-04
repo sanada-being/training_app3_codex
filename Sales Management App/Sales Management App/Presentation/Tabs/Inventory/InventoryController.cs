@@ -8,7 +8,7 @@ using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Inventory {
     /// <summary>
-    /// InventoryController クラスです。
+    /// 在庫管理 タブのイベント処理を担当し、画面とサービスを接続します。
     /// </summary>
     internal sealed class InventoryController {
         private readonly InventoryView FView;
