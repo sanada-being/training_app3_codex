@@ -22,3 +22,15 @@
 - 実行コマンド:
   - `dotnet test tests/SalesManagementApp.Tests/SalesManagementApp.Tests.csproj`
 
+## 回帰確認（2026-03-04）
+- 実施目的: コーディング規約適用後の回帰確認（Issue #82）
+- 判定: `OK`
+- 実行コマンド:
+  - `dotnet build "Sales Management App/Sales Management App.slnx"`
+  - `dotnet test tests/SalesManagementApp.Tests/SalesManagementApp.Tests.csproj`
+  - `dotnet test tests/SalesManagementApp.Tests/SalesManagementApp.Tests.csproj --filter "FullyQualifiedName~WeeklyFlowE2ETests"`
+- 実行結果:
+  - build: 成功（0 warnings / 0 errors）
+  - unit+integration+e2e: 69 passed
+  - WeeklyFlowE2E（絞り込み実行）: 1 passed
+
