@@ -9,6 +9,6 @@ namespace SalesManagementApp.Core.Domain.Interfaces;
 public interface IProductRepository
 {
     IReadOnlyList<Product> GetAll();
-    Product? FindById(string productId);
-    void SaveAll(IReadOnlyList<Product> products);
+    Product? FindById(string vProductId);
+    void SaveAll(IReadOnlyList<Product> vProducts);
 }

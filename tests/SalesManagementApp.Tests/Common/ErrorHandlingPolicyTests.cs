@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using SalesManagementApp.Core.Application.Errors;
 using SalesManagementApp.Core.Application.Exceptions;
@@ -16,14 +16,14 @@ public class ErrorHandlingPolicyTests
     /// </summary>
     public void CreatePresentation_WhenDomainValidationException_ReturnsValidationCategory()
     {
-        var ex = new DomainValidationException("入力不備です。");
+        var wEx = new DomainValidationException("入力不備です。");
 
-        var result = ErrorHandlingPolicy.CreatePresentation(ex);
+        var wResult = ErrorHandlingPolicy.CreatePresentation(wEx);
 
-        Assert.That(result.Category, Is.EqualTo(ErrorCategory.Validation));
-        Assert.That(result.Title, Is.EqualTo("入力エラー"));
-        Assert.That(result.UserMessage, Is.EqualTo("入力不備です。"));
-        Assert.That(result.LogLevel, Is.EqualTo("WARN"));
+        Assert.That(wResult.Category, Is.EqualTo(ErrorCategoryEnum.Validation));
+        Assert.That(wResult.Title, Is.EqualTo("入力エラー"));
+        Assert.That(wResult.UserMessage, Is.EqualTo("入力不備です。"));
+        Assert.That(wResult.LogLevel, Is.EqualTo("WARN"));
     }
 
     [Test]
@@ -32,13 +32,13 @@ public class ErrorHandlingPolicyTests
     /// </summary>
     public void CreatePresentation_WhenApplicationOperationException_ReturnsOperationCategory()
     {
-        var ex = new ApplicationOperationException("業務処理に失敗しました。");
+        var wEx = new ApplicationOperationException("業務処理に失敗しました。");
 
-        var result = ErrorHandlingPolicy.CreatePresentation(ex);
+        var wResult = ErrorHandlingPolicy.CreatePresentation(wEx);
 
-        Assert.That(result.Category, Is.EqualTo(ErrorCategory.Operation));
-        Assert.That(result.Title, Is.EqualTo("業務エラー"));
-        Assert.That(result.LogLevel, Is.EqualTo("ERROR"));
+        Assert.That(wResult.Category, Is.EqualTo(ErrorCategoryEnum.Operation));
+        Assert.That(wResult.Title, Is.EqualTo("業務エラー"));
+        Assert.That(wResult.LogLevel, Is.EqualTo("ERROR"));
     }
 
     [Test]
@@ -47,13 +47,14 @@ public class ErrorHandlingPolicyTests
     /// </summary>
     public void CreatePresentation_WhenUnexpectedException_ReturnsGenericMessage()
     {
-        var ex = new InvalidOperationException("unexpected");
+        var wEx = new InvalidOperationException("unexpected");
 
-        var result = ErrorHandlingPolicy.CreatePresentation(ex);
+        var wResult = ErrorHandlingPolicy.CreatePresentation(wEx);
 
-        Assert.That(result.Category, Is.EqualTo(ErrorCategory.Unexpected));
-        Assert.That(result.Title, Is.EqualTo("システムエラー"));
-        Assert.That(result.UserMessage, Does.Contain("予期しないエラー"));
-        Assert.That(result.LogLevel, Is.EqualTo("ERROR"));
+        Assert.That(wResult.Category, Is.EqualTo(ErrorCategoryEnum.Unexpected));
+        Assert.That(wResult.Title, Is.EqualTo("システムエラー"));
+        Assert.That(wResult.UserMessage, Does.Contain("予期しないエラー"));
+        Assert.That(wResult.LogLevel, Is.EqualTo("ERROR"));
     }
 }
+

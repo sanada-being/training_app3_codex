@@ -20,18 +20,18 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
         private readonly Action FOnProductsChanged;
 
         internal ProductsController(
-            ProductsView view,
-            ProductService productService,
-            AppState appState,
-            UiMessageService messageService,
-            UiActionExecutor actionExecutor,
-            Action onProductsChanged) {
-            FView = view ?? throw new ArgumentNullException("view");
-            FProductService = productService ?? throw new ArgumentNullException("productService");
-            FAppState = appState ?? throw new ArgumentNullException("appState");
-            FMessageService = messageService ?? throw new ArgumentNullException("messageService");
-            FActionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
-            FOnProductsChanged = onProductsChanged ?? delegate { };
+            ProductsView vView,
+            ProductService vProductService,
+            AppState vAppState,
+            UiMessageService vMessageService,
+            UiActionExecutor vActionExecutor,
+            Action vOnProductsChanged) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FProductService = vProductService ?? throw new ArgumentNullException("productService");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FOnProductsChanged = vOnProductsChanged ?? delegate { };
         }
 
         internal void Initialize() {
@@ -45,15 +45,15 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
         }
 
         internal void Refresh() {
-            var filter = FView.GetFilter();
-            var filtered = FProductService.GetFiltered(FAppState.Products, filter.ProductId, filter.ProductName, filter.Category);
-            var rows = filtered.Select(p => new ProductViewRow {
-                ProductId = p.ProductId,
-                ProductName = p.ProductName,
-                UnitPrice = p.UnitPrice,
-                Category = p.Category
+            var wFilter = FView.GetFilter();
+            var wFiltered = FProductService.GetFiltered(FAppState.Products, wFilter.ProductId, wFilter.ProductName, wFilter.Category);
+            var wRows = wFiltered.Select(vP => new ProductViewRow {
+                ProductId = vP.ProductId,
+                ProductName = vP.ProductName,
+                UnitPrice = vP.UnitPrice,
+                Category = vP.Category
             }).ToList();
-            FView.SetRows(rows);
+            FView.SetRows(wRows);
         }
 
         private void OnRegisterRequested(object sender, EventArgs e) {
@@ -74,18 +74,18 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
         }
 
         private void OnDeleteRequested(object sender, EventArgs e) {
-            var productId = FView.GetDeleteTargetProductId();
-            if (string.IsNullOrWhiteSpace(productId)) {
+            var wProductId = FView.GetDeleteTargetProductId();
+            if (string.IsNullOrWhiteSpace(wProductId)) {
                 FMessageService.ShowWarning("削除対象の商品IDを選択してください。", "入力エラー");
                 return;
             }
 
-            if (FMessageService.Confirm(string.Format("商品ID={0} を削除します。よろしいですか？", productId), "確認") != DialogResult.Yes) {
+            if (FMessageService.Confirm(string.Format("商品ID={0} を削除します。よろしいですか？", wProductId), "確認") != DialogResult.Yes) {
                 return;
             }
 
             FActionExecutor.Execute(delegate {
-                FProductService.Delete(FAppState.Products, productId);
+                FProductService.Delete(FAppState.Products, wProductId);
                 Refresh();
                 FView.ClearInput();
                 FOnProductsChanged.Invoke();
@@ -106,30 +106,30 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
         }
 
         private void OnSelectedProductChanged(object sender, EventArgs e) {
-            var selected = FView.GetSelectedRow();
-            if (selected == null) {
+            var wSelected = FView.GetSelectedRow();
+            if (wSelected == null) {
                 return;
             }
 
             FView.SetInput(new ProductInputModel {
-                ProductId = selected.ProductId,
-                ProductName = selected.ProductName,
-                UnitPriceText = selected.UnitPrice.ToString(),
-                Category = selected.Category
+                ProductId = wSelected.ProductId,
+                ProductName = wSelected.ProductName,
+                UnitPriceText = wSelected.UnitPrice.ToString(),
+                Category = wSelected.Category
             });
         }
 
-        private static Product CreateProductFromInput(ProductInputModel input) {
-            int unitPrice;
-            if (!int.TryParse(input.UnitPriceText, out unitPrice)) {
+        private static Product CreateProductFromInput(ProductInputModel vInput) {
+            int wUnitPrice;
+            if (!int.TryParse(vInput.UnitPriceText, out wUnitPrice)) {
                 throw new DomainValidationException("単価は整数で入力してください。");
             }
 
             return new Product {
-                ProductId = input.ProductId,
-                ProductName = input.ProductName,
-                UnitPrice = unitPrice,
-                Category = input.Category
+                ProductId = vInput.ProductId,
+                ProductName = vInput.ProductName,
+                UnitPrice = wUnitPrice,
+                Category = vInput.Category
             };
         }
     }

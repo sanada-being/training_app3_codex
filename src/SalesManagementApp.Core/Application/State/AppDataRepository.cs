@@ -21,53 +21,53 @@ public class AppDataRepository
     {
     }
 
-    internal AppDataRepository(CsvDataStore csvDataStore)
+    internal AppDataRepository(CsvDataStore vCsvDataStore)
     {
-        FCsvDataStore = csvDataStore ?? throw new ArgumentNullException(nameof(csvDataStore));
+        FCsvDataStore = vCsvDataStore ?? throw new ArgumentNullException(nameof(vCsvDataStore));
     }
 
     /// <summary>
     /// 商品CSVが存在する場合に商品一覧を読み込みます。
     /// </summary>
-    public IReadOnlyList<Product> ReadProductsIfExists(string filePath)
+    public IReadOnlyList<Product> ReadProductsIfExists(string vFilePath)
     {
-        return File.Exists(filePath) ? FCsvDataStore.ReadProducts(filePath) : Array.Empty<Product>();
+        return File.Exists(vFilePath) ? FCsvDataStore.ReadProducts(vFilePath) : Array.Empty<Product>();
     }
 
     /// <summary>
     /// 在庫CSVが存在する場合に在庫一覧を読み込みます。
     /// </summary>
-    public IReadOnlyList<InventoryRecord> ReadInventoriesIfExists(string filePath)
+    public IReadOnlyList<InventoryRecord> ReadInventoriesIfExists(string vFilePath)
     {
-        return File.Exists(filePath) ? FCsvDataStore.ReadInventories(filePath) : Array.Empty<InventoryRecord>();
+        return File.Exists(vFilePath) ? FCsvDataStore.ReadInventories(vFilePath) : Array.Empty<InventoryRecord>();
     }
 
     /// <summary>
     /// 売上CSVが存在する場合に正規化を行って読み込みます。
     /// </summary>
-    public IReadOnlyList<SaleRecord> ReadAndNormalizeSalesIfExists(string filePath, IReadOnlyCollection<Product> products)
+    public IReadOnlyList<SaleRecord> ReadAndNormalizeSalesIfExists(string vFilePath, IReadOnlyCollection<Product> vProducts)
     {
-        return File.Exists(filePath) ? FCsvDataStore.ReadAndNormalizeSales(filePath, products) : Array.Empty<SaleRecord>();
+        return File.Exists(vFilePath) ? FCsvDataStore.ReadAndNormalizeSales(vFilePath, vProducts) : Array.Empty<SaleRecord>();
     }
 
     /// <summary>
     /// 在庫履歴CSVが存在する場合に履歴一覧を読み込みます。
     /// </summary>
-    public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistoriesIfExists(string filePath)
+    public IReadOnlyList<InventoryHistoryRecord> ReadInventoryHistoriesIfExists(string vFilePath)
     {
-        return File.Exists(filePath) ? FCsvDataStore.ReadInventoryHistories(filePath) : Array.Empty<InventoryHistoryRecord>();
+        return File.Exists(vFilePath) ? FCsvDataStore.ReadInventoryHistories(vFilePath) : Array.Empty<InventoryHistoryRecord>();
     }
 
     /// <summary>
     /// 在庫履歴一覧をCSVへ書き込みます。
     /// </summary>
-    public void WriteInventoryHistories(string filePath, IEnumerable<InventoryHistoryRecord> records)
+    public void WriteInventoryHistories(string vFilePath, IEnumerable<InventoryHistoryRecord> vRecords)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
+        if (string.IsNullOrWhiteSpace(vFilePath))
         {
             return;
         }
 
-        FCsvDataStore.WriteInventoryHistories(filePath, records);
+        FCsvDataStore.WriteInventoryHistories(vFilePath, vRecords);
     }
 }

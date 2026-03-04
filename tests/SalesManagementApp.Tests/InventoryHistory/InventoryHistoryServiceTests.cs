@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SalesManagementApp.Core.Application.Services;
@@ -26,7 +26,7 @@ public class InventoryHistoryServiceTests
             new InventoryHistoryRecord
             {
                 OccurredAt = new DateTime(2026, 3, 1, 10, 0, 0),
-                OperationType = InventoryOperationType.Inbound,
+                OperationType = InventoryOperationTypeEnum.Inbound,
                 StoreId = "S001",
                 ProductId = "P001",
                 Quantity = 10,
@@ -36,7 +36,7 @@ public class InventoryHistoryServiceTests
             new InventoryHistoryRecord
             {
                 OccurredAt = new DateTime(2026, 3, 2, 9, 0, 0),
-                OperationType = InventoryOperationType.Sale,
+                OperationType = InventoryOperationTypeEnum.Sale,
                 StoreId = "S001",
                 ProductId = "P001",
                 Quantity = 2,
@@ -46,7 +46,7 @@ public class InventoryHistoryServiceTests
             new InventoryHistoryRecord
             {
                 OccurredAt = new DateTime(2026, 3, 2, 12, 0, 0),
-                OperationType = InventoryOperationType.Outbound,
+                OperationType = InventoryOperationTypeEnum.Outbound,
                 StoreId = "S002",
                 ProductId = "P002",
                 Quantity = 1,
@@ -65,7 +65,7 @@ public class InventoryHistoryServiceTests
         FService.Record(
             FHistories,
             new DateTime(2026, 3, 3, 10, 0, 0),
-            InventoryOperationType.Inbound,
+            InventoryOperationTypeEnum.Inbound,
             "S001",
             "P003",
             5,
@@ -73,7 +73,7 @@ public class InventoryHistoryServiceTests
             "Success");
 
         Assert.That(FHistories.Count, Is.EqualTo(4));
-        Assert.That(FHistories[3].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
+        Assert.That(FHistories[3].OperationType, Is.EqualTo(InventoryOperationTypeEnum.Inbound));
         Assert.That(FHistories[3].ProductId, Is.EqualTo("P003"));
     }
 
@@ -83,17 +83,18 @@ public class InventoryHistoryServiceTests
     /// </summary>
     public void Filter_WhenConditionsProvided_ReturnsMatchedRecords()
     {
-        var filtered = FService.Filter(
+        var wFiltered = FService.Filter(
             FHistories,
             new DateTime(2026, 3, 2, 0, 0, 0),
             new DateTime(2026, 3, 2, 23, 59, 59),
             "S001",
             "P001",
-            InventoryOperationType.Sale);
+            InventoryOperationTypeEnum.Sale);
 
-        Assert.That(filtered.Count, Is.EqualTo(1));
-        Assert.That(filtered[0].OperationType, Is.EqualTo(InventoryOperationType.Sale));
-        Assert.That(filtered[0].StoreId, Is.EqualTo("S001"));
-        Assert.That(filtered[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(wFiltered.Count, Is.EqualTo(1));
+        Assert.That(wFiltered[0].OperationType, Is.EqualTo(InventoryOperationTypeEnum.Sale));
+        Assert.That(wFiltered[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(wFiltered[0].ProductId, Is.EqualTo("P001"));
     }
 }
+

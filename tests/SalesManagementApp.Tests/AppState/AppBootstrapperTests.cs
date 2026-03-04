@@ -42,47 +42,47 @@ public class AppBootstrapperTests
     /// </summary>
     public void LoadFromBaseDirectory_WhenRepositoryRootExists_LoadsStateAndResolvesLatestSalesFile()
     {
-        var root = Path.Combine(FWorkDir, "repo");
-        Directory.CreateDirectory(root);
-        File.WriteAllText(Path.Combine(root, "AGENTS.md"), "marker");
-        File.WriteAllLines(Path.Combine(root, "products.csv"), new[]
+        var wRoot = Path.Combine(FWorkDir, "repo");
+        Directory.CreateDirectory(wRoot);
+        File.WriteAllText(Path.Combine(wRoot, "AGENTS.md"), "marker");
+        File.WriteAllLines(Path.Combine(wRoot, "products.csv"), new[]
         {
             "ProductId,ProductName,UnitPrice,Category",
             "P001,Cola,120,Drink"
         });
-        File.WriteAllLines(Path.Combine(root, "inventory.csv"), new[]
+        File.WriteAllLines(Path.Combine(wRoot, "inventory.csv"), new[]
         {
             "StoreId,ProductId,Stock",
             "S001,P001,10"
         });
-        File.WriteAllLines(Path.Combine(root, "sales_20260301.csv"), new[]
+        File.WriteAllLines(Path.Combine(wRoot, "sales_20260301.csv"), new[]
         {
             "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
             "2026-03-01,S001,P001,1,120"
         });
-        File.WriteAllLines(Path.Combine(root, "sales_20260302.csv"), new[]
+        File.WriteAllLines(Path.Combine(wRoot, "sales_20260302.csv"), new[]
         {
             "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
             "2026-03-02,S001,P001,2,240"
         });
-        File.WriteAllLines(Path.Combine(root, "inventory_history.csv"), new[]
+        File.WriteAllLines(Path.Combine(wRoot, "inventory_history.csv"), new[]
         {
             "OccurredAt,OperationType,StoreId,ProductId,Quantity,ResultStock,Result",
             "2026-03-02 09:00:00,Sale,S001,P001,2,8,Success"
         });
 
-        var nestedBase = Path.Combine(root, "Sales Management App", "Sales Management App", "bin", "Debug");
-        Directory.CreateDirectory(nestedBase);
+        var wNestedBase = Path.Combine(wRoot, "Sales Management App", "Sales Management App", "bin", "Debug");
+        Directory.CreateDirectory(wNestedBase);
 
-        var state = FBootstrapper.LoadFromBaseDirectory(nestedBase);
+        var wState = FBootstrapper.LoadFromBaseDirectory(wNestedBase);
 
-        Assert.That(state.RepositoryRootPath, Is.EqualTo(root));
-        Assert.That(state.Products.Count, Is.EqualTo(1));
-        Assert.That(state.Inventories.Count, Is.EqualTo(1));
-        Assert.That(state.Sales.Count, Is.EqualTo(1));
-        Assert.That(state.Sales[0].SaleDate, Is.EqualTo(new DateTime(2026, 3, 2)));
-        Assert.That(state.InventoryHistories.Count, Is.EqualTo(1));
-        Assert.That(state.SalesPath, Does.EndWith("sales_20260302.csv"));
+        Assert.That(wState.RepositoryRootPath, Is.EqualTo(wRoot));
+        Assert.That(wState.Products.Count, Is.EqualTo(1));
+        Assert.That(wState.Inventories.Count, Is.EqualTo(1));
+        Assert.That(wState.Sales.Count, Is.EqualTo(1));
+        Assert.That(wState.Sales[0].SaleDate, Is.EqualTo(new DateTime(2026, 3, 2)));
+        Assert.That(wState.InventoryHistories.Count, Is.EqualTo(1));
+        Assert.That(wState.SalesPath, Does.EndWith("sales_20260302.csv"));
     }
 
     [Test]
@@ -91,15 +91,15 @@ public class AppBootstrapperTests
     /// </summary>
     public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_ReturnsEmptyState()
     {
-        var baseDir = Path.Combine(FWorkDir, "standalone");
-        Directory.CreateDirectory(baseDir);
+        var wBaseDir = Path.Combine(FWorkDir, "standalone");
+        Directory.CreateDirectory(wBaseDir);
 
-        var state = FBootstrapper.LoadFromBaseDirectory(baseDir);
+        var wState = FBootstrapper.LoadFromBaseDirectory(wBaseDir);
 
-        Assert.That(state.RepositoryRootPath, Is.Empty);
-        Assert.That(state.Products, Is.Empty);
-        Assert.That(state.Inventories, Is.Empty);
-        Assert.That(state.Sales, Is.Empty);
-        Assert.That(state.InventoryHistories, Is.Empty);
+        Assert.That(wState.RepositoryRootPath, Is.Empty);
+        Assert.That(wState.Products, Is.Empty);
+        Assert.That(wState.Inventories, Is.Empty);
+        Assert.That(wState.Sales, Is.Empty);
+        Assert.That(wState.InventoryHistories, Is.Empty);
     }
 }

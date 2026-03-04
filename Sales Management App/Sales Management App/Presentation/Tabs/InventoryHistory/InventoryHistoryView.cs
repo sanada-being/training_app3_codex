@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -34,28 +34,28 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
         internal InventoryHistoryView() {
             Dock = DockStyle.Fill;
 
-            var root = new TableLayoutPanel {
+            var wRoot = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
                 RowCount = 2,
                 ColumnCount = 1
             };
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            wRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
+            wRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
-            var filterPanel = new TableLayoutPanel {
+            var wFilterPanel = new TableLayoutPanel {
                 Dock = DockStyle.Fill,
                 ColumnCount = 6,
                 RowCount = 3,
                 Padding = new Padding(12)
             };
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
-            filterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 220));
+            wFilterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            wFilterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            wFilterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            wFilterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            wFilterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+            wFilterPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 220));
 
-            var startLabel = new Label {
+            var wStartLabel = new Label {
                 Text = "開始日時",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -67,10 +67,10 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 ShowCheckBox = true,
                 Checked = false
             };
-            filterPanel.Controls.Add(startLabel, 0, 0);
-            filterPanel.Controls.Add(FStartDatePicker, 1, 0);
+            wFilterPanel.Controls.Add(wStartLabel, 0, 0);
+            wFilterPanel.Controls.Add(FStartDatePicker, 1, 0);
 
-            var endLabel = new Label {
+            var wEndLabel = new Label {
                 Text = "終了日時",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -82,10 +82,10 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 ShowCheckBox = true,
                 Checked = false
             };
-            filterPanel.Controls.Add(endLabel, 2, 0);
-            filterPanel.Controls.Add(FEndDatePicker, 3, 0);
+            wFilterPanel.Controls.Add(wEndLabel, 2, 0);
+            wFilterPanel.Controls.Add(FEndDatePicker, 3, 0);
 
-            var operationLabel = new Label {
+            var wOperationLabel = new Label {
                 Text = "操作種別",
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -94,21 +94,21 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 Dock = DockStyle.Fill,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
-            filterPanel.Controls.Add(operationLabel, 4, 0);
-            filterPanel.Controls.Add(FOperationTypeCombo, 5, 0);
+            wFilterPanel.Controls.Add(wOperationLabel, 4, 0);
+            wFilterPanel.Controls.Add(FOperationTypeCombo, 5, 0);
 
-            FStoreIdText = AddLabeledTextBox(filterPanel, "店舗ID", 0, 1);
-            FProductIdText = AddLabeledTextBox(filterPanel, "商品ID", 2, 1);
+            FStoreIdText = AddLabeledTextBox(wFilterPanel, "店舗ID", 0, 1);
+            FProductIdText = AddLabeledTextBox(wFilterPanel, "商品ID", 2, 1);
 
-            var buttonFlow = new FlowLayoutPanel {
+            var wButtonFlow = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
                 FlowDirection = FlowDirection.LeftToRight,
                 AutoSize = true
             };
-            buttonFlow.Controls.Add(CreateButton("検索", delegate { FilterRequested?.Invoke(this, EventArgs.Empty); }));
-            buttonFlow.Controls.Add(CreateButton("クリア", delegate { FilterClearRequested?.Invoke(this, EventArgs.Empty); }));
-            filterPanel.Controls.Add(buttonFlow, 0, 2);
-            filterPanel.SetColumnSpan(buttonFlow, 6);
+            wButtonFlow.Controls.Add(CreateButton("検索", delegate { FilterRequested?.Invoke(this, EventArgs.Empty); }));
+            wButtonFlow.Controls.Add(CreateButton("クリア", delegate { FilterClearRequested?.Invoke(this, EventArgs.Empty); }));
+            wFilterPanel.Controls.Add(wButtonFlow, 0, 2);
+            wFilterPanel.SetColumnSpan(wButtonFlow, 6);
 
             FGrid = new DataGridView {
                 Dock = DockStyle.Fill,
@@ -118,9 +118,9 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
                 MultiSelect = false
             };
 
-            root.Controls.Add(filterPanel, 0, 0);
-            root.Controls.Add(FGrid, 0, 1);
-            Controls.Add(root);
+            wRoot.Controls.Add(wFilterPanel, 0, 0);
+            wRoot.Controls.Add(FGrid, 0, 1);
+            Controls.Add(wRoot);
 
             BindOperationOptions();
         }
@@ -135,9 +135,9 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
             };
         }
 
-        internal void SetRows(IReadOnlyCollection<InventoryHistoryViewRow> rows) {
+        internal void SetRows(IReadOnlyCollection<InventoryHistoryViewRow> vRows) {
             FGrid.DataSource = null;
-            FGrid.DataSource = rows.ToList();
+            FGrid.DataSource = vRows.ToList();
             DataGridHeaderMapper.Apply(FGrid, FHeaderMap);
         }
 
@@ -150,52 +150,53 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
         }
 
         private void BindOperationOptions() {
-            var options = new List<InventoryHistoryOperationFilterOption> {
+            var wOptions = new List<InventoryHistoryOperationFilterOption> {
                 new InventoryHistoryOperationFilterOption(string.Empty, "すべて"),
-                new InventoryHistoryOperationFilterOption(InventoryOperationType.Inbound.ToString(), "入荷"),
-                new InventoryHistoryOperationFilterOption(InventoryOperationType.Outbound.ToString(), "出庫"),
-                new InventoryHistoryOperationFilterOption(InventoryOperationType.Sale.ToString(), "売上連動")
+                new InventoryHistoryOperationFilterOption(InventoryOperationTypeEnum.Inbound.ToString(), "入荷"),
+                new InventoryHistoryOperationFilterOption(InventoryOperationTypeEnum.Outbound.ToString(), "出庫"),
+                new InventoryHistoryOperationFilterOption(InventoryOperationTypeEnum.Sale.ToString(), "売上連動")
             };
 
             FOperationTypeCombo.DataSource = null;
             FOperationTypeCombo.DisplayMember = "Label";
             FOperationTypeCombo.ValueMember = "Value";
-            FOperationTypeCombo.DataSource = options;
+            FOperationTypeCombo.DataSource = wOptions;
             FOperationTypeCombo.SelectedIndex = 0;
         }
 
-        private InventoryOperationType? GetSelectedOperationType() {
-            var option = FOperationTypeCombo.SelectedItem as InventoryHistoryOperationFilterOption;
-            if (option == null || string.IsNullOrWhiteSpace(option.Value)) {
+        private InventoryOperationTypeEnum? GetSelectedOperationType() {
+            var wOption = FOperationTypeCombo.SelectedItem as InventoryHistoryOperationFilterOption;
+            if (wOption == null || string.IsNullOrWhiteSpace(wOption.Value)) {
                 return null;
             }
 
-            InventoryOperationType parsed;
-            return Enum.TryParse(option.Value, out parsed) ? parsed : (InventoryOperationType?)null;
+            InventoryOperationTypeEnum wParsed;
+            return Enum.TryParse(wOption.Value, out wParsed) ? wParsed : (InventoryOperationTypeEnum?)null;
         }
 
-        private static TextBox AddLabeledTextBox(TableLayoutPanel panel, string label, int col, int row) {
-            var lbl = new Label {
-                Text = label,
+        private static TextBox AddLabeledTextBox(TableLayoutPanel vPanel, string vLabel, int vCol, int vRow) {
+            var wLbl = new Label {
+                Text = vLabel,
                 Dock = DockStyle.Fill,
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
 
-            var textBox = new TextBox { Dock = DockStyle.Fill };
-            panel.Controls.Add(lbl, col, row);
-            panel.Controls.Add(textBox, col + 1, row);
-            return textBox;
+            var wTextBox = new TextBox { Dock = DockStyle.Fill };
+            vPanel.Controls.Add(wLbl, vCol, vRow);
+            vPanel.Controls.Add(wTextBox, vCol + 1, vRow);
+            return wTextBox;
         }
 
-        private static Button CreateButton(string text, EventHandler onClick) {
-            var button = new Button {
-                Text = text,
+        private static Button CreateButton(string vText, EventHandler vOnClick) {
+            var wButton = new Button {
+                Text = vText,
                 Width = 120,
                 Height = 34,
                 Margin = new Padding(0, 0, 12, 0)
             };
-            button.Click += onClick;
-            return button;
+            wButton.Click += vOnClick;
+            return wButton;
         }
     }
 }
+

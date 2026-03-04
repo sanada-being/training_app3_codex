@@ -58,6 +58,66 @@ function Get-FieldIdentifier {
     return $nameMatch.Groups[1].Value
 }
 
+function Split-Parameters {
+    param([string]$ParameterList)
+
+    $trimmed = $ParameterList.Trim()
+    if ([string]::IsNullOrWhiteSpace($trimmed)) {
+        return @()
+    }
+
+    $parts = $trimmed -split ","
+    return $parts | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+}
+
+function Get-ParameterIdentifier {
+    param([string]$ParameterText)
+
+    $working = $ParameterText
+    $working = $working -replace "^\s*\[[^\]]+\]\s*", ""
+    $working = $working -replace "^\s*params\s+", ""
+    $working = $working -replace "^\s*this\s+", ""
+
+    if ($working.Contains("=")) {
+        $working = ($working -split "=")[0].Trim()
+    }
+
+    $tokens = $working -split "\s+"
+    if ($tokens.Length -lt 2) {
+        return $null
+    }
+
+    return $tokens[$tokens.Length - 1]
+}
+
+function Test-IsMethodOrCtorParameterNameValid {
+    param([string]$Name)
+
+    if ([string]::IsNullOrWhiteSpace($Name)) {
+        return $true
+    }
+
+    if ($Name -in @("sender", "e")) {
+        return $true
+    }
+
+    return $Name -match "^v[A-Z]"
+}
+
+function Test-IsLocalVariableNameValid {
+    param([string]$Name)
+
+    if ([string]::IsNullOrWhiteSpace($Name)) {
+        return $true
+    }
+
+    if ($Name -in @("i", "j", "k")) {
+        return $true
+    }
+
+    return $Name -match "^w[A-Z]"
+}
+
 function Split-Lines {
     param([string]$Text)
     return [regex]::Split($Text, "`r?`n")
@@ -88,10 +148,11 @@ foreach ($file in $files) {
     $text = [System.IO.File]::ReadAllText($file, [System.Text.Encoding]::UTF8)
     $lines = Split-Lines -Text $text
 
+    $relativeFile = Resolve-Path -LiteralPath $file -Relative
+
     for ($index = 0; $index -lt $lines.Length; $index++) {
         $line = $lines[$index]
         $lineNo = $index + 1
-        $relativeFile = Resolve-Path -LiteralPath $file -Relative
 
         if ($line -match "^\s*(//|/\*|\*)" -and $line -match "Add by|TODO|Todo|Hack|Undone|\d{4}/\d{2}/\d{2}") {
             $violations.Add("${relativeFile}:$lineNo prohibited comment keyword detected.")
@@ -133,6 +194,69 @@ foreach ($file in $files) {
                 if ($fieldName -notmatch "^F[A-Z]") {
                     $violations.Add("${relativeFile}:$lineNo non-public field must start with F.")
                 }
+            }
+        }
+    }
+
+    $signatureMatches = [regex]::Matches(
+        $text,
+        "(?ms)^\s*(?:public|private|protected|internal)\s+[^\n;{}]*?\((?<params>[^)]*)\)"
+    )
+    foreach ($signatureMatch in $signatureMatches) {
+        $paramsGroup = $signatureMatch.Groups["params"].Value
+        if ([string]::IsNullOrWhiteSpace($paramsGroup)) {
+            continue
+        }
+
+        $lineNo = 1 + ($text.Substring(0, $signatureMatch.Index).Split("`n").Length - 1)
+        foreach ($param in Split-Parameters -ParameterList $paramsGroup) {
+            $name = Get-ParameterIdentifier -ParameterText $param
+            if ($null -eq $name) {
+                continue
+            }
+
+            if (-not (Test-IsMethodOrCtorParameterNameValid -Name $name)) {
+                $violations.Add("${relativeFile}:$lineNo method parameter '$name' must start with v.")
+            }
+        }
+    }
+
+    for ($index = 0; $index -lt $lines.Length; $index++) {
+        $line = $lines[$index]
+        $lineNo = $index + 1
+
+        if ($line -match "^\s*(?:public|private|protected|internal)?\s*(?:sealed\s+|static\s+|abstract\s+|partial\s+)*enum\s+([A-Za-z_][A-Za-z0-9_]*)") {
+            $enumName = $Matches[1]
+            if ($enumName -notmatch "Enum$") {
+                $violations.Add("${relativeFile}:$lineNo enum '$enumName' must end with Enum.")
+            }
+        }
+
+        if ($line -match "^\s*var\s+([A-Za-z_][A-Za-z0-9_]*)\b") {
+            $localName = $Matches[1]
+            if (-not (Test-IsLocalVariableNameValid -Name $localName)) {
+                $violations.Add("${relativeFile}:$lineNo local variable '$localName' must start with w.")
+            }
+        }
+
+        if ($line -match "^\s*foreach\s*\([^)]*\s+([A-Za-z_][A-Za-z0-9_]*)\s+in\s+") {
+            $localName = $Matches[1]
+            if (-not (Test-IsLocalVariableNameValid -Name $localName)) {
+                $violations.Add("${relativeFile}:$lineNo foreach variable '$localName' must start with w.")
+            }
+        }
+
+        if ($line -match "^\s*catch\s*\([^)]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*\)") {
+            $localName = $Matches[1]
+            if (-not (Test-IsLocalVariableNameValid -Name $localName)) {
+                $violations.Add("${relativeFile}:$lineNo catch variable '$localName' must start with w.")
+            }
+        }
+
+        if ($line -match "\bout\s+var\s+([A-Za-z_][A-Za-z0-9_]*)\b") {
+            $localName = $Matches[1]
+            if (-not (Test-IsLocalVariableNameValid -Name $localName)) {
+                $violations.Add("${relativeFile}:$lineNo out var '$localName' must start with w.")
             }
         }
     }

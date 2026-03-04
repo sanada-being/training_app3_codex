@@ -9,5 +9,5 @@ namespace SalesManagementApp.Core.Domain.Interfaces;
 public interface IInventoryRepository
 {
     IReadOnlyList<InventoryRecord> GetAll();
-    void SaveAll(IReadOnlyList<InventoryRecord> records);
+    void SaveAll(IReadOnlyList<InventoryRecord> vRecords);
 }

@@ -33,20 +33,20 @@ namespace Sales_Management_App {
         }
 
         private MainFormDependencies(
-            ProductService productService,
-            InventoryService inventoryService,
-            InventoryHistoryService inventoryHistoryService,
-            SalesService salesService,
-            SalesAggregationService salesAggregationService,
-            AppDataRepository appDataRepository,
-            AppBootstrapper appBootstrapper) {
-            ProductService = productService ?? throw new ArgumentNullException("productService");
-            InventoryService = inventoryService ?? throw new ArgumentNullException("inventoryService");
-            InventoryHistoryService = inventoryHistoryService ?? throw new ArgumentNullException("inventoryHistoryService");
-            SalesService = salesService ?? throw new ArgumentNullException("salesService");
-            SalesAggregationService = salesAggregationService ?? throw new ArgumentNullException("salesAggregationService");
-            AppDataRepository = appDataRepository ?? throw new ArgumentNullException("appDataRepository");
-            AppBootstrapper = appBootstrapper ?? throw new ArgumentNullException("appBootstrapper");
+            ProductService vProductService,
+            InventoryService vInventoryService,
+            InventoryHistoryService vInventoryHistoryService,
+            SalesService vSalesService,
+            SalesAggregationService vSalesAggregationService,
+            AppDataRepository vAppDataRepository,
+            AppBootstrapper vAppBootstrapper) {
+            this.ProductService = vProductService ?? throw new ArgumentNullException("productService");
+            this.InventoryService = vInventoryService ?? throw new ArgumentNullException("inventoryService");
+            this.InventoryHistoryService = vInventoryHistoryService ?? throw new ArgumentNullException("inventoryHistoryService");
+            this.SalesService = vSalesService ?? throw new ArgumentNullException("salesService");
+            this.SalesAggregationService = vSalesAggregationService ?? throw new ArgumentNullException("salesAggregationService");
+            this.AppDataRepository = vAppDataRepository ?? throw new ArgumentNullException("appDataRepository");
+            this.AppBootstrapper = vAppBootstrapper ?? throw new ArgumentNullException("appBootstrapper");
         }
     }
 }

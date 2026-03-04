@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SalesManagementApp.Core.Application.Exceptions;
@@ -22,20 +22,20 @@ public class SalesService
     {
     }
 
-    internal SalesService(InventoryHistoryService historyService)
+    internal SalesService(InventoryHistoryService vHistoryService)
     {
-        FHistoryService = historyService;
+        FHistoryService = vHistoryService;
     }
 
     /// <summary>
     /// 売上一覧を日付降順で返します。
     /// </summary>
-    public IReadOnlyList<SaleRecord> GetAll(IReadOnlyCollection<SaleRecord> sales)
+    public IReadOnlyList<SaleRecord> GetAll(IReadOnlyCollection<SaleRecord> vSales)
     {
-        return sales
-            .OrderByDescending(s => s.SaleDate)
-            .ThenBy(s => s.StoreId)
-            .ThenBy(s => s.ProductId)
+        return vSales
+            .OrderByDescending(vS => vS.SaleDate)
+            .ThenBy(vS => vS.StoreId)
+            .ThenBy(vS => vS.ProductId)
             .ToList();
     }
 
@@ -43,47 +43,47 @@ public class SalesService
     /// 期間・店舗・商品条件で売上一覧を絞り込みます。
     /// </summary>
     public IReadOnlyList<SaleRecord> GetFiltered(
-        IReadOnlyCollection<SaleRecord> sales,
-        DateTime? startDate,
-        DateTime? endDate,
-        string? storeIdFilter,
-        string? productIdFilter)
+        IReadOnlyCollection<SaleRecord> vSales,
+        DateTime? vStartDate,
+        DateTime? vEndDate,
+        string? vStoreIdFilter,
+        string? vProductIdFilter)
     {
-        if (startDate.HasValue && endDate.HasValue && startDate.Value.Date > endDate.Value.Date)
+        if (vStartDate.HasValue && vEndDate.HasValue && vStartDate.Value.Date > vEndDate.Value.Date)
         {
             throw new DomainValidationException("Start date must be earlier than or equal to end date.");
         }
 
-        var normalizedStoreId = NormalizeOptionalFilter(storeIdFilter);
-        var normalizedProductId = NormalizeOptionalFilter(productIdFilter);
-        var query = sales.AsEnumerable();
+        var wNormalizedStoreId = NormalizeOptionalFilter(vStoreIdFilter);
+        var wNormalizedProductId = NormalizeOptionalFilter(vProductIdFilter);
+        var wQuery = vSales.AsEnumerable();
 
-        if (startDate.HasValue)
+        if (vStartDate.HasValue)
         {
-            var start = startDate.Value.Date;
-            query = query.Where(s => s.SaleDate.Date >= start);
+            var wStart = vStartDate.Value.Date;
+            wQuery = wQuery.Where(vS => vS.SaleDate.Date >= wStart);
         }
 
-        if (endDate.HasValue)
+        if (vEndDate.HasValue)
         {
-            var end = endDate.Value.Date;
-            query = query.Where(s => s.SaleDate.Date <= end);
+            var wEnd = vEndDate.Value.Date;
+            wQuery = wQuery.Where(vS => vS.SaleDate.Date <= wEnd);
         }
 
-        if (!string.IsNullOrWhiteSpace(normalizedStoreId))
+        if (!string.IsNullOrWhiteSpace(wNormalizedStoreId))
         {
-            query = query.Where(s => HasIgnoreCaseMatch(s.StoreId, normalizedStoreId));
+            wQuery = wQuery.Where(vS => HasIgnoreCaseMatch(vS.StoreId, wNormalizedStoreId));
         }
 
-        if (!string.IsNullOrWhiteSpace(normalizedProductId))
+        if (!string.IsNullOrWhiteSpace(wNormalizedProductId))
         {
-            query = query.Where(s => HasIgnoreCaseMatch(s.ProductId, normalizedProductId));
+            wQuery = wQuery.Where(vS => HasIgnoreCaseMatch(vS.ProductId, wNormalizedProductId));
         }
 
-        return query
-            .OrderByDescending(s => s.SaleDate)
-            .ThenBy(s => s.StoreId)
-            .ThenBy(s => s.ProductId)
+        return wQuery
+            .OrderByDescending(vS => vS.SaleDate)
+            .ThenBy(vS => vS.StoreId)
+            .ThenBy(vS => vS.ProductId)
             .ToList();
     }
 
@@ -91,98 +91,99 @@ public class SalesService
     /// 売上を登録し、在庫を減算します。
     /// </summary>
     public SaleRecord RegisterSale(
-        ICollection<SaleRecord> sales,
-        IReadOnlyCollection<Product> products,
-        ICollection<InventoryRecord> inventories,
-        SaleRecord input)
+        ICollection<SaleRecord> vSales,
+        IReadOnlyCollection<Product> vProducts,
+        ICollection<InventoryRecord> vInventories,
+        SaleRecord vInput)
     {
-        return RegisterSale(sales, products, inventories, input, null, default);
+        return RegisterSale(vSales, vProducts, vInventories, vInput, null, default);
     }
 
     /// <summary>
     /// 売上を登録し、在庫を減算します。
     /// </summary>
     public SaleRecord RegisterSale(
-        ICollection<SaleRecord> sales,
-        IReadOnlyCollection<Product> products,
-        ICollection<InventoryRecord> inventories,
-        SaleRecord input,
-        ICollection<InventoryHistoryRecord>? histories,
-        DateTime occurredAt)
+        ICollection<SaleRecord> vSales,
+        IReadOnlyCollection<Product> vProducts,
+        ICollection<InventoryRecord> vInventories,
+        SaleRecord vInput,
+        ICollection<InventoryHistoryRecord>? vHistories,
+        DateTime vOccurredAt)
     {
-        ValidateInput(input);
+        ValidateInput(vInput);
 
-        var normalizedStoreId = input.StoreId.Trim();
-        var normalizedProductId = input.ProductId.Trim();
+        var wNormalizedStoreId = vInput.StoreId.Trim();
+        var wNormalizedProductId = vInput.ProductId.Trim();
 
-        var product = products.FirstOrDefault(p => p.ProductId == normalizedProductId);
-        if (product is null)
+        var wProduct = vProducts.FirstOrDefault(vP => vP.ProductId == wNormalizedProductId);
+        if (wProduct is null)
         {
             throw new DomainValidationException("商品が存在しません。");
         }
 
-        var inventory = inventories.FirstOrDefault(i =>
-            i.StoreId == normalizedStoreId &&
-            i.ProductId == normalizedProductId);
+        var wInventory = vInventories.FirstOrDefault(vI =>
+            vI.StoreId == wNormalizedStoreId &&
+            vI.ProductId == wNormalizedProductId);
 
-        if (inventory is null || inventory.Stock < input.Quantity)
+        if (wInventory is null || wInventory.Stock < vInput.Quantity)
         {
             throw new DomainValidationException("在庫が不足しています。");
         }
 
-        var record = new SaleRecord
+        var wRecord = new SaleRecord
         {
-            SaleDate = input.SaleDate,
-            StoreId = normalizedStoreId,
-            ProductId = normalizedProductId,
-            Quantity = input.Quantity,
-            SalesAmount = checked(product.UnitPrice * input.Quantity)
+            SaleDate = vInput.SaleDate,
+            StoreId = wNormalizedStoreId,
+            ProductId = wNormalizedProductId,
+            Quantity = vInput.Quantity,
+            SalesAmount = checked(wProduct.UnitPrice * vInput.Quantity)
         };
 
-        inventory.Stock -= input.Quantity;
-        sales.Add(record);
+        wInventory.Stock -= vInput.Quantity;
+        vSales.Add(wRecord);
 
-        if (histories is not null)
+        if (vHistories is not null)
         {
-            var timestamp = occurredAt == default ? DateTime.Now : occurredAt;
+            var wTimestamp = vOccurredAt == default ? DateTime.Now : vOccurredAt;
             FHistoryService.Record(
-                histories,
-                timestamp,
-                InventoryOperationType.Sale,
-                normalizedStoreId,
-                normalizedProductId,
-                input.Quantity,
-                inventory.Stock,
+                vHistories,
+                wTimestamp,
+                InventoryOperationTypeEnum.Sale,
+                wNormalizedStoreId,
+                wNormalizedProductId,
+                vInput.Quantity,
+                wInventory.Stock,
                 "Success");
         }
 
-        return record;
+        return wRecord;
     }
 
-    private static void ValidateInput(SaleRecord input)
+    private static void ValidateInput(SaleRecord vInput)
     {
-        if (input.SaleDate == default)
+        if (vInput.SaleDate == default)
         {
             throw new DomainValidationException("販売日は必須です。");
         }
 
-        ValidationGuard.RequireNotEmpty(input.StoreId, "StoreId");
-        ValidationGuard.RequireNotEmpty(input.ProductId, "ProductId");
-        ValidationGuard.RequirePositive(input.Quantity, "Quantity");
+        ValidationGuard.RequireNotEmpty(vInput.StoreId, "StoreId");
+        ValidationGuard.RequireNotEmpty(vInput.ProductId, "ProductId");
+        ValidationGuard.RequirePositive(vInput.Quantity, "Quantity");
     }
 
-    private static string NormalizeOptionalFilter(string? value)
+    private static string NormalizeOptionalFilter(string? vValue)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(vValue))
         {
             return string.Empty;
         }
 
-        return value!.Trim();
+        return vValue!.Trim();
     }
 
-    private static bool HasIgnoreCaseMatch(string source, string keyword)
+    private static bool HasIgnoreCaseMatch(string vSource, string vKeyword)
     {
-        return source?.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+        return vSource?.IndexOf(vKeyword, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 }
+

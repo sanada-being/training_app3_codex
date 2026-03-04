@@ -8,17 +8,17 @@ namespace Sales_Management_App.Presentation.Common {
     internal sealed class UiActionExecutor {
         private readonly UiMessageService FMessageService;
 
-        internal UiActionExecutor(UiMessageService messageService) {
-            FMessageService = messageService ?? throw new ArgumentNullException("messageService");
+        internal UiActionExecutor(UiMessageService vMessageService) {
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
         }
 
-        internal void Execute(Action action) {
+        internal void Execute(Action vAction) {
             try {
-                action.Invoke();
-            } catch (DomainValidationException ex) {
-                FMessageService.ShowWarning(ex.Message, "入力エラー");
-            } catch (Exception ex) {
-                FMessageService.ShowError(ex);
+                vAction.Invoke();
+            } catch (DomainValidationException wEx) {
+                FMessageService.ShowWarning(wEx.Message, "入力エラー");
+            } catch (Exception wEx) {
+                FMessageService.ShowError(wEx);
             }
         }
     }

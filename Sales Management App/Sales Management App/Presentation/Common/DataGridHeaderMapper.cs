@@ -6,15 +6,15 @@ namespace Sales_Management_App.Presentation.Common {
     /// DataGridView列ヘッダーの表示名マッピングを適用します。
     /// </summary>
     internal static class DataGridHeaderMapper {
-        internal static void Apply(DataGridView grid, IReadOnlyDictionary<string, string> headers) {
-            if (grid == null || headers == null) {
+        internal static void Apply(DataGridView vGrid, IReadOnlyDictionary<string, string> vHeaders) {
+            if (vGrid == null || vHeaders == null) {
                 return;
             }
 
-            foreach (DataGridViewColumn column in grid.Columns) {
-                string mapped;
-                if (headers.TryGetValue(column.Name, out mapped)) {
-                    column.HeaderText = mapped;
+            foreach (DataGridViewColumn wColumn in vGrid.Columns) {
+                string wMapped;
+                if (vHeaders.TryGetValue(wColumn.Name, out wMapped)) {
+                    wColumn.HeaderText = wMapped;
                 }
             }
         }

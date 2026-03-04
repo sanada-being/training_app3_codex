@@ -8,9 +8,9 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
         /// </summary>
         /// <param name="value">選択肢の内部値。</param>
         /// <param name="label">画面表示ラベル。</param>
-        public InventoryHistoryOperationFilterOption(string value, string label) {
-            Value = value;
-            Label = label;
+        public InventoryHistoryOperationFilterOption(string vValue, string vLabel) {
+            this.Value = vValue;
+            this.Label = vLabel;
         }
 
         /// <summary>

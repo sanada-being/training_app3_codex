@@ -19,40 +19,40 @@ public class DataProtectionService
     /// <summary>
     /// 既存ファイルがある場合にバックアップを作成します。
     /// </summary>
-    public string? CreateBackupIfExists(string filePath)
+    public string? CreateBackupIfExists(string vFilePath)
     {
-        if (!File.Exists(filePath))
+        if (!File.Exists(vFilePath))
         {
             return null;
         }
 
-        var backupDirectory = ResolveBackupDirectory(filePath);
-        Directory.CreateDirectory(backupDirectory);
+        var wBackupDirectory = ResolveBackupDirectory(vFilePath);
+        Directory.CreateDirectory(wBackupDirectory);
 
-        var backupFileName = string.Format(
+        var wBackupFileName = string.Format(
             "{0}_{1}{2}.bak",
-            Path.GetFileNameWithoutExtension(filePath),
+            Path.GetFileNameWithoutExtension(vFilePath),
             DateTime.Now.ToString("yyyyMMdd_HHmmssfff"),
-            Path.GetExtension(filePath));
-        var backupPath = Path.Combine(backupDirectory, backupFileName);
+            Path.GetExtension(vFilePath));
+        var wBackupPath = Path.Combine(wBackupDirectory, wBackupFileName);
 
-        File.Copy(filePath, backupPath, overwrite: true);
-        return backupPath;
+        File.Copy(vFilePath, wBackupPath, overwrite: true);
+        return wBackupPath;
     }
 
     /// <summary>
     /// 対象ファイルのバックアップ一覧を取得します。
     /// </summary>
-    public IReadOnlyList<string> GetBackupFiles(string filePath)
+    public IReadOnlyList<string> GetBackupFiles(string vFilePath)
     {
-        var backupDirectory = ResolveBackupDirectory(filePath);
-        if (!Directory.Exists(backupDirectory))
+        var wBackupDirectory = ResolveBackupDirectory(vFilePath);
+        if (!Directory.Exists(wBackupDirectory))
         {
             return Array.Empty<string>();
         }
 
         return Directory
-            .GetFiles(backupDirectory, "*.bak")
+            .GetFiles(wBackupDirectory, "*.bak")
             .OrderByDescending(File.GetLastWriteTimeUtc)
             .ToList();
     }
@@ -60,50 +60,50 @@ public class DataProtectionService
     /// <summary>
     /// 対象ファイルを最新バックアップで復元します。
     /// </summary>
-    public void RestoreLatestBackup(string filePath)
+    public void RestoreLatestBackup(string vFilePath)
     {
-        var backupFile = GetBackupFiles(filePath).FirstOrDefault();
-        if (string.IsNullOrWhiteSpace(backupFile))
+        var wBackupFile = GetBackupFiles(vFilePath).FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(wBackupFile))
         {
             throw new DomainValidationException("復元可能なバックアップが存在しません。");
         }
 
-        var directory = Path.GetDirectoryName(filePath);
-        if (!string.IsNullOrWhiteSpace(directory))
+        var wDirectory = Path.GetDirectoryName(vFilePath);
+        if (!string.IsNullOrWhiteSpace(wDirectory))
         {
-            Directory.CreateDirectory(directory);
+            Directory.CreateDirectory(wDirectory);
         }
 
-        File.Copy(backupFile, filePath, overwrite: true);
+        File.Copy(wBackupFile, vFilePath, overwrite: true);
     }
 
     /// <summary>
     /// 操作ログをログファイルに追記します。
     /// </summary>
-    public void WriteLog(string filePath, string level, string message)
+    public void WriteLog(string vFilePath, string vLevel, string vMessage)
     {
-        var targetDirectory = Path.GetDirectoryName(filePath);
-        if (string.IsNullOrWhiteSpace(targetDirectory))
+        var wTargetDirectory = Path.GetDirectoryName(vFilePath);
+        if (string.IsNullOrWhiteSpace(wTargetDirectory))
         {
-            targetDirectory = Directory.GetCurrentDirectory();
+            wTargetDirectory = Directory.GetCurrentDirectory();
         }
 
-        var logDirectory = Path.Combine(targetDirectory, C_LogDirectoryName);
-        Directory.CreateDirectory(logDirectory);
+        var wLogDirectory = Path.Combine(wTargetDirectory, C_LogDirectoryName);
+        Directory.CreateDirectory(wLogDirectory);
 
-        var logPath = Path.Combine(logDirectory, C_LogFileName);
-        var line = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [{1}] {2}", DateTime.Now, level, message);
-        File.AppendAllLines(logPath, new[] { line }, Encoding.UTF8);
+        var wLogPath = Path.Combine(wLogDirectory, C_LogFileName);
+        var wLine = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [{1}] {2}", DateTime.Now, vLevel, vMessage);
+        File.AppendAllLines(wLogPath, new[] { wLine }, Encoding.UTF8);
     }
 
-    private static string ResolveBackupDirectory(string filePath)
+    private static string ResolveBackupDirectory(string vFilePath)
     {
-        var baseDirectory = Path.GetDirectoryName(filePath);
-        if (string.IsNullOrWhiteSpace(baseDirectory))
+        var wBaseDirectory = Path.GetDirectoryName(vFilePath);
+        if (string.IsNullOrWhiteSpace(wBaseDirectory))
         {
-            baseDirectory = Directory.GetCurrentDirectory();
+            wBaseDirectory = Directory.GetCurrentDirectory();
         }
 
-        return Path.Combine(baseDirectory, C_BackupDirectoryName);
+        return Path.Combine(wBaseDirectory, C_BackupDirectoryName);
     }
 }

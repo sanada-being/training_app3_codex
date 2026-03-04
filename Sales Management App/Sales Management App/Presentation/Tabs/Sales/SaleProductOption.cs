@@ -22,7 +22,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
         /// コンボボックス表示用の文字列を取得します。
         /// </summary>
         public string DisplayText {
-            get { return string.Format("{0} - {1}", ProductId, ProductName); }
+            get { return string.Format("{0} - {1}", this.ProductId, this.ProductName); }
         }
     }
 }

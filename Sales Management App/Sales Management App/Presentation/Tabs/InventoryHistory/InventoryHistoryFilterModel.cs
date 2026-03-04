@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SalesManagementApp.Core.Domain.Entities;
 
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
@@ -14,6 +14,7 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
 
         internal string ProductId { get; set; }
 
-        internal InventoryOperationType? OperationType { get; set; }
+        internal InventoryOperationTypeEnum? OperationType { get; set; }
     }
 }
+

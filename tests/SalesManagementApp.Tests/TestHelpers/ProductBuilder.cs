@@ -16,36 +16,36 @@ public class ProductBuilder
     /// <summary>
     /// テストデータの Id を設定し、ビルダー自身を返します。
     /// </summary>
-    public ProductBuilder WithId(string value)
+    public ProductBuilder WithId(string vValue)
     {
-        FProduct.ProductId = value;
+        FProduct.ProductId = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの Name を設定し、ビルダー自身を返します。
     /// </summary>
-    public ProductBuilder WithName(string value)
+    public ProductBuilder WithName(string vValue)
     {
-        FProduct.ProductName = value;
+        FProduct.ProductName = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの Price を設定し、ビルダー自身を返します。
     /// </summary>
-    public ProductBuilder WithPrice(int value)
+    public ProductBuilder WithPrice(int vValue)
     {
-        FProduct.UnitPrice = value;
+        FProduct.UnitPrice = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの Category を設定し、ビルダー自身を返します。
     /// </summary>
-    public ProductBuilder WithCategory(string value)
+    public ProductBuilder WithCategory(string vValue)
     {
-        FProduct.Category = value;
+        FProduct.Category = vValue;
         return this;
     }
 

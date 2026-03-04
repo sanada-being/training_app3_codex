@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using NUnit.Framework;
 using SalesManagementApp.Core.Application.State;
@@ -45,11 +45,11 @@ public class AppDataRepositoryTests
     /// </summary>
     public void ReadProductsIfExists_WhenFileDoesNotExist_ReturnsEmpty()
     {
-        var path = Path.Combine(FWorkDir, "products.csv");
+        var wPath = Path.Combine(FWorkDir, "products.csv");
 
-        var result = FRepository.ReadProductsIfExists(path);
+        var wResult = FRepository.ReadProductsIfExists(wPath);
 
-        Assert.That(result, Is.Empty);
+        Assert.That(wResult, Is.Empty);
     }
 
     [Test]
@@ -58,23 +58,23 @@ public class AppDataRepositoryTests
     /// </summary>
     public void ReadAndNormalizeSalesIfExists_WhenLegacyHeader_ReturnsSalesAndNormalizesCsv()
     {
-        var path = Path.Combine(FWorkDir, "sales.csv");
-        File.WriteAllLines(path, new[]
+        var wPath = Path.Combine(FWorkDir, "sales.csv");
+        File.WriteAllLines(wPath, new[]
         {
             "SaleDate,StoreId,ProductId,Quantity",
             "2026-03-03,S001,P001,2"
         });
-        var products = new[]
+        var wProducts = new[]
         {
             new ProductEntity { ProductId = "P001", ProductName = "Cola", UnitPrice = 120, Category = "Drink" }
         };
 
-        var result = FRepository.ReadAndNormalizeSalesIfExists(path, products);
+        var wResult = FRepository.ReadAndNormalizeSalesIfExists(wPath, wProducts);
 
-        Assert.That(result.Count, Is.EqualTo(1));
-        Assert.That(result[0].SalesAmount, Is.EqualTo(240));
-        var lines = File.ReadAllLines(path);
-        Assert.That(lines[0], Is.EqualTo("SaleDate,StoreId,ProductId,Quantity,SalesAmount"));
+        Assert.That(wResult.Count, Is.EqualTo(1));
+        Assert.That(wResult[0].SalesAmount, Is.EqualTo(240));
+        var wLines = File.ReadAllLines(wPath);
+        Assert.That(wLines[0], Is.EqualTo("SaleDate,StoreId,ProductId,Quantity,SalesAmount"));
     }
 
     [Test]
@@ -83,13 +83,13 @@ public class AppDataRepositoryTests
     /// </summary>
     public void WriteInventoryHistories_WhenPathIsProvided_WritesCsv()
     {
-        var path = Path.Combine(FWorkDir, "inventory_history.csv");
-        var records = new[]
+        var wPath = Path.Combine(FWorkDir, "inventory_history.csv");
+        var wRecords = new[]
         {
             new InventoryHistoryRecord
             {
                 OccurredAt = new DateTime(2026, 3, 3, 8, 0, 0),
-                OperationType = InventoryOperationType.Inbound,
+                OperationType = InventoryOperationTypeEnum.Inbound,
                 StoreId = "S001",
                 ProductId = "P001",
                 Quantity = 3,
@@ -98,11 +98,12 @@ public class AppDataRepositoryTests
             }
         };
 
-        FRepository.WriteInventoryHistories(path, records);
+        FRepository.WriteInventoryHistories(wPath, wRecords);
 
-        var reloaded = new CsvDataStore().ReadInventoryHistories(path);
-        Assert.That(reloaded.Count, Is.EqualTo(1));
-        Assert.That(reloaded[0].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
-        Assert.That(reloaded[0].ResultStock, Is.EqualTo(13));
+        var wReloaded = new CsvDataStore().ReadInventoryHistories(wPath);
+        Assert.That(wReloaded.Count, Is.EqualTo(1));
+        Assert.That(wReloaded[0].OperationType, Is.EqualTo(InventoryOperationTypeEnum.Inbound));
+        Assert.That(wReloaded[0].ResultStock, Is.EqualTo(13));
     }
 }
+

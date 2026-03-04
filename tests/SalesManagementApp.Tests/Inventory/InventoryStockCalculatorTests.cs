@@ -26,9 +26,9 @@ public class InventoryStockCalculatorTests
     /// </summary>
     public void CalculateAfterInbound_WhenInputsAreValid_ReturnsIncreasedStock()
     {
-        var result = FCalculator.CalculateAfterInbound(10, 5);
+        var wResult = FCalculator.CalculateAfterInbound(10, 5);
 
-        Assert.That(result, Is.EqualTo(15));
+        Assert.That(wResult, Is.EqualTo(15));
     }
 
     [Test]
@@ -48,9 +48,9 @@ public class InventoryStockCalculatorTests
     /// </summary>
     public void CalculateAfterOutbound_WhenInputsAreValid_ReturnsDecreasedStock()
     {
-        var result = FCalculator.CalculateAfterOutbound(10, 4);
+        var wResult = FCalculator.CalculateAfterOutbound(10, 4);
 
-        Assert.That(result, Is.EqualTo(6));
+        Assert.That(wResult, Is.EqualTo(6));
     }
 
     [Test]

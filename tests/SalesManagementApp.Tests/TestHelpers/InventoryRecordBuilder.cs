@@ -17,27 +17,27 @@ public class InventoryRecordBuilder
     /// <summary>
     /// テストデータの StoreId を設定し、ビルダー自身を返します。
     /// </summary>
-    public InventoryRecordBuilder WithStoreId(string value)
+    public InventoryRecordBuilder WithStoreId(string vValue)
     {
-        FRecord.StoreId = value;
+        FRecord.StoreId = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの ProductId を設定し、ビルダー自身を返します。
     /// </summary>
-    public InventoryRecordBuilder WithProductId(string value)
+    public InventoryRecordBuilder WithProductId(string vValue)
     {
-        FRecord.ProductId = value;
+        FRecord.ProductId = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの Stock を設定し、ビルダー自身を返します。
     /// </summary>
-    public InventoryRecordBuilder WithStock(int value)
+    public InventoryRecordBuilder WithStock(int vValue)
     {
-        FRecord.Stock = value;
+        FRecord.Stock = vValue;
         return this;
     }
 

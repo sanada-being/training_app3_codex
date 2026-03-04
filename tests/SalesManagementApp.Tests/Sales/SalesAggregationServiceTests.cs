@@ -39,11 +39,11 @@ public class SalesAggregationServiceTests
     /// </summary>
     public void FilterByPeriod_IncludesBoundaryDates()
     {
-        var result = FService.FilterByPeriod(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var wResult = FService.FilterByPeriod(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
 
-        Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result.First().SaleDate.Date, Is.EqualTo(new DateTime(2026, 3, 1)));
-        Assert.That(result.Last().SaleDate.Date, Is.EqualTo(new DateTime(2026, 3, 8)));
+        Assert.That(wResult.Count, Is.EqualTo(4));
+        Assert.That(wResult.First().SaleDate.Date, Is.EqualTo(new DateTime(2026, 3, 1)));
+        Assert.That(wResult.Last().SaleDate.Date, Is.EqualTo(new DateTime(2026, 3, 8)));
     }
 
     [Test]
@@ -52,14 +52,14 @@ public class SalesAggregationServiceTests
     /// </summary>
     public void GetProductSummaries_ReturnsAmountAndQuantityByProduct()
     {
-        var summaries = FService.GetProductSummaries(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
-        var p001 = summaries.Single(s => s.ProductId == "P001");
-        var p002 = summaries.Single(s => s.ProductId == "P002");
+        var wSummaries = FService.GetProductSummaries(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var wP001 = wSummaries.Single(vS => vS.ProductId == "P001");
+        var wP002 = wSummaries.Single(vS => vS.ProductId == "P002");
 
-        Assert.That(p001.TotalQuantity, Is.EqualTo(3));
-        Assert.That(p001.TotalSalesAmount, Is.EqualTo(300));
-        Assert.That(p002.TotalQuantity, Is.EqualTo(5));
-        Assert.That(p002.TotalSalesAmount, Is.EqualTo(750));
+        Assert.That(wP001.TotalQuantity, Is.EqualTo(3));
+        Assert.That(wP001.TotalSalesAmount, Is.EqualTo(300));
+        Assert.That(wP002.TotalQuantity, Is.EqualTo(5));
+        Assert.That(wP002.TotalSalesAmount, Is.EqualTo(750));
     }
 
     [Test]
@@ -68,11 +68,11 @@ public class SalesAggregationServiceTests
     /// </summary>
     public void GetWeeklySummaries_ReturnsWeeklyTotals()
     {
-        var summaries = FService.GetWeeklySummaries(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var wSummaries = FService.GetWeeklySummaries(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
 
-        Assert.That(summaries.Count, Is.EqualTo(2));
-        Assert.That(summaries[0].TotalSalesAmount, Is.EqualTo(200));
-        Assert.That(summaries[1].TotalSalesAmount, Is.EqualTo(850));
+        Assert.That(wSummaries.Count, Is.EqualTo(2));
+        Assert.That(wSummaries[0].TotalSalesAmount, Is.EqualTo(200));
+        Assert.That(wSummaries[1].TotalSalesAmount, Is.EqualTo(850));
     }
 
     [Test]
@@ -81,9 +81,9 @@ public class SalesAggregationServiceTests
     /// </summary>
     public void GetTotalSalesAmount_ReturnsPeriodAmount()
     {
-        var total = FService.GetTotalSalesAmount(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
+        var wTotal = FService.GetTotalSalesAmount(FSales, new DateTime(2026, 3, 1), new DateTime(2026, 3, 8));
 
-        Assert.That(total, Is.EqualTo(1050));
+        Assert.That(wTotal, Is.EqualTo(1050));
     }
 
     [Test]

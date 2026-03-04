@@ -1,9 +1,9 @@
-namespace SalesManagementApp.Core.Domain.Entities;
+﻿namespace SalesManagementApp.Core.Domain.Entities;
 
 /// <summary>
 /// 在庫履歴で使用する操作種別を定義します。
 /// </summary>
-public enum InventoryOperationType
+public enum InventoryOperationTypeEnum
 {
     /// <summary>
     /// 入庫処理による在庫増加です。
@@ -18,3 +18,4 @@ public enum InventoryOperationType
     /// </summary>
     Sale = 3
 }
+

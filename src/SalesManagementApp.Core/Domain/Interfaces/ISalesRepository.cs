@@ -9,5 +9,5 @@ namespace SalesManagementApp.Core.Domain.Interfaces;
 public interface ISalesRepository
 {
     IReadOnlyList<SaleRecord> GetAll();
-    void SaveAll(IReadOnlyList<SaleRecord> records);
+    void SaveAll(IReadOnlyList<SaleRecord> vRecords);
 }

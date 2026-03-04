@@ -22,13 +22,13 @@ public class SanityTests
     /// </summary>
     public void CoreProjectReference_ShouldBeAvailable()
     {
-        var product = new SalesManagementApp.Core.Domain.Entities.Product
+        var wProduct = new SalesManagementApp.Core.Domain.Entities.Product
         {
             ProductId = "P001",
             ProductName = "Sample",
             UnitPrice = 100,
             Category = "Drink"
         };
-        Assert.That(product.ProductId, Is.EqualTo("P001"));
+        Assert.That(wProduct.ProductId, Is.EqualTo("P001"));
     }
 }

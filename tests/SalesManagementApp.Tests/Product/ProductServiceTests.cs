@@ -30,9 +30,9 @@ public class ProductServiceTests
     /// </summary>
     public void Register_WhenInputIsValid_AddsProduct()
     {
-        var product = new ProductBuilder().WithId("P100").Build();
+        var wProduct = new ProductBuilder().WithId("P100").Build();
 
-        FService.Register(FProducts, product);
+        FService.Register(FProducts, wProduct);
 
         Assert.That(FProducts.Count, Is.EqualTo(1));
         Assert.That(FProducts[0].ProductId, Is.EqualTo("P100"));
@@ -45,9 +45,9 @@ public class ProductServiceTests
     public void Register_WhenProductIdIsDuplicate_ThrowsValidationException()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").Build());
-        var duplicate = new ProductBuilder().WithId("P001").Build();
+        var wDuplicate = new ProductBuilder().WithId("P001").Build();
 
-        Assert.That(() => FService.Register(FProducts, duplicate), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Register(FProducts, wDuplicate), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -57,9 +57,9 @@ public class ProductServiceTests
     public void Register_WhenProductIdHasTrailingSpaceAndDuplicateExists_ThrowsValidationException()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").Build());
-        var duplicate = new ProductBuilder().WithId("P001 ").Build();
+        var wDuplicate = new ProductBuilder().WithId("P001 ").Build();
 
-        Assert.That(() => FService.Register(FProducts, duplicate), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Register(FProducts, wDuplicate), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -69,9 +69,9 @@ public class ProductServiceTests
     public void Register_WhenProductNameIsDuplicateAfterTrim_ThrowsValidationException()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").WithName("Coffee").Build());
-        var duplicate = new ProductBuilder().WithId("P002").WithName("  Coffee  ").Build();
+        var wDuplicate = new ProductBuilder().WithId("P002").WithName("  Coffee  ").Build();
 
-        Assert.That(() => FService.Register(FProducts, duplicate), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Register(FProducts, wDuplicate), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -81,9 +81,9 @@ public class ProductServiceTests
     public void Register_WhenProductNameDiffersOnlyByCase_ThrowsValidationException()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").WithName("Coffee").Build());
-        var duplicate = new ProductBuilder().WithId("P002").WithName("coffee").Build();
+        var wDuplicate = new ProductBuilder().WithId("P002").WithName("coffee").Build();
 
-        Assert.That(() => FService.Register(FProducts, duplicate), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Register(FProducts, wDuplicate), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -93,9 +93,9 @@ public class ProductServiceTests
     public void Register_WhenProductNameDiffersOnlyByFullHalfWidth_ThrowsValidationException()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").WithName("ｺｰﾋｰ").Build());
-        var duplicate = new ProductBuilder().WithId("P002").WithName("コーヒー").Build();
+        var wDuplicate = new ProductBuilder().WithId("P002").WithName("コーヒー").Build();
 
-        Assert.That(() => FService.Register(FProducts, duplicate), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Register(FProducts, wDuplicate), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -104,9 +104,9 @@ public class ProductServiceTests
     /// </summary>
     public void Register_WhenPriceIsNegative_ThrowsValidationException()
     {
-        var invalid = new ProductBuilder().WithPrice(-1).Build();
+        var wInvalid = new ProductBuilder().WithPrice(-1).Build();
 
-        Assert.That(() => FService.Register(FProducts, invalid), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Register(FProducts, wInvalid), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -116,9 +116,9 @@ public class ProductServiceTests
     public void Update_WhenProductExists_UpdatesFields()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").WithName("Old").Build());
-        var update = new ProductBuilder().WithId("P001").WithName("New").WithPrice(999).WithCategory("Snack").Build();
+        var wUpdate = new ProductBuilder().WithId("P001").WithName("New").WithPrice(999).WithCategory("Snack").Build();
 
-        FService.Update(FProducts, update);
+        FService.Update(FProducts, wUpdate);
 
         Assert.That(FProducts[0].ProductName, Is.EqualTo("New"));
         Assert.That(FProducts[0].UnitPrice, Is.EqualTo(999));
@@ -132,9 +132,9 @@ public class ProductServiceTests
     public void Update_WhenProductIdHasTrailingSpace_FindsAndUpdatesTarget()
     {
         FProducts.Add(new ProductBuilder().WithId("P001").WithName("Old").Build());
-        var update = new ProductBuilder().WithId("P001 ").WithName("New").WithPrice(999).WithCategory("Snack").Build();
+        var wUpdate = new ProductBuilder().WithId("P001 ").WithName("New").WithPrice(999).WithCategory("Snack").Build();
 
-        FService.Update(FProducts, update);
+        FService.Update(FProducts, wUpdate);
 
         Assert.That(FProducts[0].ProductId, Is.EqualTo("P001"));
         Assert.That(FProducts[0].ProductName, Is.EqualTo("New"));
@@ -150,9 +150,9 @@ public class ProductServiceTests
     {
         FProducts.Add(new ProductBuilder().WithId("P001").WithName("Coffee").Build());
         FProducts.Add(new ProductBuilder().WithId("P002").WithName("Tea").Build());
-        var update = new ProductBuilder().WithId("P002").WithName(" coffee ").Build();
+        var wUpdate = new ProductBuilder().WithId("P002").WithName(" coffee ").Build();
 
-        Assert.That(() => FService.Update(FProducts, update), Throws.TypeOf<DomainValidationException>());
+        Assert.That(() => FService.Update(FProducts, wUpdate), Throws.TypeOf<DomainValidationException>());
     }
 
     [Test]
@@ -178,9 +178,9 @@ public class ProductServiceTests
         FProducts.Add(new ProductBuilder().WithId("P002").WithName("Tea").WithCategory("Drink").Build());
         FProducts.Add(new ProductBuilder().WithId("P003").WithName("Bread").WithCategory("Food").Build());
 
-        var filtered = FService.GetFiltered(FProducts, "P00", "ea", "Drink");
+        var wFiltered = FService.GetFiltered(FProducts, "P00", "ea", "Drink");
 
-        Assert.That(filtered.Count, Is.EqualTo(1));
-        Assert.That(filtered[0].ProductId, Is.EqualTo("P002"));
+        Assert.That(wFiltered.Count, Is.EqualTo(1));
+        Assert.That(wFiltered[0].ProductId, Is.EqualTo("P002"));
     }
 }

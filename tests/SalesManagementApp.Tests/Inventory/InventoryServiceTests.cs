@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -59,10 +59,10 @@ public class InventoryServiceTests
         FRecords.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P001").WithStock(5).Build());
         FRecords.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P002").WithStock(6).Build());
 
-        var targets = FService.GetReorderTargets(FRecords, 5);
+        var wTargets = FService.GetReorderTargets(FRecords, 5);
 
-        Assert.That(targets.Count, Is.EqualTo(1));
-        Assert.That(targets[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(wTargets.Count, Is.EqualTo(1));
+        Assert.That(wTargets[0].ProductId, Is.EqualTo("P001"));
     }
 
     [Test]
@@ -73,10 +73,10 @@ public class InventoryServiceTests
     {
         FRecords.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P001").WithStock(0).Build());
 
-        var tasks = Enumerable.Range(0, 30)
+        var wTasks = Enumerable.Range(0, 30)
             .Select(_ => Task.Run(() => FService.AddStock(FRecords, "S001", "P001", 1)))
             .ToArray();
-        Task.WaitAll(tasks);
+        Task.WaitAll(wTasks);
 
         Assert.That(FRecords[0].Stock, Is.EqualTo(30));
     }
@@ -100,19 +100,19 @@ public class InventoryServiceTests
     /// </summary>
     public void AddStock_WhenHistoryCollectionIsProvided_RecordsInboundHistory()
     {
-        var histories = new List<InventoryHistoryRecord>();
-        var occurredAt = new DateTime(2026, 3, 3, 9, 30, 0);
+        var wHistories = new List<InventoryHistoryRecord>();
+        var wOccurredAt = new DateTime(2026, 3, 3, 9, 30, 0);
 
-        FService.AddStock(FRecords, "S001", "P001", 3, histories, occurredAt);
+        FService.AddStock(FRecords, "S001", "P001", 3, wHistories, wOccurredAt);
 
-        Assert.That(histories.Count, Is.EqualTo(1));
-        Assert.That(histories[0].OccurredAt, Is.EqualTo(occurredAt));
-        Assert.That(histories[0].OperationType, Is.EqualTo(InventoryOperationType.Inbound));
-        Assert.That(histories[0].StoreId, Is.EqualTo("S001"));
-        Assert.That(histories[0].ProductId, Is.EqualTo("P001"));
-        Assert.That(histories[0].Quantity, Is.EqualTo(3));
-        Assert.That(histories[0].ResultStock, Is.EqualTo(3));
-        Assert.That(histories[0].Result, Is.EqualTo("Success"));
+        Assert.That(wHistories.Count, Is.EqualTo(1));
+        Assert.That(wHistories[0].OccurredAt, Is.EqualTo(wOccurredAt));
+        Assert.That(wHistories[0].OperationType, Is.EqualTo(InventoryOperationTypeEnum.Inbound));
+        Assert.That(wHistories[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(wHistories[0].ProductId, Is.EqualTo("P001"));
+        Assert.That(wHistories[0].Quantity, Is.EqualTo(3));
+        Assert.That(wHistories[0].ResultStock, Is.EqualTo(3));
+        Assert.That(wHistories[0].Result, Is.EqualTo("Success"));
     }
 
     [Test]
@@ -125,10 +125,11 @@ public class InventoryServiceTests
         FRecords.Add(new InventoryRecordBuilder().WithStoreId("S001").WithProductId("P002").WithStock(3).Build());
         FRecords.Add(new InventoryRecordBuilder().WithStoreId("S002").WithProductId("P001").WithStock(4).Build());
 
-        var filtered = FService.GetFiltered(FRecords, "S001", "P002");
+        var wFiltered = FService.GetFiltered(FRecords, "S001", "P002");
 
-        Assert.That(filtered.Count, Is.EqualTo(1));
-        Assert.That(filtered[0].StoreId, Is.EqualTo("S001"));
-        Assert.That(filtered[0].ProductId, Is.EqualTo("P002"));
+        Assert.That(wFiltered.Count, Is.EqualTo(1));
+        Assert.That(wFiltered[0].StoreId, Is.EqualTo("S001"));
+        Assert.That(wFiltered[0].ProductId, Is.EqualTo("P002"));
     }
 }
+

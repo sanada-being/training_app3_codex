@@ -16,20 +16,20 @@ public class SalesAggregationService
     /// 指定期間内の売上データを抽出します。
     /// </summary>
     public IReadOnlyList<SaleRecord> FilterByPeriod(
-        IReadOnlyCollection<SaleRecord> sales,
-        DateTime startDate,
-        DateTime endDate)
+        IReadOnlyCollection<SaleRecord> vSales,
+        DateTime vStartDate,
+        DateTime vEndDate)
     {
-        ValidatePeriod(startDate, endDate);
+        ValidatePeriod(vStartDate, vEndDate);
 
-        var start = startDate.Date;
-        var end = endDate.Date;
+        var wStart = vStartDate.Date;
+        var wEnd = vEndDate.Date;
 
-        return sales
-            .Where(s => s.SaleDate.Date >= start && s.SaleDate.Date <= end)
-            .OrderBy(s => s.SaleDate)
-            .ThenBy(s => s.StoreId)
-            .ThenBy(s => s.ProductId)
+        return vSales
+            .Where(vS => vS.SaleDate.Date >= wStart && vS.SaleDate.Date <= wEnd)
+            .OrderBy(vS => vS.SaleDate)
+            .ThenBy(vS => vS.StoreId)
+            .ThenBy(vS => vS.ProductId)
             .ToList();
     }
 
@@ -37,19 +37,19 @@ public class SalesAggregationService
     /// 商品別の売上数量・売上金額サマリーを集計します。
     /// </summary>
     public IReadOnlyList<ProductSalesSummary> GetProductSummaries(
-        IReadOnlyCollection<SaleRecord> sales,
-        DateTime startDate,
-        DateTime endDate)
+        IReadOnlyCollection<SaleRecord> vSales,
+        DateTime vStartDate,
+        DateTime vEndDate)
     {
-        return FilterByPeriod(sales, startDate, endDate)
-            .GroupBy(s => s.ProductId)
-            .Select(g => new ProductSalesSummary
+        return FilterByPeriod(vSales, vStartDate, vEndDate)
+            .GroupBy(vS => vS.ProductId)
+            .Select(vG => new ProductSalesSummary
             {
-                ProductId = g.Key,
-                TotalQuantity = g.Sum(x => x.Quantity),
-                TotalSalesAmount = g.Sum(x => x.SalesAmount)
+                ProductId = vG.Key,
+                TotalQuantity = vG.Sum(vX => vX.Quantity),
+                TotalSalesAmount = vG.Sum(vX => vX.SalesAmount)
             })
-            .OrderBy(x => x.ProductId)
+            .OrderBy(vX => vX.ProductId)
             .ToList();
     }
 
@@ -57,24 +57,24 @@ public class SalesAggregationService
     /// 週別の売上数量・売上金額サマリーを集計します。
     /// </summary>
     public IReadOnlyList<WeeklySalesSummary> GetWeeklySummaries(
-        IReadOnlyCollection<SaleRecord> sales,
-        DateTime startDate,
-        DateTime endDate)
+        IReadOnlyCollection<SaleRecord> vSales,
+        DateTime vStartDate,
+        DateTime vEndDate)
     {
-        return FilterByPeriod(sales, startDate, endDate)
-            .GroupBy(s => GetWeekStartDate(s.SaleDate.Date))
-            .Select(g =>
+        return FilterByPeriod(vSales, vStartDate, vEndDate)
+            .GroupBy(vS => GetWeekStartDate(vS.SaleDate.Date))
+            .Select(vG =>
             {
-                var weekStart = g.Key;
+                var wWeekStart = vG.Key;
                 return new WeeklySalesSummary
                 {
-                    WeekStartDate = weekStart,
-                    WeekEndDate = weekStart.AddDays(6),
-                    TotalQuantity = g.Sum(x => x.Quantity),
-                    TotalSalesAmount = g.Sum(x => x.SalesAmount)
+                    WeekStartDate = wWeekStart,
+                    WeekEndDate = wWeekStart.AddDays(6),
+                    TotalQuantity = vG.Sum(vX => vX.Quantity),
+                    TotalSalesAmount = vG.Sum(vX => vX.SalesAmount)
                 };
             })
-            .OrderBy(x => x.WeekStartDate)
+            .OrderBy(vX => vX.WeekStartDate)
             .ToList();
     }
 
@@ -82,22 +82,22 @@ public class SalesAggregationService
     /// 対象期間の総売上金額を算出します。
     /// </summary>
     public int GetTotalSalesAmount(
-        IReadOnlyCollection<SaleRecord> sales,
-        DateTime startDate,
-        DateTime endDate)
+        IReadOnlyCollection<SaleRecord> vSales,
+        DateTime vStartDate,
+        DateTime vEndDate)
     {
-        return FilterByPeriod(sales, startDate, endDate).Sum(s => s.SalesAmount);
+        return FilterByPeriod(vSales, vStartDate, vEndDate).Sum(vS => vS.SalesAmount);
     }
 
-    private static void ValidatePeriod(DateTime startDate, DateTime endDate)
+    private static void ValidatePeriod(DateTime vStartDate, DateTime vEndDate)
     {
-        ValidationGuard.RequireDateRange(startDate, endDate);
+        ValidationGuard.RequireDateRange(vStartDate, vEndDate);
     }
 
-    private static DateTime GetWeekStartDate(DateTime date)
+    private static DateTime GetWeekStartDate(DateTime vDate)
     {
-        const DayOfWeek day = DayOfWeek.Monday;
-        var diff = (7 + (date.DayOfWeek - day)) % 7;
-        return date.AddDays(-diff);
+        const DayOfWeek wDay = DayOfWeek.Monday;
+        var wDiff = (7 + (vDate.DayOfWeek - wDay)) % 7;
+        return vDate.AddDays(-wDiff);
     }
 }

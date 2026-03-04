@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SalesManagementApp.Core.Application.Exceptions;
 
 namespace SalesManagementApp.Core.Application.Errors;
@@ -6,7 +6,7 @@ namespace SalesManagementApp.Core.Application.Errors;
 /// <summary>
 /// 例外を画面表示用途で分類する種別を定義します。
 /// </summary>
-public enum ErrorCategory
+public enum ErrorCategoryEnum
 {
     /// <summary>
     /// 入力値や業務ルール違反によるエラーです。
@@ -42,7 +42,7 @@ public class ErrorPresentation
     /// <summary>
     /// エラーの取り扱い区分を示すカテゴリです。
     /// </summary>
-    public ErrorCategory Category { get; set; }
+    public ErrorCategoryEnum Category { get; set; }
 }
 
 /// <summary>
@@ -53,26 +53,26 @@ public static class ErrorHandlingPolicy
     /// <summary>
     /// 例外種別に応じた画面表示用エラー情報を生成します。
     /// </summary>
-    public static ErrorPresentation CreatePresentation(Exception ex)
+    public static ErrorPresentation CreatePresentation(Exception vEx)
     {
-        if (ex is DomainValidationException)
+        if (vEx is DomainValidationException)
         {
             return new ErrorPresentation
             {
                 Title = "入力エラー",
-                UserMessage = ex.Message,
-                Category = ErrorCategory.Validation,
+                UserMessage = vEx.Message,
+                Category = ErrorCategoryEnum.Validation,
                 LogLevel = "WARN"
             };
         }
 
-        if (ex is ApplicationOperationException)
+        if (vEx is ApplicationOperationException)
         {
             return new ErrorPresentation
             {
                 Title = "業務エラー",
-                UserMessage = ex.Message,
-                Category = ErrorCategory.Operation,
+                UserMessage = vEx.Message,
+                Category = ErrorCategoryEnum.Operation,
                 LogLevel = "ERROR"
             };
         }
@@ -81,8 +81,9 @@ public static class ErrorHandlingPolicy
         {
             Title = "システムエラー",
             UserMessage = "予期しないエラーが発生しました。管理者に連絡してください。",
-            Category = ErrorCategory.Unexpected,
+            Category = ErrorCategoryEnum.Unexpected,
             LogLevel = "ERROR"
         };
     }
 }
+

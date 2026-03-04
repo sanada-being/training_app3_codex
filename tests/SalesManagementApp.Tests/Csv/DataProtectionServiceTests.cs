@@ -43,11 +43,11 @@ public class DataProtectionServiceTests
     /// </summary>
     public void CreateBackupIfExists_WhenFileDoesNotExist_ReturnsNull()
     {
-        var path = Path.Combine(FWorkDir, "missing.csv");
+        var wPath = Path.Combine(FWorkDir, "missing.csv");
 
-        var backup = FService.CreateBackupIfExists(path);
+        var wBackup = FService.CreateBackupIfExists(wPath);
 
-        Assert.That(backup, Is.Null);
+        Assert.That(wBackup, Is.Null);
     }
 
     [Test]
@@ -56,10 +56,10 @@ public class DataProtectionServiceTests
     /// </summary>
     public void RestoreLatestBackup_WhenNoBackupExists_ThrowsValidationException()
     {
-        var path = Path.Combine(FWorkDir, "products.csv");
+        var wPath = Path.Combine(FWorkDir, "products.csv");
 
         Assert.That(
-            () => FService.RestoreLatestBackup(path),
+            () => FService.RestoreLatestBackup(wPath),
             Throws.TypeOf<DomainValidationException>());
     }
 }

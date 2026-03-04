@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace SalesManagementApp.Core.Domain.Entities;
 
@@ -15,7 +15,7 @@ public class InventoryHistoryRecord
     /// <summary>
     /// 実行した在庫操作の種別です。
     /// </summary>
-    public InventoryOperationType OperationType { get; set; }
+    public InventoryOperationTypeEnum OperationType { get; set; }
 
     /// <summary>
     /// 操作対象となった店舗を識別するIDです。
@@ -42,3 +42,4 @@ public class InventoryHistoryRecord
     /// </summary>
     public string Result { get; set; } = string.Empty;
 }
+

@@ -45,18 +45,18 @@ namespace Sales_Management_App {
             : this(MainFormDependencies.CreateDefault()) {
         }
 
-        internal Form1(MainFormDependencies dependencies) {
-            if (dependencies == null) {
+        internal Form1(MainFormDependencies vDependencies) {
+            if (vDependencies == null) {
                 throw new ArgumentNullException("dependencies");
             }
 
-            FProductService = dependencies.ProductService;
-            FInventoryService = dependencies.InventoryService;
-            FInventoryHistoryService = dependencies.InventoryHistoryService;
-            FSalesService = dependencies.SalesService;
-            FSalesAggregationService = dependencies.SalesAggregationService;
-            FAppDataRepository = dependencies.AppDataRepository;
-            FAppBootstrapper = dependencies.AppBootstrapper;
+            FProductService = vDependencies.ProductService;
+            FInventoryService = vDependencies.InventoryService;
+            FInventoryHistoryService = vDependencies.InventoryHistoryService;
+            FSalesService = vDependencies.SalesService;
+            FSalesAggregationService = vDependencies.SalesAggregationService;
+            FAppDataRepository = vDependencies.AppDataRepository;
+            FAppBootstrapper = vDependencies.AppBootstrapper;
             FMessageService = new UiMessageService();
             FUiActionExecutor = new UiActionExecutor(FMessageService);
 
@@ -144,66 +144,66 @@ namespace Sales_Management_App {
             Width = 1100;
             Height = 700;
 
-            var tabs = new TabControl { Dock = DockStyle.Fill };
-            tabs.TabPages.Add(CreateProductTab());
-            tabs.TabPages.Add(CreateInventoryTab());
-            tabs.TabPages.Add(CreateInventoryHistoryTab());
-            tabs.TabPages.Add(CreateSalesTab());
-            tabs.TabPages.Add(CreateAggregationTab());
-            Controls.Add(tabs);
+            var wTabs = new TabControl { Dock = DockStyle.Fill };
+            wTabs.TabPages.Add(CreateProductTab());
+            wTabs.TabPages.Add(CreateInventoryTab());
+            wTabs.TabPages.Add(CreateInventoryHistoryTab());
+            wTabs.TabPages.Add(CreateSalesTab());
+            wTabs.TabPages.Add(CreateAggregationTab());
+            Controls.Add(wTabs);
         }
 
         private TabPage CreateProductTab() {
-            var tab = new TabPage("商品管理");
+            var wTab = new TabPage("商品管理");
             FProductsView = new ProductsView();
-            tab.Controls.Add(FProductsView);
-            return tab;
+            wTab.Controls.Add(FProductsView);
+            return wTab;
         }
 
         private TabPage CreateInventoryTab() {
-            var tab = new TabPage("在庫管理");
+            var wTab = new TabPage("在庫管理");
             FInventoryView = new InventoryView();
-            tab.Controls.Add(FInventoryView);
-            return tab;
+            wTab.Controls.Add(FInventoryView);
+            return wTab;
         }
 
         private TabPage CreateSalesTab() {
-            var tab = new TabPage("売上登録");
+            var wTab = new TabPage("売上登録");
             FSalesView = new SalesView();
-            tab.Controls.Add(FSalesView);
-            return tab;
+            wTab.Controls.Add(FSalesView);
+            return wTab;
         }
 
         private TabPage CreateInventoryHistoryTab() {
-            var tab = new TabPage("在庫履歴");
+            var wTab = new TabPage("在庫履歴");
             FInventoryHistoryView = new InventoryHistoryView();
-            tab.Controls.Add(FInventoryHistoryView);
-            return tab;
+            wTab.Controls.Add(FInventoryHistoryView);
+            return wTab;
         }
 
         private TabPage CreateAggregationTab() {
-            var tab = new TabPage("売上集計");
+            var wTab = new TabPage("売上集計");
             FAggregationView = new AggregationView();
-            tab.Controls.Add(FAggregationView);
-            return tab;
+            wTab.Controls.Add(FAggregationView);
+            return wTab;
         }
 
         private void LoadInitialDataFromRepositoryRoot() {
             try {
-                var loaded = FAppBootstrapper.LoadFromBaseDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                FAppState.Products = loaded.Products;
-                FAppState.Inventories = loaded.Inventories;
-                FAppState.InventoryHistories = loaded.InventoryHistories;
-                FAppState.Sales = loaded.Sales;
-                FAppState.RepositoryRootPath = loaded.RepositoryRootPath;
-                FAppState.ProductsPath = loaded.ProductsPath;
-                FAppState.InventoryPath = loaded.InventoryPath;
-                FAppState.SalesPath = loaded.SalesPath;
-                FAppState.InventoryHistoryPath = loaded.InventoryHistoryPath;
-            } catch (DomainValidationException ex) {
-                FMessageService.ShowWarning(string.Format("初期データの読み込みに失敗しました: {0}", ex.Message), "入力エラー");
-            } catch (Exception ex) {
-                FMessageService.ShowError(ex);
+                var wLoaded = FAppBootstrapper.LoadFromBaseDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                FAppState.Products = wLoaded.Products;
+                FAppState.Inventories = wLoaded.Inventories;
+                FAppState.InventoryHistories = wLoaded.InventoryHistories;
+                FAppState.Sales = wLoaded.Sales;
+                FAppState.RepositoryRootPath = wLoaded.RepositoryRootPath;
+                FAppState.ProductsPath = wLoaded.ProductsPath;
+                FAppState.InventoryPath = wLoaded.InventoryPath;
+                FAppState.SalesPath = wLoaded.SalesPath;
+                FAppState.InventoryHistoryPath = wLoaded.InventoryHistoryPath;
+            } catch (DomainValidationException wEx) {
+                FMessageService.ShowWarning(string.Format("初期データの読み込みに失敗しました: {0}", wEx.Message), "入力エラー");
+            } catch (Exception wEx) {
+                FMessageService.ShowError(wEx);
             }
         }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using SalesManagementApp.Core.Application.Services;
 using SalesManagementApp.Core.Application.State;
@@ -16,14 +16,14 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
         private readonly UiActionExecutor FActionExecutor;
 
         internal InventoryHistoryController(
-            InventoryHistoryView view,
-            InventoryHistoryService inventoryHistoryService,
-            AppState appState,
-            UiActionExecutor actionExecutor) {
-            FView = view ?? throw new ArgumentNullException("view");
-            FInventoryHistoryService = inventoryHistoryService ?? throw new ArgumentNullException("inventoryHistoryService");
-            FAppState = appState ?? throw new ArgumentNullException("appState");
-            FActionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            InventoryHistoryView vView,
+            InventoryHistoryService vInventoryHistoryService,
+            AppState vAppState,
+            UiActionExecutor vActionExecutor) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FInventoryHistoryService = vInventoryHistoryService ?? throw new ArgumentNullException("inventoryHistoryService");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
         }
 
         internal void Initialize() {
@@ -32,25 +32,25 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
         }
 
         internal void Refresh() {
-            var filter = FView.GetFilter();
-            var filtered = FInventoryHistoryService.Filter(
+            var wFilter = FView.GetFilter();
+            var wFiltered = FInventoryHistoryService.Filter(
                 FAppState.InventoryHistories,
-                filter.StartDateTime,
-                filter.EndDateTime,
-                filter.StoreId,
-                filter.ProductId,
-                filter.OperationType);
+                wFilter.StartDateTime,
+                wFilter.EndDateTime,
+                wFilter.StoreId,
+                wFilter.ProductId,
+                wFilter.OperationType);
 
-            var rows = filtered.Select(h => new InventoryHistoryViewRow {
-                OccurredAt = h.OccurredAt.ToString("yyyy/MM/dd HH:mm:ss"),
-                OperationType = ToOperationTypeLabel(h.OperationType),
-                StoreId = h.StoreId,
-                ProductId = h.ProductId,
-                Quantity = h.Quantity,
-                ResultStock = h.ResultStock,
-                Result = h.Result
+            var wRows = wFiltered.Select(vH => new InventoryHistoryViewRow {
+                OccurredAt = vH.OccurredAt.ToString("yyyy/MM/dd HH:mm:ss"),
+                OperationType = ToOperationTypeLabel(vH.OperationType),
+                StoreId = vH.StoreId,
+                ProductId = vH.ProductId,
+                Quantity = vH.Quantity,
+                ResultStock = vH.ResultStock,
+                Result = vH.Result
             }).ToList();
-            FView.SetRows(rows);
+            FView.SetRows(wRows);
         }
 
         private void OnFilterRequested(object sender, EventArgs e) {
@@ -64,17 +64,18 @@ namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
             Refresh();
         }
 
-        private static string ToOperationTypeLabel(InventoryOperationType operationType) {
-            switch (operationType) {
-                case InventoryOperationType.Inbound:
+        private static string ToOperationTypeLabel(InventoryOperationTypeEnum vOperationType) {
+            switch (vOperationType) {
+                case InventoryOperationTypeEnum.Inbound:
                     return "入荷";
-                case InventoryOperationType.Outbound:
+                case InventoryOperationTypeEnum.Outbound:
                     return "出庫";
-                case InventoryOperationType.Sale:
+                case InventoryOperationTypeEnum.Sale:
                     return "売上連動";
                 default:
-                    return operationType.ToString();
+                    return vOperationType.ToString();
             }
         }
     }
 }
+

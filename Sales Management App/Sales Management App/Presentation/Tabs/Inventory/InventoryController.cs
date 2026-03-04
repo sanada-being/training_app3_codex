@@ -20,20 +20,20 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
         private readonly Action FOnInventoryUpdated;
 
         internal InventoryController(
-            InventoryView view,
-            InventoryService inventoryService,
-            AppDataRepository repository,
-            AppState appState,
-            UiMessageService messageService,
-            UiActionExecutor actionExecutor,
-            Action onInventoryUpdated) {
-            FView = view ?? throw new ArgumentNullException("view");
-            FInventoryService = inventoryService ?? throw new ArgumentNullException("inventoryService");
-            FRepository = repository ?? throw new ArgumentNullException("repository");
-            FAppState = appState ?? throw new ArgumentNullException("appState");
-            FMessageService = messageService ?? throw new ArgumentNullException("messageService");
-            FActionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
-            FOnInventoryUpdated = onInventoryUpdated ?? delegate { };
+            InventoryView vView,
+            InventoryService vInventoryService,
+            AppDataRepository vRepository,
+            AppState vAppState,
+            UiMessageService vMessageService,
+            UiActionExecutor vActionExecutor,
+            Action vOnInventoryUpdated) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FInventoryService = vInventoryService ?? throw new ArgumentNullException("inventoryService");
+            FRepository = vRepository ?? throw new ArgumentNullException("repository");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FOnInventoryUpdated = vOnInventoryUpdated ?? delegate { };
         }
 
         internal void Initialize() {
@@ -46,25 +46,25 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
         }
 
         internal void Refresh() {
-            var filter = FView.GetFilter();
-            var filtered = FInventoryService.GetFiltered(FAppState.Inventories, filter.StoreId, filter.ProductId);
-            var rows = filtered.Select(i => new InventoryViewRow {
-                StoreId = i.StoreId,
-                ProductId = i.ProductId,
-                Stock = i.Stock
+            var wFilter = FView.GetFilter();
+            var wFiltered = FInventoryService.GetFiltered(FAppState.Inventories, wFilter.StoreId, wFilter.ProductId);
+            var wRows = wFiltered.Select(vI => new InventoryViewRow {
+                StoreId = vI.StoreId,
+                ProductId = vI.ProductId,
+                Stock = vI.Stock
             }).ToList();
-            FView.SetRows(rows);
+            FView.SetRows(wRows);
             FView.SetReorderCount(FInventoryService.GetReorderTargets(FAppState.Inventories, 5).Count);
         }
 
         private void OnAddRequested(object sender, EventArgs e) {
             FActionExecutor.Execute(delegate {
-                var input = CreateInventoryRecordFromInput(FView.GetInput());
+                var wInput = CreateInventoryRecordFromInput(FView.GetInput());
                 FInventoryService.AddStock(
                     FAppState.Inventories,
-                    input.StoreId,
-                    input.ProductId,
-                    input.Stock,
+                    wInput.StoreId,
+                    wInput.ProductId,
+                    wInput.Stock,
                     FAppState.InventoryHistories,
                     DateTime.Now);
                 FRepository.WriteInventoryHistories(FAppState.InventoryHistoryPath, FAppState.InventoryHistories);
@@ -78,12 +78,12 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
 
         private void OnRemoveRequested(object sender, EventArgs e) {
             FActionExecutor.Execute(delegate {
-                var input = CreateInventoryRecordFromInput(FView.GetInput());
+                var wInput = CreateInventoryRecordFromInput(FView.GetInput());
                 FInventoryService.RemoveStock(
                     FAppState.Inventories,
-                    input.StoreId,
-                    input.ProductId,
-                    input.Stock,
+                    wInput.StoreId,
+                    wInput.ProductId,
+                    wInput.Stock,
                     FAppState.InventoryHistories,
                     DateTime.Now);
                 FRepository.WriteInventoryHistories(FAppState.InventoryHistoryPath, FAppState.InventoryHistories);
@@ -109,28 +109,28 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
         }
 
         private void OnSelectedInventoryChanged(object sender, EventArgs e) {
-            var selected = FView.GetSelectedRow();
-            if (selected == null) {
+            var wSelected = FView.GetSelectedRow();
+            if (wSelected == null) {
                 return;
             }
 
             FView.SetInput(new InventoryInputModel {
-                StoreId = selected.StoreId,
-                ProductId = selected.ProductId,
+                StoreId = wSelected.StoreId,
+                ProductId = wSelected.ProductId,
                 QuantityText = string.Empty
             });
         }
 
-        private static InventoryRecord CreateInventoryRecordFromInput(InventoryInputModel input) {
-            int quantity;
-            if (!int.TryParse(input.QuantityText, out quantity)) {
+        private static InventoryRecord CreateInventoryRecordFromInput(InventoryInputModel vInput) {
+            int wQuantity;
+            if (!int.TryParse(vInput.QuantityText, out wQuantity)) {
                 throw new DomainValidationException("数量は整数で入力してください。");
             }
 
             return new InventoryRecord {
-                StoreId = input.StoreId,
-                ProductId = input.ProductId,
-                Stock = quantity
+                StoreId = vInput.StoreId,
+                ProductId = vInput.ProductId,
+                Stock = wQuantity
             };
         }
     }

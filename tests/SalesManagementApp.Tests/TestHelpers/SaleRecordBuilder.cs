@@ -19,45 +19,45 @@ public class SaleRecordBuilder
     /// <summary>
     /// テストデータの Date を設定し、ビルダー自身を返します。
     /// </summary>
-    public SaleRecordBuilder WithDate(DateTime value)
+    public SaleRecordBuilder WithDate(DateTime vValue)
     {
-        FRecord.SaleDate = value;
+        FRecord.SaleDate = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの StoreId を設定し、ビルダー自身を返します。
     /// </summary>
-    public SaleRecordBuilder WithStoreId(string value)
+    public SaleRecordBuilder WithStoreId(string vValue)
     {
-        FRecord.StoreId = value;
+        FRecord.StoreId = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの ProductId を設定し、ビルダー自身を返します。
     /// </summary>
-    public SaleRecordBuilder WithProductId(string value)
+    public SaleRecordBuilder WithProductId(string vValue)
     {
-        FRecord.ProductId = value;
+        FRecord.ProductId = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの Quantity を設定し、ビルダー自身を返します。
     /// </summary>
-    public SaleRecordBuilder WithQuantity(int value)
+    public SaleRecordBuilder WithQuantity(int vValue)
     {
-        FRecord.Quantity = value;
+        FRecord.Quantity = vValue;
         return this;
     }
 
     /// <summary>
     /// テストデータの SalesAmount を設定し、ビルダー自身を返します。
     /// </summary>
-    public SaleRecordBuilder WithSalesAmount(int value)
+    public SaleRecordBuilder WithSalesAmount(int vValue)
     {
-        FRecord.SalesAmount = value;
+        FRecord.SalesAmount = vValue;
         return this;
     }
 
