@@ -48,12 +48,12 @@ public class InventoryService
 
         if (!string.IsNullOrWhiteSpace(normalizedStoreId))
         {
-            query = query.Where(r => ContainsIgnoreCase(r.StoreId, normalizedStoreId));
+            query = query.Where(r => HasIgnoreCaseMatch(r.StoreId, normalizedStoreId));
         }
 
         if (!string.IsNullOrWhiteSpace(normalizedProductId))
         {
-            query = query.Where(r => ContainsIgnoreCase(r.ProductId, normalizedProductId));
+            query = query.Where(r => HasIgnoreCaseMatch(r.ProductId, normalizedProductId));
         }
 
         return query.OrderBy(r => r.StoreId).ThenBy(r => r.ProductId).ToList();
@@ -168,7 +168,7 @@ public class InventoryService
         return value!.Trim();
     }
 
-    private static bool ContainsIgnoreCase(string source, string keyword)
+    private static bool HasIgnoreCaseMatch(string source, string keyword)
     {
         return source?.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
     }

@@ -56,7 +56,7 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
 
         private void OnAddRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                var input = BuildInput(_view.GetInput());
+                var input = CreateInventoryRecordFromInput(_view.GetInput());
                 _inventoryService.AddStock(
                     _appState.Inventories,
                     input.StoreId,
@@ -75,7 +75,7 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
 
         private void OnRemoveRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                var input = BuildInput(_view.GetInput());
+                var input = CreateInventoryRecordFromInput(_view.GetInput());
                 _inventoryService.RemoveStock(
                     _appState.Inventories,
                     input.StoreId,
@@ -118,7 +118,7 @@ namespace Sales_Management_App.Presentation.Tabs.Inventory {
             });
         }
 
-        private static InventoryRecord BuildInput(InventoryInputModel input) {
+        private static InventoryRecord CreateInventoryRecordFromInput(InventoryInputModel input) {
             int quantity;
             if (!int.TryParse(input.QuantityText, out quantity)) {
                 throw new DomainValidationException("数量は整数で入力してください。");
