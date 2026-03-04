@@ -44,16 +44,16 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
 
         private void OnExecuteRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                var snapshot = BuildSnapshot();
-                RenderSnapshot(snapshot);
+                var snapshot = CreateAggregationSnapshot();
+                RenderAggregationSnapshot(snapshot);
             });
         }
 
         private void OnCopyRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                var snapshot = BuildSnapshot();
-                RenderSnapshot(snapshot);
-                Clipboard.SetText(BuildClipboardText(snapshot));
+                var snapshot = CreateAggregationSnapshot();
+                RenderAggregationSnapshot(snapshot);
+                Clipboard.SetText(CreateAggregationClipboardText(snapshot));
                 _messageService.ShowInfo("集計結果をクリップボードにコピーしました。");
             });
         }
@@ -67,7 +67,7 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
             ApplyFilter();
         }
 
-        private AggregationSnapshot BuildSnapshot() {
+        private AggregationSnapshot CreateAggregationSnapshot() {
             var startDate = _view.GetStartDate();
             var endDate = _view.GetEndDate();
 
@@ -80,7 +80,7 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
             };
         }
 
-        private void RenderSnapshot(AggregationSnapshot snapshot) {
+        private void RenderAggregationSnapshot(AggregationSnapshot snapshot) {
             _currentSnapshot = snapshot;
             _view.SetSummaryText(string.Format(
                 "期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd} / 合計売上: {2} 円",
@@ -120,7 +120,7 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
             _view.SetWeeklyRows(weeklyRows);
         }
 
-        private static string BuildClipboardText(AggregationSnapshot snapshot) {
+        private static string CreateAggregationClipboardText(AggregationSnapshot snapshot) {
             var builder = new StringBuilder();
             builder.AppendLine(string.Format("期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd}", snapshot.StartDate, snapshot.EndDate));
             builder.AppendLine(string.Format("合計売上: {0} 円", snapshot.TotalSalesAmount));

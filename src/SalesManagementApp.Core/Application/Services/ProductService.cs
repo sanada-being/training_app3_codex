@@ -29,17 +29,17 @@ public class ProductService
 
         if (!string.IsNullOrWhiteSpace(normalizedIdFilter))
         {
-            query = query.Where(p => ContainsIgnoreCase(p.ProductId, normalizedIdFilter));
+            query = query.Where(p => HasIgnoreCaseMatch(p.ProductId, normalizedIdFilter));
         }
 
         if (!string.IsNullOrWhiteSpace(normalizedNameFilter))
         {
-            query = query.Where(p => ContainsIgnoreCase(p.ProductName, normalizedNameFilter));
+            query = query.Where(p => HasIgnoreCaseMatch(p.ProductName, normalizedNameFilter));
         }
 
         if (!string.IsNullOrWhiteSpace(normalizedCategoryFilter))
         {
-            query = query.Where(p => ContainsIgnoreCase(p.Category, normalizedCategoryFilter));
+            query = query.Where(p => HasIgnoreCaseMatch(p.Category, normalizedCategoryFilter));
         }
 
         return query.OrderBy(p => p.ProductId).ToList();
@@ -137,7 +137,7 @@ public class ProductService
         return value!.Trim();
     }
 
-    private static bool ContainsIgnoreCase(string source, string keyword)
+    private static bool HasIgnoreCaseMatch(string source, string keyword)
     {
         return source?.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
     }

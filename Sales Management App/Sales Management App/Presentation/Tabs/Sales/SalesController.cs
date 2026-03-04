@@ -98,7 +98,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
 
         private void OnRegisterRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                var input = BuildSaleInput(_view.GetInput());
+                var input = CreateSaleRecordFromInput(_view.GetInput());
                 var registered = _salesService.RegisterSale(
                     _appState.Sales,
                     _appState.Products,
@@ -136,7 +136,7 @@ namespace Sales_Management_App.Presentation.Tabs.Sales {
             UpdatePricePreview();
         }
 
-        private static SaleRecord BuildSaleInput(SalesInputModel input) {
+        private static SaleRecord CreateSaleRecordFromInput(SalesInputModel input) {
             if (string.IsNullOrWhiteSpace(input.ProductId)) {
                 throw new DomainValidationException("商品を選択してください。");
             }

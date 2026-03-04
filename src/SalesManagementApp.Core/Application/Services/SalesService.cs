@@ -60,12 +60,12 @@ public class SalesService
 
         if (!string.IsNullOrWhiteSpace(normalizedStoreId))
         {
-            query = query.Where(s => ContainsIgnoreCase(s.StoreId, normalizedStoreId));
+            query = query.Where(s => HasIgnoreCaseMatch(s.StoreId, normalizedStoreId));
         }
 
         if (!string.IsNullOrWhiteSpace(normalizedProductId))
         {
-            query = query.Where(s => ContainsIgnoreCase(s.ProductId, normalizedProductId));
+            query = query.Where(s => HasIgnoreCaseMatch(s.ProductId, normalizedProductId));
         }
 
         return query
@@ -163,7 +163,7 @@ public class SalesService
         return value!.Trim();
     }
 
-    private static bool ContainsIgnoreCase(string source, string keyword)
+    private static bool HasIgnoreCaseMatch(string source, string keyword)
     {
         return source?.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
     }

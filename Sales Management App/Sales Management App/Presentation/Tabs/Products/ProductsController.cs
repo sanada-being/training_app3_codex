@@ -55,7 +55,7 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
 
         private void OnRegisterRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                _productService.Register(_appState.Products, BuildProductInput(_view.GetInput()));
+                _productService.Register(_appState.Products, CreateProductFromInput(_view.GetInput()));
                 Refresh();
                 _view.ClearInput();
                 _onProductsChanged.Invoke();
@@ -64,7 +64,7 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
 
         private void OnUpdateRequested(object sender, EventArgs e) {
             _actionExecutor.Execute(delegate {
-                _productService.Update(_appState.Products, BuildProductInput(_view.GetInput()));
+                _productService.Update(_appState.Products, CreateProductFromInput(_view.GetInput()));
                 Refresh();
                 _onProductsChanged.Invoke();
             });
@@ -116,7 +116,7 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
             });
         }
 
-        private static Product BuildProductInput(ProductInputModel input) {
+        private static Product CreateProductFromInput(ProductInputModel input) {
             int unitPrice;
             if (!int.TryParse(input.UnitPriceText, out unitPrice)) {
                 throw new DomainValidationException("単価は整数で入力してください。");
