@@ -1,2 +1,2 @@
-# training_app3_codex
+# training_app3
 新人基礎研修のアプリケーションのサンプルコードを作成します
