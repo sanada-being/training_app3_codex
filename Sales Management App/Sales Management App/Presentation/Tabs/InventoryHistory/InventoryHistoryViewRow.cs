@@ -1,4 +1,7 @@
 namespace Sales_Management_App.Presentation.Tabs.InventoryHistory {
+    /// <summary>
+    /// 在庫履歴 タブの一覧表示にバインドする行データモデルです。
+    /// </summary>
     internal sealed class InventoryHistoryViewRow {
         /// <summary>
         /// 発生日時の表示文字列を取得または設定します。

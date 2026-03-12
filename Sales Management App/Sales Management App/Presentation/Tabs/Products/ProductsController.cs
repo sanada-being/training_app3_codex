@@ -8,89 +8,92 @@ using SalesManagementApp.Core.Domain.Entities;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Products {
+    /// <summary>
+    /// 商品管理 タブのイベント処理を担当し、画面とサービスを接続します。
+    /// </summary>
     internal sealed class ProductsController {
-        private readonly ProductsView _view;
-        private readonly ProductService _productService;
-        private readonly AppState _appState;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _actionExecutor;
-        private readonly Action _onProductsChanged;
+        private readonly ProductsView FView;
+        private readonly ProductService FProductService;
+        private readonly AppState FAppState;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FActionExecutor;
+        private readonly Action FOnProductsChanged;
 
         internal ProductsController(
-            ProductsView view,
-            ProductService productService,
-            AppState appState,
-            UiMessageService messageService,
-            UiActionExecutor actionExecutor,
-            Action onProductsChanged) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _productService = productService ?? throw new ArgumentNullException("productService");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
-            _onProductsChanged = onProductsChanged ?? delegate { };
+            ProductsView vView,
+            ProductService vProductService,
+            AppState vAppState,
+            UiMessageService vMessageService,
+            UiActionExecutor vActionExecutor,
+            Action vOnProductsChanged) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FProductService = vProductService ?? throw new ArgumentNullException("productService");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            FOnProductsChanged = vOnProductsChanged ?? delegate { };
         }
 
         internal void Initialize() {
-            _view.RegisterRequested += OnRegisterRequested;
-            _view.UpdateRequested += OnUpdateRequested;
-            _view.DeleteRequested += OnDeleteRequested;
-            _view.ClearInputRequested += OnClearInputRequested;
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
-            _view.SelectedProductChanged += OnSelectedProductChanged;
+            FView.RegisterRequested += OnRegisterRequested;
+            FView.UpdateRequested += OnUpdateRequested;
+            FView.DeleteRequested += OnDeleteRequested;
+            FView.ClearInputRequested += OnClearInputRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
+            FView.SelectedProductChanged += OnSelectedProductChanged;
         }
 
         internal void Refresh() {
-            var filter = _view.GetFilter();
-            var filtered = _productService.GetFiltered(_appState.Products, filter.ProductId, filter.ProductName, filter.Category);
-            var rows = filtered.Select(p => new ProductViewRow {
-                ProductId = p.ProductId,
-                ProductName = p.ProductName,
-                UnitPrice = p.UnitPrice,
-                Category = p.Category
+            var wFilter = FView.GetFilter();
+            var wFiltered = FProductService.GetFiltered(FAppState.Products, wFilter.ProductId, wFilter.ProductName, wFilter.Category);
+            var wRows = wFiltered.Select(vP => new ProductViewRow {
+                ProductId = vP.ProductId,
+                ProductName = vP.ProductName,
+                UnitPrice = vP.UnitPrice,
+                Category = vP.Category
             }).ToList();
-            _view.SetRows(rows);
+            FView.SetRows(wRows);
         }
 
         private void OnRegisterRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                _productService.Register(_appState.Products, CreateProductFromInput(_view.GetInput()));
+            FActionExecutor.Execute(delegate {
+                FProductService.Register(FAppState.Products, CreateProductFromInput(FView.GetInput()));
                 Refresh();
-                _view.ClearInput();
-                _onProductsChanged.Invoke();
+                FView.ClearInput();
+                FOnProductsChanged.Invoke();
             });
         }
 
         private void OnUpdateRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                _productService.Update(_appState.Products, CreateProductFromInput(_view.GetInput()));
+            FActionExecutor.Execute(delegate {
+                FProductService.Update(FAppState.Products, CreateProductFromInput(FView.GetInput()));
                 Refresh();
-                _onProductsChanged.Invoke();
+                FOnProductsChanged.Invoke();
             });
         }
 
         private void OnDeleteRequested(object sender, EventArgs e) {
-            var productId = _view.GetDeleteTargetProductId();
-            if (string.IsNullOrWhiteSpace(productId)) {
-                _messageService.ShowWarning("削除対象の商品IDを選択してください。", "入力エラー");
+            var wProductId = FView.GetDeleteTargetProductId();
+            if (string.IsNullOrWhiteSpace(wProductId)) {
+                FMessageService.ShowWarning("削除対象の商品IDを選択してください。", "入力エラー");
                 return;
             }
 
-            if (_messageService.Confirm(string.Format("商品ID={0} を削除します。よろしいですか？", productId), "確認") != DialogResult.Yes) {
+            if (FMessageService.Confirm(string.Format("商品ID={0} を削除します。よろしいですか？", wProductId), "確認") != DialogResult.Yes) {
                 return;
             }
 
-            _actionExecutor.Execute(delegate {
-                _productService.Delete(_appState.Products, productId);
+            FActionExecutor.Execute(delegate {
+                FProductService.Delete(FAppState.Products, wProductId);
                 Refresh();
-                _view.ClearInput();
-                _onProductsChanged.Invoke();
+                FView.ClearInput();
+                FOnProductsChanged.Invoke();
             });
         }
 
         private void OnClearInputRequested(object sender, EventArgs e) {
-            _view.ClearInput();
+            FView.ClearInput();
         }
 
         private void OnFilterRequested(object sender, EventArgs e) {
@@ -98,35 +101,35 @@ namespace Sales_Management_App.Presentation.Tabs.Products {
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearFilter();
+            FView.ClearFilter();
             Refresh();
         }
 
         private void OnSelectedProductChanged(object sender, EventArgs e) {
-            var selected = _view.GetSelectedRow();
-            if (selected == null) {
+            var wSelected = FView.GetSelectedRow();
+            if (wSelected == null) {
                 return;
             }
 
-            _view.SetInput(new ProductInputModel {
-                ProductId = selected.ProductId,
-                ProductName = selected.ProductName,
-                UnitPriceText = selected.UnitPrice.ToString(),
-                Category = selected.Category
+            FView.SetInput(new ProductInputModel {
+                ProductId = wSelected.ProductId,
+                ProductName = wSelected.ProductName,
+                UnitPriceText = wSelected.UnitPrice.ToString(),
+                Category = wSelected.Category
             });
         }
 
-        private static Product CreateProductFromInput(ProductInputModel input) {
-            int unitPrice;
-            if (!int.TryParse(input.UnitPriceText, out unitPrice)) {
+        private static Product CreateProductFromInput(ProductInputModel vInput) {
+            int wUnitPrice;
+            if (!int.TryParse(vInput.UnitPriceText, out wUnitPrice)) {
                 throw new DomainValidationException("単価は整数で入力してください。");
             }
 
             return new Product {
-                ProductId = input.ProductId,
-                ProductName = input.ProductName,
-                UnitPrice = unitPrice,
-                Category = input.Category
+                ProductId = vInput.ProductId,
+                ProductName = vInput.ProductName,
+                UnitPrice = wUnitPrice,
+                Category = vInput.Category
             };
         }
     }

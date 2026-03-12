@@ -8,53 +8,56 @@ using SalesManagementApp.Core.Application.State;
 using Sales_Management_App.Presentation.Common;
 
 namespace Sales_Management_App.Presentation.Tabs.Aggregation {
+    /// <summary>
+    /// 売上集計 タブのイベント処理を担当し、画面とサービスを接続します。
+    /// </summary>
     internal sealed class AggregationController {
-        private readonly AggregationView _view;
-        private readonly SalesAggregationService _salesAggregationService;
-        private readonly AppState _appState;
-        private readonly UiMessageService _messageService;
-        private readonly UiActionExecutor _actionExecutor;
+        private readonly AggregationView FView;
+        private readonly SalesAggregationService FSalesAggregationService;
+        private readonly AppState FAppState;
+        private readonly UiMessageService FMessageService;
+        private readonly UiActionExecutor FActionExecutor;
 
-        private AggregationSnapshot _currentSnapshot;
+        private AggregationSnapshot FCurrentSnapshot;
 
         internal AggregationController(
-            AggregationView view,
-            SalesAggregationService salesAggregationService,
-            AppState appState,
-            UiMessageService messageService,
-            UiActionExecutor actionExecutor) {
-            _view = view ?? throw new ArgumentNullException("view");
-            _salesAggregationService = salesAggregationService ?? throw new ArgumentNullException("salesAggregationService");
-            _appState = appState ?? throw new ArgumentNullException("appState");
-            _messageService = messageService ?? throw new ArgumentNullException("messageService");
-            _actionExecutor = actionExecutor ?? throw new ArgumentNullException("actionExecutor");
+            AggregationView vView,
+            SalesAggregationService vSalesAggregationService,
+            AppState vAppState,
+            UiMessageService vMessageService,
+            UiActionExecutor vActionExecutor) {
+            FView = vView ?? throw new ArgumentNullException("view");
+            FSalesAggregationService = vSalesAggregationService ?? throw new ArgumentNullException("salesAggregationService");
+            FAppState = vAppState ?? throw new ArgumentNullException("appState");
+            FMessageService = vMessageService ?? throw new ArgumentNullException("messageService");
+            FActionExecutor = vActionExecutor ?? throw new ArgumentNullException("actionExecutor");
         }
 
         internal void Initialize() {
-            _view.ExecuteRequested += OnExecuteRequested;
-            _view.CopyRequested += OnCopyRequested;
-            _view.FilterRequested += OnFilterRequested;
-            _view.FilterClearRequested += OnFilterClearRequested;
+            FView.ExecuteRequested += OnExecuteRequested;
+            FView.CopyRequested += OnCopyRequested;
+            FView.FilterRequested += OnFilterRequested;
+            FView.FilterClearRequested += OnFilterClearRequested;
         }
 
         internal void Reset() {
-            _currentSnapshot = null;
-            _view.ResetDisplay();
+            FCurrentSnapshot = null;
+            FView.ResetDisplay();
         }
 
         private void OnExecuteRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                var snapshot = CreateAggregationSnapshot();
-                RenderAggregationSnapshot(snapshot);
+            FActionExecutor.Execute(delegate {
+                var wSnapshot = CreateAggregationSnapshot();
+                RenderAggregationSnapshot(wSnapshot);
             });
         }
 
         private void OnCopyRequested(object sender, EventArgs e) {
-            _actionExecutor.Execute(delegate {
-                var snapshot = CreateAggregationSnapshot();
-                RenderAggregationSnapshot(snapshot);
-                Clipboard.SetText(CreateAggregationClipboardText(snapshot));
-                _messageService.ShowInfo("集計結果をクリップボードにコピーしました。");
+            FActionExecutor.Execute(delegate {
+                var wSnapshot = CreateAggregationSnapshot();
+                RenderAggregationSnapshot(wSnapshot);
+                Clipboard.SetText(CreateAggregationClipboardText(wSnapshot));
+                FMessageService.ShowInfo("集計結果をクリップボードにコピーしました。");
             });
         }
 
@@ -63,89 +66,89 @@ namespace Sales_Management_App.Presentation.Tabs.Aggregation {
         }
 
         private void OnFilterClearRequested(object sender, EventArgs e) {
-            _view.ClearProductIdFilter();
+            FView.ClearProductIdFilter();
             ApplyFilter();
         }
 
         private AggregationSnapshot CreateAggregationSnapshot() {
-            var startDate = _view.GetStartDate();
-            var endDate = _view.GetEndDate();
+            var wStartDate = FView.GetStartDate();
+            var wEndDate = FView.GetEndDate();
 
             return new AggregationSnapshot {
-                StartDate = startDate,
-                EndDate = endDate,
-                ProductSummaries = _salesAggregationService.GetProductSummaries(_appState.Sales, startDate, endDate).ToList(),
-                WeeklySummaries = _salesAggregationService.GetWeeklySummaries(_appState.Sales, startDate, endDate).ToList(),
-                TotalSalesAmount = _salesAggregationService.GetTotalSalesAmount(_appState.Sales, startDate, endDate)
+                StartDate = wStartDate,
+                EndDate = wEndDate,
+                ProductSummaries = FSalesAggregationService.GetProductSummaries(FAppState.Sales, wStartDate, wEndDate).ToList(),
+                WeeklySummaries = FSalesAggregationService.GetWeeklySummaries(FAppState.Sales, wStartDate, wEndDate).ToList(),
+                TotalSalesAmount = FSalesAggregationService.GetTotalSalesAmount(FAppState.Sales, wStartDate, wEndDate)
             };
         }
 
-        private void RenderAggregationSnapshot(AggregationSnapshot snapshot) {
-            _currentSnapshot = snapshot;
-            _view.SetSummaryText(string.Format(
+        private void RenderAggregationSnapshot(AggregationSnapshot vSnapshot) {
+            FCurrentSnapshot = vSnapshot;
+            FView.SetSummaryText(string.Format(
                 "期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd} / 合計売上: {2} 円",
-                snapshot.StartDate,
-                snapshot.EndDate,
-                snapshot.TotalSalesAmount));
+                vSnapshot.StartDate,
+                vSnapshot.EndDate,
+                vSnapshot.TotalSalesAmount));
             ApplyFilter();
         }
 
         private void ApplyFilter() {
-            if (_currentSnapshot == null) {
-                _view.SetProductRows(new List<AggregationProductSummaryRow>());
-                _view.SetWeeklyRows(new List<AggregationWeeklySummaryRow>());
+            if (FCurrentSnapshot == null) {
+                FView.SetProductRows(new List<AggregationProductSummaryRow>());
+                FView.SetWeeklyRows(new List<AggregationWeeklySummaryRow>());
                 return;
             }
 
-            var filter = _view.GetProductIdFilter();
-            var filteredProductSummaries = _currentSnapshot.ProductSummaries;
-            if (!string.IsNullOrWhiteSpace(filter)) {
-                filteredProductSummaries = filteredProductSummaries
-                    .Where(s => s.ProductId.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
+            var wFilter = FView.GetProductIdFilter();
+            var wFilteredProductSummaries = FCurrentSnapshot.ProductSummaries;
+            if (!string.IsNullOrWhiteSpace(wFilter)) {
+                wFilteredProductSummaries = wFilteredProductSummaries
+                    .Where(vS => vS.ProductId.IndexOf(wFilter, StringComparison.OrdinalIgnoreCase) >= 0)
                     .ToList();
             }
 
-            var productRows = filteredProductSummaries.Select(s => new AggregationProductSummaryRow {
-                ProductId = s.ProductId,
-                TotalQuantity = s.TotalQuantity,
-                TotalSalesAmount = s.TotalSalesAmount
+            var wProductRows = wFilteredProductSummaries.Select(vS => new AggregationProductSummaryRow {
+                ProductId = vS.ProductId,
+                TotalQuantity = vS.TotalQuantity,
+                TotalSalesAmount = vS.TotalSalesAmount
             }).ToList();
-            _view.SetProductRows(productRows);
+            FView.SetProductRows(wProductRows);
 
-            var weeklyRows = _currentSnapshot.WeeklySummaries.Select(s => new AggregationWeeklySummaryRow {
-                Week = string.Format("{0:yyyy/MM/dd} - {1:yyyy/MM/dd}", s.WeekStartDate, s.WeekEndDate),
-                TotalQuantity = s.TotalQuantity,
-                TotalSalesAmount = s.TotalSalesAmount
+            var wWeeklyRows = FCurrentSnapshot.WeeklySummaries.Select(vS => new AggregationWeeklySummaryRow {
+                Week = string.Format("{0:yyyy/MM/dd} - {1:yyyy/MM/dd}", vS.WeekStartDate, vS.WeekEndDate),
+                TotalQuantity = vS.TotalQuantity,
+                TotalSalesAmount = vS.TotalSalesAmount
             }).ToList();
-            _view.SetWeeklyRows(weeklyRows);
+            FView.SetWeeklyRows(wWeeklyRows);
         }
 
-        private static string CreateAggregationClipboardText(AggregationSnapshot snapshot) {
-            var builder = new StringBuilder();
-            builder.AppendLine(string.Format("期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd}", snapshot.StartDate, snapshot.EndDate));
-            builder.AppendLine(string.Format("合計売上: {0} 円", snapshot.TotalSalesAmount));
-            builder.AppendLine();
-            builder.AppendLine("[商品別集計]");
-            builder.AppendLine("商品ID\t販売数量\t売上金額");
+        private static string CreateAggregationClipboardText(AggregationSnapshot vSnapshot) {
+            var wBuilder = new StringBuilder();
+            wBuilder.AppendLine(string.Format("期間: {0:yyyy/MM/dd} - {1:yyyy/MM/dd}", vSnapshot.StartDate, vSnapshot.EndDate));
+            wBuilder.AppendLine(string.Format("合計売上: {0} 円", vSnapshot.TotalSalesAmount));
+            wBuilder.AppendLine();
+            wBuilder.AppendLine("[商品別集計]");
+            wBuilder.AppendLine("商品ID\t販売数量\t売上金額");
 
-            foreach (var summary in snapshot.ProductSummaries) {
-                builder.AppendLine(string.Format("{0}\t{1}\t{2}", summary.ProductId, summary.TotalQuantity, summary.TotalSalesAmount));
+            foreach (var wSummary in vSnapshot.ProductSummaries) {
+                wBuilder.AppendLine(string.Format("{0}\t{1}\t{2}", wSummary.ProductId, wSummary.TotalQuantity, wSummary.TotalSalesAmount));
             }
 
-            builder.AppendLine();
-            builder.AppendLine("[週次集計]");
-            builder.AppendLine("週\t販売数量\t売上金額");
+            wBuilder.AppendLine();
+            wBuilder.AppendLine("[週次集計]");
+            wBuilder.AppendLine("週\t販売数量\t売上金額");
 
-            foreach (var summary in snapshot.WeeklySummaries) {
-                builder.AppendLine(string.Format(
+            foreach (var wSummary in vSnapshot.WeeklySummaries) {
+                wBuilder.AppendLine(string.Format(
                     "{0:yyyy/MM/dd}-{1:yyyy/MM/dd}\t{2}\t{3}",
-                    summary.WeekStartDate,
-                    summary.WeekEndDate,
-                    summary.TotalQuantity,
-                    summary.TotalSalesAmount));
+                    wSummary.WeekStartDate,
+                    wSummary.WeekEndDate,
+                    wSummary.TotalQuantity,
+                    wSummary.TotalSalesAmount));
             }
 
-            return builder.ToString();
+            return wBuilder.ToString();
         }
     }
 }
