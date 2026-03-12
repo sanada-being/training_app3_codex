@@ -87,19 +87,58 @@ public class AppBootstrapperTests
 
     [Test]
     /// <summary>
-    /// リポジトリルートが見つからない場合に空のアプリケーション状態を返すことを検証します。
+    /// リポジトリルートが見つからない場合でも起動フォルダ内のCSVを読み込めることを検証します。
     /// </summary>
-    public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_ReturnsEmptyState()
+    public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_UsesBaseDirectoryAsDataRoot()
     {
         var wBaseDir = Path.Combine(FWorkDir, "standalone");
+        Directory.CreateDirectory(wBaseDir);
+        File.WriteAllLines(Path.Combine(wBaseDir, "products.csv"), new[]
+        {
+            "ProductId,ProductName,UnitPrice,Category",
+            "P001,Cola,120,Drink"
+        });
+        File.WriteAllLines(Path.Combine(wBaseDir, "inventory.csv"), new[]
+        {
+            "StoreId,ProductId,Stock",
+            "S001,P001,10"
+        });
+        File.WriteAllLines(Path.Combine(wBaseDir, "sales_20260303.csv"), new[]
+        {
+            "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
+            "2026-03-03,S001,P001,1,120"
+        });
+
+        var wState = FBootstrapper.LoadFromBaseDirectory(wBaseDir);
+
+        Assert.That(wState.RepositoryRootPath, Is.EqualTo(wBaseDir));
+        Assert.That(wState.Products.Count, Is.EqualTo(1));
+        Assert.That(wState.Inventories.Count, Is.EqualTo(1));
+        Assert.That(wState.Sales.Count, Is.EqualTo(1));
+        Assert.That(wState.ProductsPath, Is.EqualTo(Path.Combine(wBaseDir, "products.csv")));
+        Assert.That(wState.InventoryPath, Is.EqualTo(Path.Combine(wBaseDir, "inventory.csv")));
+        Assert.That(wState.SalesPath, Is.EqualTo(Path.Combine(wBaseDir, "sales_20260303.csv")));
+        Assert.That(wState.InventoryHistoryPath, Is.EqualTo(Path.Combine(wBaseDir, "inventory_history.csv")));
+    }
+
+    [Test]
+    /// <summary>
+    /// リポジトリルートが見つからずCSVが未配置でも起動フォルダをデータルートとして保持することを検証します。
+    /// </summary>
+    public void LoadFromBaseDirectory_WhenRepositoryRootNotFoundAndDataFilesMissing_UsesBaseDirectoryWithEmptyState()
+    {
+        var wBaseDir = Path.Combine(FWorkDir, "empty-standalone");
         Directory.CreateDirectory(wBaseDir);
 
         var wState = FBootstrapper.LoadFromBaseDirectory(wBaseDir);
 
-        Assert.That(wState.RepositoryRootPath, Is.Empty);
+        Assert.That(wState.RepositoryRootPath, Is.EqualTo(wBaseDir));
         Assert.That(wState.Products, Is.Empty);
         Assert.That(wState.Inventories, Is.Empty);
         Assert.That(wState.Sales, Is.Empty);
         Assert.That(wState.InventoryHistories, Is.Empty);
+        Assert.That(wState.ProductsPath, Is.EqualTo(Path.Combine(wBaseDir, "products.csv")));
+        Assert.That(wState.InventoryPath, Is.EqualTo(Path.Combine(wBaseDir, "inventory.csv")));
+        Assert.That(wState.InventoryHistoryPath, Is.EqualTo(Path.Combine(wBaseDir, "inventory_history.csv")));
     }
 }

@@ -7,6 +7,13 @@
 - `dotnet build "Sales Management App/Sales Management App.slnx"`
 - `dotnet test tests/SalesManagementApp.Tests/SalesManagementApp.Tests.csproj`
 
+## 配布手順
+1. Visual Studio で `Sales Management App/Sales Management App/Sales Management App.csproj` を `Release` ビルドする
+2. リポジトリルートで `powershell -ExecutionPolicy Bypass -File .\scripts\Create-Distribution.ps1 -Clean` を実行する
+3. `dist/SalesManagementApp` フォルダをまとめて配布する
+
+配布先PCでは、`Sales Management App.exe`、`SalesManagementApp.Core.dll`、`Sales Management App.exe.config`、各CSVを同じフォルダに置いたまま起動する。
+
 ## 主要ドキュメント
 - 利用者向け手順: `docs/user-operation-manual.md`
 - 開発者向け手順: `docs/developer-setup.md`

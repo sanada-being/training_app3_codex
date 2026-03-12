@@ -33,12 +33,12 @@ public class AppBootstrapper
     /// </summary>
     public AppState LoadFromBaseDirectory(string vBaseDirectory)
     {
-        var wRootPath = FindRepositoryRoot(vBaseDirectory);
-        if (string.IsNullOrWhiteSpace(wRootPath))
+        if (string.IsNullOrWhiteSpace(vBaseDirectory))
         {
             return new AppState();
         }
 
+        var wRootPath = ResolveDataRoot(vBaseDirectory);
         var wState = new AppState
         {
             RepositoryRootPath = wRootPath,
@@ -54,6 +54,17 @@ public class AppBootstrapper
         wState.InventoryHistories.AddRange(FRepository.ReadInventoryHistoriesIfExists(wState.InventoryHistoryPath));
 
         return wState;
+    }
+
+    private static string ResolveDataRoot(string vBaseDirectory)
+    {
+        var wRepositoryRoot = FindRepositoryRoot(vBaseDirectory);
+        if (!string.IsNullOrWhiteSpace(wRepositoryRoot))
+        {
+            return wRepositoryRoot;
+        }
+
+        return Path.GetFullPath(vBaseDirectory);
     }
 
     private static string FindRepositoryRoot(string vBaseDirectory)
