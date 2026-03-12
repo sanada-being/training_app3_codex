@@ -74,17 +74,53 @@ public class AppBootstrapperTests
     }
 
     [Test]
-    public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_ReturnsEmptyState()
+    public void LoadFromBaseDirectory_WhenRepositoryRootNotFound_UsesBaseDirectoryAsDataRoot()
     {
         var baseDir = Path.Combine(_workDir, "standalone");
+        Directory.CreateDirectory(baseDir);
+        File.WriteAllLines(Path.Combine(baseDir, "products.csv"), new[]
+        {
+            "ProductId,ProductName,UnitPrice,Category",
+            "P001,Cola,120,Drink"
+        });
+        File.WriteAllLines(Path.Combine(baseDir, "inventory.csv"), new[]
+        {
+            "StoreId,ProductId,Stock",
+            "S001,P001,10"
+        });
+        File.WriteAllLines(Path.Combine(baseDir, "sales_20260303.csv"), new[]
+        {
+            "SaleDate,StoreId,ProductId,Quantity,SalesAmount",
+            "2026-03-03,S001,P001,1,120"
+        });
+
+        var state = _bootstrapper.LoadFromBaseDirectory(baseDir);
+
+        Assert.That(state.RepositoryRootPath, Is.EqualTo(baseDir));
+        Assert.That(state.Products.Count, Is.EqualTo(1));
+        Assert.That(state.Inventories.Count, Is.EqualTo(1));
+        Assert.That(state.Sales.Count, Is.EqualTo(1));
+        Assert.That(state.ProductsPath, Is.EqualTo(Path.Combine(baseDir, "products.csv")));
+        Assert.That(state.InventoryPath, Is.EqualTo(Path.Combine(baseDir, "inventory.csv")));
+        Assert.That(state.SalesPath, Is.EqualTo(Path.Combine(baseDir, "sales_20260303.csv")));
+        Assert.That(state.InventoryHistoryPath, Is.EqualTo(Path.Combine(baseDir, "inventory_history.csv")));
+    }
+
+    [Test]
+    public void LoadFromBaseDirectory_WhenRepositoryRootNotFoundAndDataFilesMissing_UsesBaseDirectoryWithEmptyState()
+    {
+        var baseDir = Path.Combine(_workDir, "empty-standalone");
         Directory.CreateDirectory(baseDir);
 
         var state = _bootstrapper.LoadFromBaseDirectory(baseDir);
 
-        Assert.That(state.RepositoryRootPath, Is.Empty);
+        Assert.That(state.RepositoryRootPath, Is.EqualTo(baseDir));
         Assert.That(state.Products, Is.Empty);
         Assert.That(state.Inventories, Is.Empty);
         Assert.That(state.Sales, Is.Empty);
         Assert.That(state.InventoryHistories, Is.Empty);
+        Assert.That(state.ProductsPath, Is.EqualTo(Path.Combine(baseDir, "products.csv")));
+        Assert.That(state.InventoryPath, Is.EqualTo(Path.Combine(baseDir, "inventory.csv")));
+        Assert.That(state.InventoryHistoryPath, Is.EqualTo(Path.Combine(baseDir, "inventory_history.csv")));
     }
 }
